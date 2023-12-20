@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+  <title>OTP Entry</title>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f8f9fa;
+    }
+
+    .otp-input {
+      width: 40px;
+      text-align: center;
+      margin: 0 5px;
+    }
+
+    .otp-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container text-center">
+    <h2>Enter OTP</h2>
+    <% if (typeof error !== 'undefined') { %>
+      <div class="alert alert-danger">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <p>We've sent a 6-digit OTP to your Email Address.</p>
+
+    <form id="otpForm" action="/verifyotp" method="POST">
+      <div class="otp-container">
+  
+          <input type="text" class="form-control otp-input" name="a" maxlength="1" pattern="\d*" inputmode="numeric" required oninput="moveToNextOrPreviousField(this, event)">
+          <input type="text" class="form-control otp-input" name="b" maxlength="1" pattern="\d*" inputmode="numeric" required oninput="moveToNextOrPreviousField(this, event)">
+          <input type="text" class="form-control otp-input" name="c" maxlength="1" pattern="\d*" inputmode="numeric" required oninput="moveToNextOrPreviousField(this, event)">
+          <input type="text" class="form-control otp-input" name="d" maxlength="1" pattern="\d*" inputmode="numeric" required oninput="moveToNextOrPreviousField(this, event)">
+          <input type="text" class="form-control otp-input" name="e" maxlength="1" pattern="\d*" inputmode="numeric" required oninput="moveToNextOrPreviousField(this, event)">
+          <input type="text" class="form-control otp-input" name="f" maxlength="1" pattern="\d*" inputmode="numeric" required oninput="moveToNextOrPreviousField(this, event)">
+
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-3">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    function moveToNextOrPreviousField(currentInput, event) {
+      const maxLength = parseInt(currentInput.getAttribute('maxlength'));
+      const inputValue = currentInput.value;
+
+      if (event.key === 'Backspace' && inputValue.length === 0) {
+        const previousField = currentInput.previousElementSibling;
+
+        if (previousField) {
+          previousField.focus();
+          event.preventDefault();
+        }
+      } else if (inputValue.length === maxLength) {
+        const nextField = currentInput.nextElementSibling;
+
+        if (nextField) {
+          nextField.focus();
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>
