@@ -1,15 +1,17 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const path = require('path');
-const session = require('express-session');
-const router = require('./server/routes/userRouter'); 
+import express from 'express';
+import path from 'path';
+import session from 'express-session';
+import userRouter from './server/routes/userRouter.js';
+import adminRouter from './server/routes/adminRouter.js';
+import connectDB from './server/database/connection.js';
+import "dotenv/config"
 
-const connectDB = require('./server/database/connection')
 
 const app = express();
 
-dotenv.config({path:'config.env'})
+
 const PORT = process.env.PORT || 8080;
+const __dirname = path.resolve();
 
 app.use(
     session({
@@ -37,15 +39,11 @@ app.use(express.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
 // app.set('views' ,path.resolve(__dirname, "views/ejs"));
 
-// load assets
-app.use('/css',express.static(path.resolve(__dirname, 'assets/css')));
-app.use('/images',express.static(path.resolve(__dirname, 'assets/images')));
-app.use('/js',express.static(path.resolve(__dirname, 'assets/js')));
-app.use('/fonts',express.static(path.resolve(__dirname, 'assets/fonts')));
+app.use(express.static(__dirname + "/assets"));
 
 // load routers
-app.use('/', require('./server/routes/userRouter'))
-app.use('/', require('./server/routes/adminRouter'))
+app.use('/', userRouter)
+app.use('/', adminRouter)
  
 
 app.listen(PORT, () => 

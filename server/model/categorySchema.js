@@ -1,4 +1,6 @@
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
+
+import mongoose from 'mongoose';
 
 
 const categorySchema = new mongoose.Schema({
@@ -7,13 +9,13 @@ const categorySchema = new mongoose.Schema({
     required: true,
     unique:true,
     },
-  status:{
+  isHidden:{
     type: Boolean,
-    default:true
+    default:false,
     }
-});
+});  
 
 
 const Categorydb = mongoose.model('categorydb', categorySchema);
 
-module.exports = Categorydb;
+export default Categorydb;

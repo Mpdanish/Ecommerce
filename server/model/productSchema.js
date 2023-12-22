@@ -1,9 +1,12 @@
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
+
+import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
     productname:{
         type:String,
-        required:true
+        required:true,
+        unique:true,
     },
     description:{
         type:String,
@@ -25,14 +28,14 @@ const productSchema = new mongoose.Schema({
         required: true,
         min: 0
     },
-    // category: {
-    //     type: String, 
-    //     required: true
-    // },
+    category: {
+        type: String, 
+        required: true
+    },
     
 
 })
 
 const Productdb = mongoose.model('productdb',productSchema);
 
-module.exports = Productdb;
+export default Productdb;

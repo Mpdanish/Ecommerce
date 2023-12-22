@@ -1,4 +1,6 @@
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
+
+import mongoose from 'mongoose';
 
 
 const otpSchema = new mongoose.Schema({
@@ -21,4 +23,4 @@ const otpSchema = new mongoose.Schema({
 
 const Otpdb = mongoose.model('otpdb', otpSchema);
 
-module.exports = Otpdb;
+export default Otpdb;

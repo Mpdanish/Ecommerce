@@ -1,19 +1,17 @@
-const Userdb = require('../model/userSchema');
-const Otpdb = require('../model/otpSchema');
-const bcrypt = require('bcrypt');
-const nodemailer = require('nodemailer');
-
-
+import Userdb from '../model/userSchema.js';
+import Otpdb from '../model/otpSchema.js';
+import nodemailer from 'nodemailer';
+import bcrypt from 'bcrypt';
 
 // Function to generate a random OTP
 
-    generateOTP = () => {
+  const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
     };
 
 
 // create and save new user
-  exports.newuser = async (req, res) => {
+  export async function newuser (req, res) {
         // validate request
         if (!req.body) {
         res.status(400).send({ message: 'Content can not be empty' });
@@ -56,9 +54,9 @@ const nodemailer = require('nodemailer');
         console.log(err);
         res.redirect('/register');
         }
-  },
+  };
 
-  exports.isUser = async (req, res) => {
+  export async function isUser (req, res) {
         if (!req.body) {
         res.status(400).redirect('/login');
         return;
@@ -77,16 +75,16 @@ const nodemailer = require('nodemailer');
 
         return res.status(401).send({ message: 'User is blocked by admin' });
     }
+        const data = await Userdb.findOne({email: inputEmail});
 
         const isPasswordMatch = await bcrypt.compare(inputPassword, data.password);
 
-        
 
         if (isPasswordMatch) {
 
             // Set session and redirect to home
             req.session.email = inputEmail;
-            res.send('home');
+            res.redirect('/homepage1');
         } else {
             res.status(401).send({ message: 'Invalid credentials' });
         } 
@@ -94,10 +92,10 @@ const nodemailer = require('nodemailer');
         console.error(err);
         res.redirect('/login');
         }
-  },
+  };
 
 
-exports.otp = async (req, res) => {
+  export async function otp (req, res) {
   try {
     const otp = generateOTP();
     const otptyped = req.body.a + req.body.b + req.body.c + req.body.d + req.body.e + req.body.f;

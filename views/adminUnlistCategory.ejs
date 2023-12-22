@@ -10,12 +10,11 @@
             <section class="content-main">
                 <div class="content-header">
                     <div>
-                        <h2 class="content-title card-title">Categories</h2>
-                        <p>Add, edit or delete a category</p>
+                        <h2 class="content-title card-title">Unlisted Categories</h2>
                     </div>
                     <div>
                         <div class="d-grid">
-                          <a href="/adminUnlistedCategory"> <button  class="btn btn-primary">Unlisted Categories</button> </a>  
+                          <a href="/adminCategory"> <button  class="btn btn-primary">Go Back</button> </a>  
                         </div>
                     </div>
                     <div>
@@ -25,17 +24,6 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-3">
-                                <form action="/api/addcategory"  method="post">
-                                    <div class="mb-4">
-                                        <label for="product_name" class="form-label">Category Name</label>
-                                        <input type="text" placeholder="Type here" name="categoryName" class="form-control" id="product_name" />
-                                    </div>
-                                    <div class="d-grid">
-                                        <button class="btn btn-primary">Add Category</button>
-                                    </div>
-                                </form>
-                            </div>
                             <div class="col-md-9">
                                 <div class="table-responsive">
                                     <table class="table table-hover">
@@ -48,7 +36,7 @@
                                         </thead>
                                         <tbody>
                                             <% for( let i = 0; i < category.length; i++ ) { %>
-                                                <% if (category[i].isHidden==false) { %>
+                                                <% if (category[i].isHidden==true) { %>
                                                 <tr>
                                                     <td>
                                                         <%= i+1 %>
@@ -59,7 +47,7 @@
                                                     <td>
                                                         
                     
-                                                           <a href="/api/deletecategory?categoryid=<%= category[i]._id %>"><button type="button" class="btn btn-danger">Unlist</button></a> 
+                                                           <a href="/api/deletecategory?categoryid=<%= category[i]._id %>"><button type="button" class="btn btn-danger">List</button></a> 
                     
                                                             <% } %>
                                                     </td>
