@@ -1,9 +1,9 @@
 <%- include('include/_header') %>
 
 
-        <%- include('include/_nav') %>
+    <%- include('include/_nav') %>
 
-        
+
         <%- include('include/_topheader') %>
 
 
@@ -14,7 +14,7 @@
                     </div>
                     <div>
                         <div class="d-grid">
-                          <a href="/adminCategory"> <button  class="btn btn-primary">Go Back</button> </a>  
+                            <a href="/adminCategory"> <button class="btn btn-primary">Go Back</button> </a>
                         </div>
                     </div>
                     <div>
@@ -35,25 +35,28 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <% for( let i = 0; i < category.length; i++ ) { %>
+                                            <% for( let i=0; i < category.length; i++ ) { %>
                                                 <% if (category[i].isHidden==true) { %>
-                                                <tr>
-                                                    <td>
-                                                        <%= i+1 %>
-                                                    </td>
-                                                    <td>
-                                                        <p><%= category[i].categoryname  %></p>
-                                                    </td>
-                                                    <td>
-                                                        
-                    
-                                                           <a href="/api/deletecategory?categoryid=<%= category[i]._id %>"><button type="button" class="btn btn-danger">List</button></a> 
-                    
+                                                    <tr>
+                                                        <td>
+                                                            <%= i+1 %>
+                                                        </td>
+                                                        <td>
+                                                            <p>
+                                                                <%= category[i].categoryname %>
+                                                            </p>
+                                                        </td>
+                                                        <td>
+
+
+                                                            <button class="btn btn-success"
+                                                                onclick="handlelist('<%= category[i]._id %>')">List</button>
+
                                                             <% } %>
-                                                    </td>
-                                                </tr>
-                                            
-                                            <% } %>
+                                                        </td>
+                                                    </tr>
+
+                                                    <% } %>
                                         </tbody>
                                     </table>
                                 </div>
@@ -65,7 +68,48 @@
                     <!-- card body .// -->
                 </div>
                 <!-- card .// -->
+                <% if (category.length!=0) { %>
+
+                    <div class="pagination-area mt-30 mb-50">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <% } else { %>
+
+                        <div>
+                            <h3 class="text-center text-danger">No Data Available..!!</h3>
+                        </div>
+
+
+                        <% } %>
             </section>
 
+            
+
+            <script>
+
+                function handlelist(id) {
+                    axios.post('/api/restorecategory', { id })
+                        .then((data) => {
+                            Swal.fire({
+                                title: "Good job!",
+                                text: "Successfully Listed",
+                                icon: "success"
+                            });
+                            setTimeout(() => {
+                                window.location.reload()
+                            }, 3000);
+                        }).catch((err) => {
+                            console.log(err);
+                        })
+                }
+
+            </script>
 
             <%- include('include/_footer') %>

@@ -1,46 +1,52 @@
 <%- include('include/_header') %>
 
 
-        <%- include('include/_nav') %>
+    <%- include('include/_nav') %>
 
-        
+
         <%- include('include/_topheader') %>
 
 
-    <div class="container">
-        <h1>Edit Product</h1>
-        <form action="" method="post" enctype="multipart/form-data">
-            <div class="row mb-3">
-                <div class="col-md-6">
-                <label for="name" class="form-label">Product Name:</label>
-                <input type="text" class="form-control" id="name" name="name" value="">
-                </div>
-                <div class="col-md-6">
-                <label for="category" class="form-label">Category:</label>
-                <select class="form-select" id="category" name="category">
-                </select>
-                </div>
-            </div>
-            <div class="mb-3">
-                <label for="price" class="form-label">Price:</label>
-                <div class="input-group">
-                <span class="input-group-text">₹</span>
-                <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" value="">
-                </div>
-            </div>
+            <div class="container">
+                <h1>Edit Product</h1>
+                <form action="/api/updateproduct/<%= product._id %>" id="updateForm" enctype="multipart/form-data">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Product Name:</label>
+                            <input type="text" class="form-control" id="name" name="name"
+                                value="<%= product.productname %>">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="category" class="form-label">Category:</label>
+                            <input type="text" class="form-control" id="category" name="category"
+                                value="<%= product.category %>">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price:</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input type="number" class="form-control" id="price" name="price" step="0.01" min="0"
+                                value="<%= product.price %>">
+                        </div>
+                    </div>
 
-            <div class="mb-3">
-                <label for="stock" class="form-label">Stock:</label>
-                <input type="number" class="form-control" id="stock" name="stock" min="0" value="">
-            </div>
+                    <div class="mb-3">
+                        <label for="stock" class="form-label">Stock:</label>
+                        <input type="number" class="form-control" id="stock" name="stock" min="0"
+                            value="<%= product.stock %>">
+                    </div>
 
-            <div class="mb-3">
-                <label for="images" class="form-label">Images:</label>
-                <input type="file" class="form-control" id="images" name="images" multiple>
-                <small class="text-muted">Drag and drop multiple images or click to select.</small>
-            </div>
+                    <div class="mb-3">
+                        <label for="images" class="form-label">Images:</label>
+                        <input type="file" class="form-control" id="images" name="images" multiple>
+                        <small class="text-muted">Drag and drop multiple images or click to select.</small>
+                    </div>
 
-                <div class="mb-3">
+
+
+                    <!-- <div class="mb-3">
                 <h5>Existing Images:</h5>
                 <ul>
                     <li>
@@ -48,22 +54,79 @@
                         <a href="#" data-image-url="" class="remove-image btn btn-sm btn-danger">Remove</a>
                     </li>
                 </ul>
-                </div>
+                </div> -->
 
-            <button type="submit" class="btn btn-primary">Update Product</button> 
-        </form>
-  </div>
+                    <% if (product.images.length> 0) { %>
+                        <div class="mb-3">
+                            <h5>Existing Images:</h5>
+                            <ul>
+                                <% product.images.forEach((image)=> { %>
+                                    <li>
+                                        <img src="<%= image %>" width="100" alt="Product Image">
+                                        <a href="#" data-image-url="<%= image %>" class="remove-image btn btn-sm btn-danger">Remove</a>
+                                    </li>
+                                    <% }); %>
+                            </ul>
+                        </div>
+                        <% } %>
 
-<script>
-    const removeImageButtons = document.querySelectorAll('.remove-image');
-    removeImageButtons.forEach(function(button) {
-      button.addEventListener('click', function(event) {
-        event.preventDefault();
-        const imageUrl = this.dataset.imageUrl;
-        // TODO: Implement logic to remove image from backend and update UI
-      });
-    });
-</script>
+                            <button type="submit" class="btn btn-primary" style="margin-bottom: 7rem;">Update
+                                Product</button>
+                </form>
+            </div>
+            <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+            <script>
+                const removeImageButtons = document.getElementsByClassName('remove-image');
 
-<%- include('include/_footer') %>
 
+
+                Array.from(removeImageButtons).forEach((button) => {
+                    button.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        const imageUrl = button.dataset.imageUrl;
+
+                        console.log(imageUrl);
+
+                    });
+                });
+
+                document.getElementById('updateForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    let uploadedImage = [];
+
+                    for(let i = 0 ; i < document.getElementById('images').files.length ; i++) {
+                        uploadedImage[i] = await convertBase64(document.getElementById('images').files[i]);
+                     }
+
+                     console.log(uploadedImage);
+
+
+                    axios
+                        .put(document.getElementById('updateForm').getAttribute('action'), {
+                            productname: document.getElementById('name').value,
+                            category: document.getElementById('category').value,
+                            price: document.getElementById('price').value,
+                            stock: document.getElementById('stock').value,
+                            images: uploadedImage,
+                        }).then((response) => {
+                            window.location.href = '/adminProducts'
+                        })
+                });
+
+
+                function convertBase64(file) {
+                    return new Promise((resolve, reject) => {
+                        const fileReader = new FileReader();
+                        fileReader.readAsDataURL(file);
+                        fileReader.onload = () => {
+                            resolve(fileReader.result);
+                        };
+                        fileReader.onerror = (error) => {
+                            reject(error);
+                        };
+                    });
+                }
+
+            </script>
+
+            <%- include('include/_footer') %>

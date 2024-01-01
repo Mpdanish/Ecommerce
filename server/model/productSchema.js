@@ -16,17 +16,14 @@ const productSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
-    // images: [
-    //     {
-    //         items: {
-    //             type: String
-    //           }
-    //     }
-    // ],
     stock: {
         type: Number,
         required: true,
         min: 0
+    },
+    images:{
+        type:Array,
+        required:true,
     },
     category: {
         type: String, 

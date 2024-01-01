@@ -1,4 +1,3 @@
-import axios from 'axios';
 import session from 'express-session';
 import userSchema from '../model/userSchema.js';
 import Productdb from '../model/productSchema.js';
@@ -39,16 +38,25 @@ export async function homepage1 (req, res) {
   res.render('homePage1.ejs',{product:data})
 }
 
-  //logout for home user
-  export function logout  (req, res)  {
-    req.session.isauth = false;
-    axios.get(`http://localhost:${process.env.PORT}/api/logout?email=${req.query.email}`).then()
-    req.session.email = ''
-    res.redirect("/login");
-  };
+  // //logout for home user
+  // export function logout  (req, res)  {
+  //   req.session.isauth = false;
+  //   axios.get(`http://localhost:${process.env.PORT}/api/logout?email=${req.query.email}`).then()
+  //   req.session.email = ''
+  //   res.redirect("/login");
+  // };
 
 //   export async function UserProduct  (req, res)  {
 //     const data=await Productdb.find()
 //     res.render('homePage.ejs',{product:data});
 
+// };
+
+
+export function productpage  (req, res) {
+  res.render('productpage.ejs')
+};
+
+// export function productpage  (req, res) {
+//   res.render('productpage1.ejs')
 // };

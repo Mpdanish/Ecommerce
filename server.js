@@ -4,6 +4,7 @@ import session from 'express-session';
 import userRouter from './server/routes/userRouter.js';
 import adminRouter from './server/routes/adminRouter.js';
 import connectDB from './server/database/connection.js';
+// import validator from './server/validator.js';
 import "dotenv/config"
 
 
@@ -32,7 +33,7 @@ app.use((req, res, next) => {
 // mongodb connection
 connectDB(); 
 
-app.use(express.json());
+app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({extended: true}));
 
 // set view engine

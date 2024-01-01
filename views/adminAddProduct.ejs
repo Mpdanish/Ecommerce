@@ -1,42 +1,43 @@
 <%- include('include/_header') %>
 
 
-        <%- include('include/_nav') %>
-        
-        
+    <%- include('include/_nav') %>
+
+
         <%- include('include/_topheader') %>
-        
+
+
             <section class="content-main">
                 <div class="row">
-                    <div class="col-9">
+                    <div class="row-auto">
                         <div class="content-header">
                             <h2 class="content-title">Add New Product</h2>
-                            <div>
-                                <button class="btn btn-md rounded font-sm hover-up submit" type="button">Add Product</button>
-                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="row-lg-6">
                         <div class="card mb-4">
                             <div class="card-header">
                                 <h4>Product Details</h4>
                             </div>
                             <div class="card-body">
-                                <form action="/api/addproduct" id="form" method="post">
+                                <form action="/api/addproduct" id="addProductForm" method="post">
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Product Name</label>
-                                        <input type="text" placeholder="Type here" name="productname" class="form-control" id="product_name" />
+                                        <input type="text" placeholder="Type here" name="productname"
+                                            class="form-control" id="productname" required >
                                     </div>
                                     <div class="mb-4">
                                         <label class="form-label">Description</label>
-                                        <textarea placeholder="Type here" name="description" class="form-control" rows="4"></textarea>
+                                        <textarea placeholder="Type here" name="description" class="form-control"
+                                            rows="4" id="description" required></textarea>
                                     </div>
-                                    <div class="row" >
+                                    <div class="row">
                                         <div class="col-lg-4" style="width: 50%;">
                                             <div class="mb-4">
                                                 <label class="form-label">Price</label>
                                                 <div class="row gx-2">
-                                                    <input placeholder="₹" name="price" type="text" class="form-control" />
+                                                    <input placeholder="₹" name="price" type="number"
+                                                        class="form-control" id="price" required />
                                                 </div>
                                             </div>
                                         </div>
@@ -44,59 +45,145 @@
                                             <div class="mb-4">
                                                 <label class="form-label">Stock</label>
                                                 <div class="row gx-2">
-                                                    <input placeholder="0" type="text" name="stock" class="form-control" />
+                                                    <input placeholder="0" type="number" name="stock"
+                                                        class="form-control" id="stock" required />
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row-lg-2">
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <h4>Media</h4>
+                                            </div>
+                                            <div class="card-body">
+
+                                                <div class="input-upload mb-4">
+                                                    <img src="/images/theme/upload.svg" alt="" />
+                                                <label for="formFile" class="form-label">Upload Images</label>
+                                                    <input name="images" class="form-control" type="file" id="Image" multiple />
+                                                </div>
+
+                                                <!-- <div class="input-upload mb-4">
+                                                    <input class="form-control" type="file" id="img1" />
+                                                </div>
+                                                <div class="input-upload mb-4">
+                                                    <input class="form-control" type="file" id="img2" />
+                                                </div>
+                                                <div class="input-upload mb-4">
+                                                    <input class="form-control" type="file" id="img3" />
+                                                </div> -->
+                                            </div>
+                                            <div class="card mb-4">
+                                                <div class="card-header">
+                                                    <h4>Category</h4>
+                                                </div>
+                                                <div class="card-body">
+                                                    <select class="form-select" name="category" id="category">
+                                                        <% for (let i of category) { %>
+                                                            <option>
+                                                                <%= i.categoryname %>
+                                                            </option>
+                                                            <% } %>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="justify-content-center">
+                                            <button class="btn btn-md rounded font-sm hover-up submit" type="submit">Add
+                                                Product</button>
+                                        </div>
                                 </form>
+
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="col-lg-3">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h4>Media</h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="input-upload">
-                                    <img src="/images/theme/upload.svg" alt="" />
-                                    <input name="images" class="form-control" type="file" />
-                                </div>
-                            </div>
-                        </div>-->
-                        <!-- card end// -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                        <h4>Category</h4>
-                            </div>
 
-                            
-                            
-                            
-                                        <div class="card-body"></div>
+                    <!-- card end// -->
 
-                                        <select class="form-select">
-
-                                            <% for( let i = 0; i < category.length; i++ ) { %>
-                                            
-                                                <option><%= category[i].categoryname %></option>
-                                                
-                                            <% } %>
-
-                                            </select>
-
-                                     
-                            
-                        </div>
-                    </div>
+                </div>
                 </div>
             </section>
             <script>
+
                 document.querySelector('.submit').addEventListener('click', () => {
                     document.querySelector('#form').submit();
                 });
-            </script>
-           
 
-    <%- include('include/_footer') %>
+                // JavaScript for custom validation
+                document.getElementById('addProductForm').addEventListener('submit', function (event) {
+                    var form = event.target;
+
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+
+                    form.classList.add('was-validated');
+                });
+
+
+
+                const addProductForm = document.getElementById("addProductForm");
+                const productname = document.getElementById("productname");
+                const description = document.getElementById("description");
+                const price = document.getElementById("price");
+                const stock = document.getElementById("price");
+                const category = document.getElementById("category");
+                const Image = document.getElementById("Image");
+                // const img1 = document.getElementById("img1");
+                // const img2 = document.getElementById("img2");
+
+                
+                addProductForm.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+                    //  for(let i = 0 ; i < Image.length ; i++) {
+                    //     console.log(Image.files[i]);
+                    //  }
+                    let ImageArr = []
+                     for(let i = 0 ; i < Image.files.length ; i++) {
+                         ImageArr[i] = await convertBase64(Image.files[i]);
+                     }
+     
+                    // const images = [coverimg];
+
+                    axios
+                        .post("/api/addproduct", {
+                            productname: productname.value,
+                            description: description.value,
+                            price: price.value,
+                            stock: stock.value,
+                            category: category.value,
+                            ImageArr,
+                        })
+
+                        .then(({ data }) => {
+                            if (data) {
+                                Swal.fire("Product Added", "Click the button", "success").then(
+                                    () => {
+                                        // window.location.reload();
+                                    }
+                                );
+                            }
+                        });
+                });
+
+                function convertBase64(file) {
+                    return new Promise((resolve, reject) => {
+                        const fileReader = new FileReader();
+                        fileReader.readAsDataURL(file);
+                        fileReader.onload = () => {
+                            resolve(fileReader.result);
+                        };
+                        fileReader.onerror = (error) => {
+                            reject(error);
+                        };
+                    });
+                }
+
+                function imageUpload(img) { }
+            </script>
+
+
+            <%- include('include/_footer') %>

@@ -1,8 +1,8 @@
-import axios from 'axios';
 import session from 'express-session';
 import "dotenv/config"
 import Productdb from '../model/productSchema.js';
 import Categorydb from '../model/categorySchema.js';
+import Userdb from '../model/userSchema.js';
 
 
 const adminEmail = "admin@gmail.com";
@@ -35,12 +35,9 @@ const adminPassword = "1234";
     res.render('adminHome.ejs');
   };
 
-  export function adminUser  (req, res)  {
-      axios.get(`http://localhost:${process.env.PORT}/api/adminUser`).then((response)=>{
-      res.render('adminUsers.ejs',{user:response.data});
-      }).catch((err)=>{
-        res.send(err)
-      })
+  export async function adminUser  (req, res)  {
+    const data=await Userdb.find()
+      res.render('adminUsers.ejs',{user:data});
   };
 
   export async function adminProduct  (req, res)  {
@@ -54,26 +51,21 @@ const adminPassword = "1234";
     res.render('adminAddProduct.ejs',{category:data});
   };
   
-  export function adminEditProduct  (req, res)  {
-    res.render('adminEditProduct.ejs');
+  export async function adminEditProduct  (req, res)  {
+    const product=await Productdb.findOne({_id:req.params.id})
+    res.render('adminEditProduct.ejs',{product});
   };
 
   export function adminOrder  (req, res)  {
     res.render('adminOrders.ejs');
   };
   
-  export function adminCategory  (req, res)  {
-    axios.get(`http://localhost:${process.env.PORT}/api/adminshowCategoty`).then((response)=>{
-        res.render('adminCategories.ejs',{category:response.data});
-      }).catch((err)=>{
-        res.send(err)
-      })
+  export async function adminCategory  (req, res)  {
+    const data=await Categorydb.find()
+    res.render('adminCategories.ejs',{category:data});
   };
   
-  export function adminUnlistedCategory  (req, res)  {
-    axios.get(`http://localhost:${process.env.PORT}/api/adminshowCategoty`).then((response)=>{
-        res.render('adminUnlistCategory.ejs',{category:response.data});
-      }).catch((err)=>{
-        res.send(err)
-      })
+  export async function adminUnlistedCategory  (req, res)  {
+    const data=await Categorydb.find()
+    res.render('adminUnlistCategory.ejs',{category:data});
   };

@@ -34,7 +34,7 @@
                     <!-- card-header end// -->
                     <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover display" id="table_id" >
+                        <table class="table table-hover" >
                             <thead>
                                 <tr>
                                     <th>Name</th>
@@ -55,11 +55,11 @@
                                 <td>
                                     <% if (user[i].status==true) { %>
 
-                                        <p>Active</p>
+                                        <p class=" text-success ">Active</p>
 
                                         <% } else { %>
                                          
-                                        <p>Inactive</p>
+                                        <p class="text-danger ">Inactive</p>
 
                                     <% } %>
                                       
@@ -85,35 +85,28 @@
                     <!-- card-body end// -->
                 </div>
                 <!-- card end// -->
-                <div class="pagination-area mt-15 mb-50">
-                    <nav aria-label="Page navigation example">
-                        <ul class="pagination justify-content-start">
-                            <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                            <li class="page-item"><a class="page-link" href="#">02</a></li>
-                            <li class="page-item"><a class="page-link" href="#">03</a></li>
-                            <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                            <li class="page-item"><a class="page-link" href="#">16</a></li>
-                            <li class="page-item">
-                                <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+
+                <% if (user.length!=0) { %>
+ 
+    <div class="pagination-area mt-30 mb-50">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
+                </li>
+            </ul>  
+        </nav>
+    </div>
+    <% } else { %>
+     
+        <div>
+            <h3 class="text-center text-danger">No Data Available..!!</h3>
+        </div>
+
+
+<% } %>
             </section>
-            
-            <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
-            <script src="js/adminserver.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
-                integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-        
-            <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
-            <script>
-                $(document).ready(function () {
-            $('#table_id').DataTable();
-        });
-        
-            </script>
         
             
             <%- include('include/_footer') %>
