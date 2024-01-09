@@ -4,8 +4,13 @@ import Productdb from "../model/productSchema.js";
 import cloudinaryUploadImage from "../helper/cloudinary.js";
 
 export async function adminUsers(req, res) {
-  const data = await Userdb.find();
-  res.send(data);
+  try {
+    const data = await Userdb.find();
+    res.send(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error" );
+  }
 }
 
 export async function blockuser(req, res) {

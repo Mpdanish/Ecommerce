@@ -4,6 +4,7 @@ import session from 'express-session';
 import userRouter from './server/routes/userRouter.js';
 import adminRouter from './server/routes/adminRouter.js';
 import connectDB from './server/database/connection.js';
+import MongoStore from 'connect-mongo';
 // import validator from './server/validator.js';
 import "dotenv/config"
 
@@ -17,6 +18,7 @@ const __dirname = path.resolve();
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
+        store: MongoStore.create({mongoUrl : process.env.MONGO_URI}),
         resave: true,
         saveUninitialized: true
     })

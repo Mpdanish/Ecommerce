@@ -1,50 +1,70 @@
-import session from 'express-session';
-import userSchema from '../model/userSchema.js';
-import Productdb from '../model/productSchema.js';
-import "dotenv/config"
-
-
+import session from "express-session";
+import userSchema from "../model/userSchema.js";
+import Productdb from "../model/productSchema.js";
+import "dotenv/config";
+import Cartdb from "../model/cartSchema.js";
+import mongoose from "mongoose";
 
 //Register User Page
-export function register  (req, res) {
-    res.render('userSignup.ejs')
-  };
-
-  // Login Page
-// exports.login = (req, res) => {
-//     axios.get(`http://localhost:3000/api/users?email=${req.session.email}`)
-//     .then(function (response) {
-//         console.log(response.data);
-//       res.render('userLogin.ejs', { users: response.data });
-//     })
-//     .catch((err) => {
-//       res.send(err);
-//     });
-//   };
-
-
-export function login  (req, res)  {
-  req.session.emailIsValid = false;
-  res.render("userLogin.ejs", { isValidate: req.session.isValidate });
-};
-
-export async function homepage (req, res) {
-  const data=await Productdb.find()
-  res.render('homePage.ejs',{product:data})
+export function register(req, res) {
+  try {
+    res.status(200).render("userSignup.ejs");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 }
 
-export async function homepage1 (req, res) {
-  const data=await Productdb.find()
-  res.render('homePage1.ejs',{product:data})
+export function login(req, res) {
+  try {
+    req.session.emailIsValid = false;
+    res
+      .status(200)
+      .render("userLogin.ejs", { isValidate: req.session.isValidate });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 }
 
-  // //logout for home user
-  // export function logout  (req, res)  {
-  //   req.session.isauth = false;
-  //   axios.get(`http://localhost:${process.env.PORT}/api/logout?email=${req.query.email}`).then()
-  //   req.session.email = ''
-  //   res.redirect("/login");
-  // };
+export async function homepage(req, res) {
+  try {
+    const data = await Productdb.find();
+    res.status(200).render("homePage.ejs", { product: data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function homepage1(req, res) {
+  try {
+    const data = await Productdb.find();
+    res.status(200).render("homePage1.ejs", { product: data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function logoutUser(req, res) {
+  try {
+    req.session.destroy();
+    const data = await Productdb.find();
+    res.status(200).render("homePage.ejs", { product: data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+// //logout for home user
+// export function logout  (req, res)  {
+//   req.session.isauth = false;
+//   axios.get(`http://localhost:${process.env.PORT}/api/logout?email=${req.query.email}`).then()
+//   req.session.email = ''
+//   res.redirect("/login");
+// };
 
 //   export async function UserProduct  (req, res)  {
 //     const data=await Productdb.find()
@@ -52,11 +72,43 @@ export async function homepage1 (req, res) {
 
 // };
 
+export async function productpage(req, res) {
+  try {
+    const data = await Productdb.findOne({ _id: req.params.id });
+    res.status(200).render("productpage.ejs", { product: data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
 
-export function productpage  (req, res) {
-  res.render('productpage.ejs')
-};
+export async function cart(req, res) {
+  try {
+    const userid = req.session.userId;
 
-// export function productpage  (req, res) {
-//   res.render('productpage1.ejs')
-// };
+    const data = await Cartdb.aggregate([
+      {
+        $match: { userId: new mongoose.Types.ObjectId(userid) },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $lookup: {
+          from: Productdb.collection.name,
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "productsDetails",
+        },
+      },
+      {
+        $unwind: "$productsDetails",
+      },
+    ]);
+
+    res.status(200).render("userCart.ejs", { products: data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}

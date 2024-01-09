@@ -1,5 +1,6 @@
 import Userdb from '../model/userSchema.js';
 import Otpdb from '../model/otpSchema.js';
+import Productdb from '../model/productSchema.js';
 import nodemailer from 'nodemailer';
 import bcrypt from 'bcrypt';
 import { body, validationResult } from 'express-validator';
@@ -11,97 +12,97 @@ import { body, validationResult } from 'express-validator';
 
 
 // create and save new user
-  // export async function newuser (req, res) {
-  //       // validate request
-  //       if (!req.body) {
-  //       res.status(400).send({ message: 'Content can not be empty' });
-  //       return;
-  //       }
-
-  //       // Password matching
-  //       if (req.body.password !== req.body.confirmpassword) {
-  //       return res.status(400).send({ message: 'Password and Confirm Password do not match!' });
-  //       }
- 
-  //       const otp = generateOTP()
-  //       const otpp= new Otpdb({
-  //         email: req.body.email,
-  //         otp: otp
-  //       })
-
-  //       const otpInfo = await otpp.save(); 
-  //       req.session.email = req.body.email;
-        
-  //       // Hash the password
-  //       const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        
-  //       // Create a new user with hashed password and save it
-  //       const user = new Userdb({
-  //       name: req.body.name,
-  //       email: req.body.email,
-  //       password: hashedPassword,
-  //       });
-
-  //       try {
-  //       const data = await user.save();
-
-  //       // Send email with OTP
-  //       sendOtpEmail(req.body.email, otp);
-
-  //       // Render OTP entry page
-  //       res.render('otpentry');
-  //       } catch (err) {
-  //       console.log(err);
-  //       res.redirect('/register');
-  //       }
-  // };
-
-
-export async function newuser(req, res) {
-  try {
-    // Validate request using express-validator
-    await Promise.all([
-      body('name').trim().isLength({ min: 3 }).withMessage('Name cannot be empty').run(req),
-      body('email').trim().isEmail().withMessage('Invalid email address').run(req),
-      body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long').run(req),
-      body('confirmpassword').custom((value, { req }) => {
-        if (value !== req.body.password) {
-          throw new Error('Password and Confirm Password do not match!');
+  export async function newuser (req, res) {
+        // validate request
+        if (!req.body) {
+        res.status(400).send({ message: 'Content can not be empty' });
+        return;
         }
-        return true;
-      }).run(req),
-    ]);
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+        // Password matching
+        if (req.body.password !== req.body.confirmpassword) {
+        return res.status(400).send({ message: 'Password and Confirm Password do not match!' });
+        }
+ 
+        const otp = generateOTP()
+        const otpp= new Otpdb({
+          email: req.body.email,
+          otp: otp
+        })
 
-    const otp = generateOTP();
-    const otpp = new Otpdb({
-      email: req.body.email,
-      otp: otp,
-    });
+        const otpInfo = await otpp.save(); 
+        req.session.email = req.body.email;
+        
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        
+        // Create a new user with hashed password and save it
+        const user = new Userdb({
+        name: req.body.name,
+        email: req.body.email,
+        password: hashedPassword,
+        });
 
-    const otpInfo = await otpp.save();
-    req.session.email = req.body.email;
+        try {
+        const data = await user.save();
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = new Userdb({
-      name: req.body.name,
-      email: req.body.email,
-      password: hashedPassword,
-    });
+        // Send email with OTP
+        sendOtpEmail(req.body.email, otp);
 
-    const data = await user.save();
-    sendOtpEmail(req.body.email, otp);
+        // Render OTP entry page
+        res.render('otpentry');
+        } catch (err) {
+        console.log(err);
+        res.redirect('/register');
+        }
+  };
 
-    res.render('otpentry');
-  } catch (error) {
-    console.error(error);
-    res.redirect('/register');
-  }
-}
+
+// export async function newuser(req, res) {
+//   try {
+//     // Validate request using express-validator
+//     await Promise.all([
+//       body('name').trim().isLength({ min: 3 }).withMessage('Name cannot be empty').run(req),
+//       body('email').trim().isEmail().withMessage('Invalid email address').run(req),
+//       body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long').run(req),
+//       body('confirmpassword').custom((value, { req }) => {
+//         if (value !== req.body.password) {
+//           throw new Error('Password and Confirm Password do not match!');
+//         }
+//         return true;
+//       }).run(req),
+//     ]);
+
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//       return res.status(400).json({ errors: errors.array() });
+//     }
+
+//     const otp = generateOTP();
+//     const otpp = new Otpdb({
+//       email: req.body.email,
+//       otp: otp,
+//     });
+
+//     const otpInfo = await otpp.save();
+//     req.session.email = req.body.email;
+
+//     const hashedPassword = await bcrypt.hash(req.body.password, 10);
+//     const user = new Userdb({
+//       name: req.body.name,
+//       email: req.body.email,
+//       password: hashedPassword,
+//     });
+
+//     const data = await user.save();
+//     sendOtpEmail(req.body.email, otp);
+
+//     res.render('otpentry');
+//   } catch (error) {
+//     console.error(error);
+//     res.redirect('/register');
+//   }
+// }
 
 
   export async function isUser (req, res) {
@@ -130,8 +131,11 @@ export async function newuser(req, res) {
         if (isPasswordMatch) {
 
             // Set session and redirect to home
+
+            req.session.userId = user.id;
             req.session.email = email;
             res.redirect('/homepage1');
+
         } else {
             res.status(401).send({ message: 'Invalid password' });
         } 
@@ -146,24 +150,24 @@ export async function newuser(req, res) {
   try {
     const otp = generateOTP();
     const otptyped = req.body.a + req.body.b + req.body.c + req.body.d + req.body.e + req.body.f;
-    console.log(otptyped);
+    // console.log(otptyped);
 
     // Retrieve the OTP from the database based on your user or session identifier
     const otpDocument = await Otpdb.findOne({ email: req.session.email }); // Replace 'userId' with your actual field
-    console.log(otpDocument);
+    // console.log(otpDocument);
 
     if (!otpDocument) {
       return res.status(400).send({ message: 'No OTP found for the user' });
     }
 
     const storedOTP = otpDocument.otp;
-    console.log(storedOTP);
+    // console.log(storedOTP);
 
     if (otptyped === storedOTP) {
 
       const updateResult = await Userdb.updateOne({ email: req.session.email }, { $set: { verified: true } });
       console.log(updateResult);
-      res.redirect('/login');
+      res.redirect('/homepage1');
     } else {
       console.log('OTP does not match');
       res.status(400).send({ message: 'Invalid OTP' });
@@ -199,4 +203,10 @@ function sendOtpEmail(email, otp) {
     }
   });
 }  
+
+export async function productpageshow(req, res) {
+  const data = await Productdb.findOne({ _id: req.params.id });
+  res.send(data);
+}
+
 

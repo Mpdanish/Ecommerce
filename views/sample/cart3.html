@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <div class="container mx-auto my-8 p-8 bg-white rounded-md shadow-md">
+
+        <h1 class="text-3xl font-bold mb-8">Shopping Cart</h1>
+
+        <!-- Product List -->
+        <ul class="grid grid-rows-1 sm:grid-rows-2 lg:grid-rows-3 gap-8">
+            <!-- Product item -->
+            <li class="bg-white p-4 rounded-md shadow-md mb-4">
+                <img src="product1-image.jpg" alt="Product Image" class="w-full h-40 object-cover rounded-md mb-4">
+                <h2 class="text-lg font-semibold mb-2">Product 1</h2>
+                <p class="text-gray-600 mb-2">Product 1 description goes here.</p>
+                <p class="text-blue-500 font-bold mb-4">$19.99</p>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300">Add to Cart</button>
+            </li>
+
+            <!-- Product item -->
+            <li class="bg-white p-4 rounded-md shadow-md mb-4">
+                <img src="product2-image.jpg" alt="Product Image" class="w-full h-40 object-cover rounded-md mb-4">
+                <h2 class="text-lg font-semibold mb-2">Product 2</h2>
+                <p class="text-gray-600 mb-2">Product 2 description goes here.</p>
+                <p class="text-blue-500 font-bold mb-4">$29.99</p>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300">Add to Cart</button>
+            </li>
+
+            <!-- Repeat the above list item for each product -->
+
+        </ul>
+
+        <!-- Cart Summary -->
+        <div class="mt-8 p-4 bg-white rounded-md shadow-md">
+            <h2 class="text-xl font-bold mb-4">Cart Summary</h2>
+            <div class="flex justify-between mb-2">
+                <span class="text-gray-600">Subtotal:</span>
+                <span class="font-bold">$39.98</span>
+            </div>
+            <div class="flex justify-between mb-2">
+                <span class="text-gray-600">Shipping:</span>
+                <span class="font-bold">$5.00</span>
+            </div>
+            <div class="flex justify-between mb-4">
+                <span class="text-gray-600">Total:</span>
+                <span class="font-bold text-blue-500">$44.98</span>
+            </div>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-md w-full hover:bg-blue-600 transition duration-300">Proceed to Checkout</button>
+        </div>
+
+    </div>
+
+</body>
+</html>
