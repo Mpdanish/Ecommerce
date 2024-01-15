@@ -4,6 +4,7 @@ import Productdb from "../model/productSchema.js";
 import "dotenv/config";
 import Cartdb from "../model/cartSchema.js";
 import mongoose from "mongoose";
+import Userdb from "../model/userSchema.js";
 
 //Register User Page
 export function register(req, res) {
@@ -37,10 +38,21 @@ export async function homepage(req, res) {
   }
 }
 
+export async function profile(req, res) {
+  try {
+    res.status(200).render("prosample.ejs");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
 export async function homepage1(req, res) {
   try {
     const data = await Productdb.find();
-    res.status(200).render("homePage1.ejs", { product: data });
+    const userid = req.session.userId;
+    const userdata = await Userdb.findById(userid);
+    res.status(200).render("homePage1.ejs", { product: data , user: userdata});
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -72,10 +84,22 @@ export async function logoutUser(req, res) {
 
 // };
 
+export async function showprofile(req, res) {
+  try {
+    const data = await Userdb.findOne({ _id: req.params.id });
+    res.status(200).render("prosample.ejs", { user: data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
 export async function productpage(req, res) {
   try {
     const data = await Productdb.findOne({ _id: req.params.id });
-    res.status(200).render("productpage.ejs", { product: data });
+    const userid = req.session.userId;
+    const userdata = await Userdb.findById(userid);
+    res.status(200).render("productpreview.ejs", { product: data, user: userdata });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -111,4 +135,13 @@ export async function cart(req, res) {
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
+}
+
+export async function checkout(req,res){
+  try {
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  } 
 }

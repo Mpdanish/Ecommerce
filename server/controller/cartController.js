@@ -3,25 +3,13 @@ import Productdb from "../model/productSchema.js";
 
 export async function addToCart(req, res) {
   try {
-    // console.log("hfgh");
-
     let userId = req.session.userId;
 
-    // console.log(userId);
-    // console.log(req.session);
-
     const { id, quantity } = req.body;
-    // console.log(req.body);
-
-    console.log("productid : ", id, "quantity :", quantity);
 
     const productId = id;
 
-    // console.log(productId);
-
     let cart = await Cartdb.findOne({ userId });
-
-    // console.log(cart);
 
     if (!cart) {
       cart = await Cartdb.create({ userId });
@@ -34,11 +22,25 @@ export async function addToCart(req, res) {
       cart.products.push({ productId, quantity });
     }
 
-    let saved = await cart.save();
-    console.log(saved);
-    res.send(cart);
-  } catch (err) {
-    console.error(err);
-    res.send("Error adding product to cart");
+    await cart.save();
+    res.status(200).send(cart);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 }
+
+
+export async function removeFromCart(req, res) {
+  try {
+    const itemIdToRemove = parseInt(req.body.itemId, 10);
+
+    cart = Cartdb.filter(item => item.id !== itemIdToRemove);
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+

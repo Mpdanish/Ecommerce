@@ -26,25 +26,27 @@
                             <h2 class="mb-4 text-2xl font-bold text-gray-700 lg:mb-7 md:text-5xl dark:text-gray-300">
                                 Create your account</h2>
                             <p class="text-gray-500 dark:text-gray-400">Your credentials here</p>
-                            <form method="POST" id="signupForm" action="/api/registeruser" class="mt-4 lg:mt-7 ">
-                                <div id="errorContainer" style="color: red;"></div>
-                                <div class="mt-4 lg:mt-7">
-                                    <input type="name"
-                                        class="w-full px-4 py-3 mt-2 bg-white rounded-lg lg:py-5 dark:text-gray-300 dark:bg-gray-700 -gray-800"
-                                        name="name" placeholder="Enter your name">
-                                </div>
-                                <div class="mt-3 lg:mt-7">
-                                    <input type="email"
-                                        class="w-full px-4 py-3 mt-2 bg-white rounded-lg lg:py-5 dark:text-gray-300 dark:bg-gray-700 -gray-800"
-                                        name="email" placeholder="Enter your email">
-                                </div>
-                                <div class="mt-4 lg:mt-7">
-                                    <div>
-                                        <div class="relative flex items-center">
-                                            <input type="password"
-                                                class="w-full px-4 py-3 bg-white rounded-lg lg:py-5 dark:text-gray-300 dark:bg-gray-700 -gray-800 "
-                                                name="password" placeholder="Enter password">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                            <div class="bg-red-600 relative z-10  top-5 py-1.5 px-3 rounded-lg text-white hidden transition duration-300 ease-in-out animate-bounce"
+                                id="errorpopup">
+                            </div>
+                            <div class="mt-4 lg:mt-7">
+                                <input type="name"
+                                    class="w-full px-4 py-3 mt-2 bg-white rounded-lg lg:py-5 dark:text-gray-300 dark:bg-gray-700 -gray-800"
+                                    name="name" id="name" placeholder="Enter your name">
+                            </div>
+                            <div class="mt-3 lg:mt-7">
+                                <input type="email" id="email"
+                                    class="w-full px-4 py-3 mt-2 bg-white rounded-lg lg:py-5 dark:text-gray-300 dark:bg-gray-700 -gray-800"
+                                    name="email" placeholder="Enter your email">
+                            </div>
+                            <div class="mt-4 lg:mt-7">
+                                <div>
+                                    <div class="relative flex items-center">
+                                        <input type="password" id="password"
+                                            class="w-full px-4 py-3 bg-white rounded-lg lg:py-5 dark:text-gray-300 dark:bg-gray-700 -gray-800 "
+                                            name="password" placeholder="Enter password">
+
+                                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 class="absolute right-0 mr-3 dark:text-gray-300" fill="currentColor"
                                                 class="bi bi-eye-slash" viewBox="0 0 16 16">
                                                 <path
@@ -53,17 +55,17 @@
                                                     d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z" />
                                                 <path
                                                     d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708z" />
-                                            </svg>
-                                        </div>
+                                            </svg> -->
                                     </div>
                                 </div>
-                                <div class="mt-4 lg:mt-7">
-                                    <div>
-                                        <div class="relative flex items-center">
-                                            <input type="password"
-                                                class="w-full px-4 py-3 bg-white rounded-lg lg:py-5 dark:text-gray-300 dark:bg-gray-700 -gray-800 "
-                                                name="confirmpassword" placeholder="Re-enter password">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                            </div>
+                            <div class="mt-4 lg:mt-7">
+                                <div>
+                                    <div class="relative flex items-center">
+                                        <input type="password" id="confirmpassword"
+                                            class="w-full px-4 py-3 bg-white rounded-lg lg:py-5 dark:text-gray-300 dark:bg-gray-700 -gray-800 "
+                                            name="confirmpassword" placeholder="Re-enter password">
+                                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 class="absolute right-0 mr-3 dark:text-gray-300" fill="currentColor"
                                                 class="bi bi-eye-slash" viewBox="0 0 16 16">
                                                 <path
@@ -72,11 +74,11 @@
                                                     d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z" />
                                                 <path
                                                     d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708z" />
-                                            </svg>
-                                        </div>
+                                            </svg> -->
                                     </div>
                                 </div>
-                                <!-- <div class="flex flex-wrap items-center justify-between mt-4 lg:mt-7">
+                            </div>
+                            <!-- <div class="flex flex-wrap items-center justify-between mt-4 lg:mt-7">
                                     <label for="" class="flex dark:text-gray-300">
                                         <input type="checkbox" class="mt-1 mr-4">
                                         <span class="text-sm ">Remember me</span>
@@ -85,74 +87,54 @@
                                         class="mt-2 text-sm font-semibold text-blue-500 lg:mt-0 dark:text-blue-300 hover:underline">
                                         forgot password? </a>
                                 </div> -->
-                                <button
-                                    class="w-full py-3 text-lg font-bold text-gray-300 uppercase bg-blue-700 rounded-md lg:mt-7 mt-7 dark:text-gray-300 dark:bg-blue-700 px-11 md:mt-7 hover:bg-blue-900 dark:hover:bg-blue-900"
-                                    type="submit">SIGNUP</button>
-                                <p class="mt-4 text-xs text-gray-700 lg:mt-7 dark:text-gray-400 lg:text-base">
-                                    Already have an account?
-                                    <a href="/login" class="font-semibold text-blue-400 hover:text-blue-600">
-                                        Login Here...!</a>
-                                </p>
-                            </form>
+                            <button
+                                class="w-full py-3 text-lg font-bold text-gray-300 uppercase bg-blue-700 rounded-md lg:mt-7 mt-7 dark:text-gray-300 dark:bg-blue-700 px-11 md:mt-7 hover:bg-blue-900 dark:hover:bg-blue-900"
+                                onclick="submitSignup()">SIGNUP</button>
+                            <p class="mt-4 text-xs text-gray-700 lg:mt-7 dark:text-gray-400 lg:text-base">
+                                Already have an account?
+                                <a href="/login" class="font-semibold text-blue-400 hover:text-blue-600">
+                                    Login Here...!</a>
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.5/axios.min.js"
+        integrity="sha512-TjBzDQIDnc6pWyeM1bhMnDxtWH0QpOXMcVooglXrali/Tj7W569/wd4E8EDjk1CwOAOPSJon1VfcEt1BI4xIrA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
-        document.getElementById('signupForm').addEventListener('submit', function (event) {
-            const errorContainer = document.getElementById('errorContainer');
-            errorContainer.innerHTML = ''; // Clear previous error messages
 
-            // Validate form fields (You can also use HTML5 validation attributes)
-            const name = document.querySelector('input[name="name"]').value;
-            const email = document.querySelector('input[name="email"]').value;
-            const password = document.querySelector('input[name="password"]').value;
-            const confirmPassword = document.querySelector('input[name="confirmpassword"]').value;
+        // Validate form fields
+        function submitSignup() {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmpassword").value;
+            const matcherror = document.getElementById('matcherror')
 
 
-            if (!name || !email || !password || !confirmPassword) {
-                errorContainer.innerHTML = '<p>All fields are required</p>';
-                event.preventDefault();
-                return;
-            }
+            axios.post("/api/registeruser", {
+                name, email, password, confirmPassword,
+            })
+                .then(data => {
+                    let errorModal = document.getElementById('errorpopup')
+                    errorModal.innerText = data.data.message
+                    errorModal.classList.remove('hidden')
+                })
+                .catch((error) => {
+                    if (error?.response?.data?.errStatus) {
+                        let errorModal = document.getElementById('errorpopup')
+                        errorModal.innerText = error.response.data.message
+                        return errorModal.classList.remove('hidden')
+                    }
+                    console.log(error);
+                })
 
-            // if (!name) {
-            //     errorContainer.innerHTML = '<p>Name is required</p>';
-            //     event.preventDefault();
-            //     return;
-            // }
-
-            // if (!email) {
-            //     errorContainer.innerHTML = '<p>Email is required</p>';
-            //     event.preventDefault();
-            //     return;
-            // }
-
-            // if (!password) {
-            //     errorContainer.innerHTML = '<p>Password is required</p>';
-            //     event.preventDefault();
-            //     return;
-            // }
-
-            // if (!confirmPassword) {
-            //     errorContainer.innerHTML = '<p>Confirm Password is required</p>';
-            //     event.preventDefault();
-            //     return;
-            // }
-
-            // if (password !== confirmPassword) {
-            //     errorContainer.innerHTML = '<p>Password and Confirm Password do not match</p>';
-            //     event.preventDefault();
-            //     return;
-            // }
-
-            
-        });
+        }
     </script>
-
 </body>
 
 </html>

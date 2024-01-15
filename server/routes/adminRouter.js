@@ -41,7 +41,6 @@ router.get("/adminEditProduct/:id", adminEditProduct);
 
 router.post("/adminlogin", isAdmin);
 
-
 //API
 
 router.get("/api/adminUser", adminUsers);
@@ -49,7 +48,6 @@ router.get("/api/blockuser", blockuser);
 router.get("/api/unblockuser", unblockuser);
 router.get("/api/editproduct", editproduct);
 router.get("/api/adminshowCategoty", adminshowcategory);
-
 
 router.post("/api/addcategory", addcategory);
 router.post("/api/deletecategory", deleteCategory);

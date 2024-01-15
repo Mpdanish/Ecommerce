@@ -1,209 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        /* width */
-        #scroll::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        /* Track */
-        #scroll::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        /* Handle */
-        #scroll::-webkit-scrollbar-thumb {
-            background: rgb(133, 132, 132);
-        }
-
-        body, html {
-            height: 100%;
-            margin: 0;
-        }
-
-        #chec-div {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        #scroll {
-            max-height: 100vh; /* You can adjust this value based on your content and design */
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-    </style>
+    <title>Check Out</title>
 </head>
+
 <body>
-    
-    <div class="flex items-center justify-center py-8">
-        <button onclick="checkoutHandler(false)" class="py-2 px-10 rounded bg-indigo-600 hover:bg-indigo-700 text-white">Open Modal</button>
-    </div>
-    <div class="w-full h-full bg-black dark:bg-gray-900 bg-opacity-90 top-0 overflow-auto fixed sticky-0" id="chec-div">
-        <div class="w-full absolute z-10 right-0 h-full overflow-x-hidden transform translate-x-0 transition ease-in-out duration-700" id="checkout">
-            <div class="flex items-end lg:flex-row flex-col justify-end" id="cart">
-                <div class="lg:w-1/2 md:w-8/12 w-full lg:px-8 lg:py-14 md:px-6 px-4 md:py-8 py-4 bg-white dark:bg-gray-800 overflow-y overflow-x lg:h-screen h-auto" id="scroll">
-                    <!-- <div class="flex items-center text-gray-500 hover:text-gray-600 dark:text-white cursor-pointer" onclick="checkoutHandler(false)">
-                        <img class="dark:hidden" src="https://tuk-cdn.s3.amazonaws.com/can-uploader/shopping-cart-1-svg1.svg" alt="previous"/>
-                         <img class="dark:block hidden" src="https://tuk-cdn.s3.amazonaws.com/can-uploader/shopping-cart-1-svg1dark.svg" alt="previous"/>
-                        <p class="text-sm pl-2 leading-none dark:hover:text-gray-200">Back</p>
-                    </div> -->
+    <div class="grid sm:px-10 lg:grid-cols-2 lg:px-20 xl:px-32">
+        <div class="px-4 pt-8">
 
+            <p class="text-xl font-medium">Address Details</p>
+            <p class="text-gray-400">Select Address or Enter Address</p>
 
-                    <div class="flex items-center text-gray-500 hover:text-gray-600 dark:text-white cursor-pointer" onclick="checkoutHandler(true)">
-                        <img class="dark:hidden" src="https://tuk-cdn.s3.amazonaws.com/can-uploader/shopping-cart-1-svg1.svg" alt="previous"/>
-                        <img class="dark:block hidden" src="https://tuk-cdn.s3.amazonaws.com/can-uploader/shopping-cart-1-svg1dark.svg" alt="previous"/>
-                        <p class="text-sm pl-2 leading-none dark:hover:text-gray-200">Back</p>
-                    </div>
+            <div class="flex gap-5">
+                <div class="relative w-6/12">
+                    <label for="name" class="mt-4 mb-2 block text-sm font-medium">Name</label>
+                    <input type="text" id="name" name="name"
+                        class="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="Your Name" />
+                </div>
+                <div class="relative w-6/12">
+                    <label for="phonenumber" class="mt-4 mb-2 block text-sm font-medium">Phone Number</label>
+                    <input type="number" id="phonenumber" name="phonenumber"
+                        class="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="Phone Number" />
+                </div>
 
-                    
+            </div>
 
-                    <p class="lg:text-4xl text-3xl font-black leading-10 text-gray-800 dark:text-white pt-3">Bag</p>
-                    <div class="md:flex items-strech py-8 md:py-10 lg:py-8 border-t border-gray-50">
-                        <div class="md:w-4/12 2xl:w-1/4 w-full">
-                            <img src="https://i.ibb.co/SX762kX/Rectangle-36-1.png" alt="Black Leather Bag" class="h-full object-center object-cover md:block hidden" />
-                            <img src="https://i.ibb.co/g9xsdCM/Rectangle-37.pngg" alt="Black Leather Bag" class="md:hidden w-full h-full object-center object-cover" />
-                        </div>
-                        <div class="md:pl-3 md:w-8/12 2xl:w-3/4 flex flex-col justify-center">
-                            <p class="text-xs leading-3 text-gray-800 dark:text-white md:pt-0 pt-4">RF293</p>
-                            <div class="flex items-center justify-between w-full pt-1">
-                                <p class="text-base font-black leading-none text-gray-800 dark:text-white">North wolf bag</p>
-                                <select aria-label="Select quantity" class="py-2 px-1 border border-gray-200 mr-6 focus:outline-none dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white">
-                                    <option>01</option>
-                                    <option>02</option>
-                                    <option>03</option>
-                                </select>
-                            </div>
-                            <p class="text-xs leading-3 text-gray-600 dark:text-white pt-2">Height: 10 inches</p>
-                            <p class="text-xs leading-3 text-gray-600 dark:text-white py-4">Color: Black</p>
-                            <p class="w-96 text-xs leading-3 text-gray-600 dark:text-white">Composition: 100% calf leather</p>
-                            <div class="flex items-center justify-between pt-5">
-                                <div class="flex itemms-center">
-                                    <p class="text-xs leading-3 underline text-gray-800 dark:text-white cursor-pointer">Add to favorites</p>
-                                    <p class="text-xs leading-3 underline text-red-500 pl-5 cursor-pointer">Remove</p>
-                                </div>
-                                <p class="text-base font-black leading-none text-gray-800 dark:text-white">$9,000</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="md:flex items-strech py-8 md:py-10 lg:py-8 border-t border-gray-50">
-                        <div class="md:w-4/12 2xl:w-1/4 w-full">
-                            <img src="https://i.ibb.co/c6KyDXN/Rectangle-5-1.png" alt="Gray Sneakers" class="h-full object-center object-cover md:block hidden" />
-                            <img src="https://i.ibb.co/yVSpYqx/Rectangle-6.png" alt="Gray Sneakers" class="md:hidden w-full h-full object-center object-cover" />
-                        </div>
-                        <div class="md:pl-3 md:w-8/12 2xl:w-3/4 flex flex-col justify-center">
-                            <p class="text-xs leading-3 text-gray-800 dark:text-white md:pt-0 pt-4">RF293</p>
-                            <div class="flex items-center justify-between w-full pt-1">
-                                <p class="text-base font-black leading-none text-gray-800 dark:text-white">LW sneakers</p>
-                                <select aria-label="Select quantity" class="py-2 px-1 border border-gray-200 mr-6 focus:outline-none dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white">
-                                    <option>01</option>
-                                    <option>02</option>
-                                    <option>03</option>
-                                </select>
-                            </div>
-                            <p class="text-xs leading-3 text-gray-600 dark:text-white pt-2">Height: 10 inches</p>
-                            <p class="text-xs leading-3 text-gray-600 dark:text-white py-4">Color: Black</p>
-                            <p class="w-96 text-xs leading-3 text-gray-600 dark:text-white">Composition: 100% calf leather</p>
-                            <div class="flex items-center justify-between pt-5">
-                                <div class="flex itemms-center">
-                                    <p class="text-xs leading-3 underline text-gray-800 dark:text-white cursor-pointer">Add to favorites</p>
-                                    <p class="text-xs leading-3 underline text-red-500 pl-5 cursor-pointer">Remove</p>
-                                </div>
-                                <p class="text-base font-black leading-none text-gray-800 dark:text-white">$9,000</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="md:flex items-strech py-8 md:py-10 lg:py-8 border-t border-gray-50">
-                        <div class="md:w-4/12 2xl:w-1/4 w-full">
-                            <img src="https://i.ibb.co/6gzWwSq/Rectangle-20-1.png" alt="Black Leather Purse" class="h-full object-center object-cover md:block hidden" />
-                            <img src="https://i.ibb.co/TTnzMTf/Rectangle-21.png" alt="Black Leather Purse" class="md:hidden w-full h-full object-center object-cover" />
-                        </div>
-                        <div class="md:pl-3 md:w-8/12 2xl:w-3/4 flex flex-col justify-center">
-                            <p class="text-xs leading-3 text-gray-800 dark:text-white md:pt-0 pt-4">RF293</p>
-                            <div class="flex items-center justify-between w-full">
-                                <p class="text-base font-black leading-none text-gray-800 dark:text-white">Luxe card holder</p>
-                                <select aria-label="Select quantity" class="py-2 px-1 border border-gray-200 mr-6 focus:outline-none dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white">
-                                    <option>01</option>
-                                    <option>02</option>
-                                    <option>03</option>
-                                </select>
-                            </div>
-                            <p class="text-xs leading-3 text-gray-600 dark:text-white pt-2">Height: 10 inches</p>
-                            <p class="text-xs leading-3 text-gray-600 dark:text-white py-4">Color: Black</p>
-                            <p class="w-96 text-xs leading-3 text-gray-600 dark:text-white">Composition: 100% calf leather</p>
-                            <div class="flex items-center justify-between pt-5">
-                                <div class="flex itemms-center">
-                                    <p class="text-xs leading-3 underline text-gray-800 dark:text-white cursor-pointer">Add to favorites</p>
-                                    <p class="text-xs leading-3 underline text-red-500 pl-5 cursor-pointer">Remove</p>
-                                </div>
-                                <p class="text-base font-black leading-none text-gray-800 dark:text-white">$9,000</p>
-                            </div>
-                        </div>
+            <div class="flex gap-5">
+
+                <div class="relative w-6/12">
+                    <label for="pincode" class="mt-4 mb-2 block text-sm font-medium">Pincode</label>
+                    <input type="number" id="pincode" name="pincode"
+                        class="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="Your Name" />
+                </div>
+                <div class="relative w-6/12">
+                    <label for="phonenumber" class="mt-4 mb-2 block text-sm font-medium">Phone Number</label>
+                    <input type="number" id="phonenumber" name="phonenumber"
+                        class="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="Phone Number" />
+                </div>
+
+            </div>
+
+            <label for="card-holder" class="mt-4 mb-2 block text-sm font-medium">Card Holder</label>
+            <div class="relative">
+                <input type="text" id="card-holder" name="card-holder"
+                    class="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm uppercase shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="Your full name here" />
+            </div>
+            <label for="card-no" class="mt-4 mb-2 block text-sm font-medium">Card Details</label>
+            <div class="flex">
+                <div class="relative w-7/12 flex-shrink-0">
+                    <input type="text" id="card-no" name="card-no"
+                        class="w-full rounded-md border border-gray-200 px-2 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="xxxx-xxxx-xxxx-xxxx" />
+                </div>
+                <input type="text" name="credit-expiry"
+                    class="w-full rounded-md border border-gray-200 px-2 py-3 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="MM/YY" />
+                <input type="text" name="credit-cvc"
+                    class="w-1/6 flex-shrink-0 rounded-md border border-gray-200 px-2 py-3 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="CVC" />
+            </div>
+            <label for="billing-address" class="mt-4 mb-2 block text-sm font-medium">Billing Address</label>
+            <div class="flex flex-col sm:flex-row">
+                <div class="relative flex-shrink-0 sm:w-7/12">
+                    <input type="text" id="billing-address" name="billing-address"
+                        class="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+                        placeholder="Street Address" />
+                    <div class="pointer-events-none absolute inset-y-0 left-0 inline-flex items-center px-3">
+                        <img class="h-4 w-4 object-contain"
+                            src="https://flagpack.xyz/_nuxt/4c829b6c0131de7162790d2f897a90fd.svg" alt="" />
                     </div>
                 </div>
-                <div class="lg:w-96 md:w-8/12 w-full bg-gray-100 dark:bg-gray-900 h-full">
-                    <div class="flex flex-col lg:h-screen h-auto lg:px-8 md:px-7 px-4 lg:py-20 md:py-10 py-6 justify-between overflow-y-auto">
-                        <div>
-                            <p class="lg:text-4xl text-3xl font-black leading-9 text-gray-800 dark:text-white">Summary</p>
-                            <div class="flex items-center justify-between pt-16">
-                                <p class="text-base leading-none text-gray-800 dark:text-white">Subtotal</p>
-                                <p class="text-base leading-none text-gray-800 dark:text-white">$9,000</p>
-                            </div>
-                            <div class="flex items-center justify-between pt-5">
-                                <p class="text-base leading-none text-gray-800 dark:text-white">Shipping</p>
-                                <p class="text-base leading-none text-gray-800 dark:text-white">$30</p>
-                            </div>
-                            <div class="flex items-center justify-between pt-5">
-                                <p class="text-base leading-none text-gray-800 dark:text-white">Tax</p>
-                                <p class="text-base leading-none text-gray-800 dark:text-white">$35</p>
-                            </div>
+                <select type="text" name="billing-state"
+                    class="w-full rounded-md border border-gray-200 px-4 py-3 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500">
+                    <option value="State">State</option>
+                </select>
+                <input type="text" name="billing-zip"
+                    class="flex-shrink-0 rounded-md border border-gray-200 px-4 py-3 text-sm shadow-sm outline-none sm:w-1/6 focus:z-10 focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="ZIP" />
+            </div>
+
+            <p class="mt-8 text-lg font-medium">Shipping Methods</p>
+            <form class="mt-5 grid gap-6">
+                <div class="relative">
+                    <input class="peer hidden" id="radio_1" type="radio" name="radio" checked />
+                    <span
+                        class="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
+                    <label
+                        class="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4"
+                        for="radio_1">
+                        <img class="w-14 object-contain" src="/images/naorrAeygcJzX0SyNI4Y0.png" alt="" />
+                        <div class="ml-5">
+                            <span class="mt-2 font-semibold">Fedex Delivery</span>
+                            <p class="text-slate-500 text-sm leading-6">Delivery: 2-4 Days</p>
                         </div>
-                        <div>
-                            <div class="flex items-center pb-6 justify-between lg:pt-5 pt-20">
-                                <p class="text-2xl leading-normal text-gray-800 dark:text-white">Total</p>
-                                <p class="text-2xl font-bold leading-normal text-right text-gray-800 dark:text-white">$10,240</p>
-                            </div>
-                            <button onclick="checkoutHandler1(true)" class="text-base leading-none w-full py-5 bg-gray-800 border-gray-800 border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-white dark:hover:bg-gray-700">Checkout</button>
+                    </label>
+                </div>
+                <div class="relative">
+                    <input class="peer hidden" id="radio_2" type="radio" name="radio" checked />
+                    <span
+                        class="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
+                    <label
+                        class="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4"
+                        for="radio_2">
+                        <img class="w-14 object-contain" src="/images/oG8xsl3xsOkwkMsrLGKM4.png" alt="" />
+                        <div class="ml-5">
+                            <span class="mt-2 font-semibold">Fedex Delivery</span>
+                            <p class="text-slate-500 text-sm leading-6">Delivery: 2-4 Days</p>
                         </div>
-                    </div>
+                    </label>
+                </div>
+            </form>
+        </div>
+        <div class="mt-10 bg-gray-50 px-4 pt-8 lg:mt-0">
+
+
+            <!-- Total -->
+            <div class="mt-6 border-t border-b py-2">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-medium text-gray-900">Subtotal</p>
+                    <p class="font-semibold text-gray-900">$399.00</p>
+                </div>
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-medium text-gray-900">Shipping</p>
+                    <p class="font-semibold text-gray-900">$8.00</p>
                 </div>
             </div>
+            <div class="mt-6 flex items-center justify-between">
+                <p class="text-sm font-medium text-gray-900">Total</p>
+                <p class="text-2xl font-semibold text-gray-900">$408.00</p>
+            </div>
+
+            <button class="mt-4 mb-8 w-full rounded-md bg-gray-900 px-6 py-3 font-medium text-white">Place
+                Order</button>
         </div>
-
     </div>
-  
-<script>
-
-let checkout = document.getElementById("checkout");
-let checdiv = document.getElementById("chec-div");
-let flag3 = false;
-const checkoutHandler = (hide) => {
-    if (hide) {
-        checkout.classList.add("translate-x-full");
-        checkout.classList.remove("translate-x-0");
-        setTimeout(function () {
-            checdiv.classList.add("hidden");
-        }, 1000);
-        flag3 = true;
-    } else {
-        setTimeout(function () {
-            checkout.classList.remove("translate-x-full");
-            checkout.classList.add("translate-x-0");
-        }, 1000);
-        checdiv.classList.remove("hidden");
-        flag3 = false;
-    }
-};
-
-
-</script>  
-
+    <script src="https://cdn.tailwindcss.com"></script>
 </body>
+
 </html>

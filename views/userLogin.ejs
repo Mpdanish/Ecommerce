@@ -1,77 +1,13 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OtronMart</title>
-    <link rel="stylesheet" href="/css/user-login.css">
-    <link rel="shortcut icon" href="/images/Vector.jpg" type="image/x-icon">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-</head>
-<body>
-      <section class="vh-100">
-        <div class="container-fluid h-custom">
-          <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-md-9 col-lg-6 col-xl-5">
-              <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
-                class="img-fluid" alt="Sample image">
-            </div>
-            <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-              <form method="POST" action="/api/login">
-                
-                
-                <div class="form-outline mb-4">
-                  <input type="email" id="form3Example3" name="inputEmail" class="form-control form-control-lg" placeholder="Enter a valid email address" />
-                  <label class="form-label" for="form3Example3">Email address</label>
-                </div>
-      
-               
-                <div class="form-outline mb-3">
-                  <input type="password" id="form3Example4" name="inputPassword" class="form-control form-control-lg" placeholder="Enter password" />
-                  <label class="form-label" for="form3Example4">Password</label>
-                </div>
-      
-                <div class="d-flex justify-content-between align-items-center">
-
-                  
-                  <div class="form-check mb-0">
-                    <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
-                    <label class="form-check-label" for="form2Example3"> Remember me </label>
-                  </div>
-                  <a href="#!" class="text-body">Forgot password?</a>
-                </div>
-      
-                <div class="text-center text-lg-start mt-4 pt-2">
-                  <button type="submit" class="btn btn-primary btn-lg" style="padding-left: 2.5rem; padding-right: 2.5rem;">Login</button>
-                  <p class="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <a href="/register" class="link-danger">Register</a></p>
-                </div>
-      
-              </form>
-            </div>
-          </div>
-        </div>
-        <div
-          class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary">
-
-
-          <div class="text-white mb-3 mb-md-0">
-            Copyright © 2020. All rights reserved.
-          </div>
-        </div>
-      </section>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-</body>
-</html> -->
-
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
     <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
 </head>
+
 <body>
     <section class="flex items-center justify-center h-screen font-poppins">
         <div class="flex-1">
@@ -89,20 +25,23 @@
                             </a>
                             <h2 class="mb-4 text-2xl font-bold text-gray-700 lg:mb-7 md:text-5xl dark:text-gray-300">
                                 Login your account</h2>
+
                             <p class="text-gray-500 dark:text-gray-400">Your credentials here</p>
-                            <form method="POST" id="loginForm" action="/api/login" class="mt-4 lg:mt-7 ">
-                              <div id="errorContainer" style="color: red;"></div>
+                            <div class="bg-red-600 z-10 top-5 py-1.5 px-3 relative rounded-lg text-white hidden transition duration-300 ease-in-out animate-bounce"
+                                id="errorpopup">
+                            </div>
+                            <div class="mt-4 lg:mt-7">
                                 <div class="">
                                     <input type="email"
                                         class="w-full px-4 py-3 mt-2 bg-white rounded-lg lg:py-5 dark:text-gray-300 dark:bg-gray-700 -gray-800"
-                                        name="email" placeholder="Enter your email" >
+                                        name="email" id="email" placeholder="Enter your email">
                                 </div>
                                 <div class="mt-4 lg:mt-7">
                                     <div>
                                         <div class="relative flex items-center">
                                             <input type="password"
                                                 class="w-full px-4 py-3 bg-white rounded-lg lg:py-5 dark:text-gray-300 dark:bg-gray-700 -gray-800 "
-                                                name="password" placeholder="Enter password" >
+                                                name="password" id="password" placeholder="Enter password">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                 class="absolute right-0 mr-3 dark:text-gray-300" fill="currentColor"
                                                 class="bi bi-eye-slash" viewBox="0 0 16 16">
@@ -117,33 +56,32 @@
                                     </div>
                                 </div>
                                 <!-- <div class="flex flex-wrap items-center justify-between mt-4 lg:mt-7">
-                                    <label for="" class="flex dark:text-gray-300">
-                                        <input type="checkbox" class="mt-1 mr-4">
-                                        <span class="text-sm ">Remember me</span>
-                                    </label>
-                                    <a href=" #"
-                                        class="mt-2 text-sm font-semibold text-blue-500 lg:mt-0 dark:text-blue-300 hover:underline">
-                                        forgot password? </a>
-                                </div> -->
+                                  <label for="" class="flex dark:text-gray-300">
+                                      <input type="checkbox" class="mt-1 mr-4">
+                                      <span class="text-sm ">Remember me</span>
+                                  </label>
+                                  <a href=" #"
+                                      class="mt-2 text-sm font-semibold text-blue-500 lg:mt-0 dark:text-blue-300 hover:underline">
+                                      forgot password? </a>
+                              </div> -->
                                 <button
                                     class="w-full py-3 text-lg font-bold text-gray-300 uppercase bg-blue-700 rounded-md lg:mt-7 mt-7 dark:text-gray-300 dark:bg-blue-700 px-11 md:mt-7 hover:bg-blue-900 dark:hover:bg-blue-900"
-                                    type="submit">LOGIN</button>
+                                    onclick="submitLogin()">LOGIN</button>
                                 <p class="mt-4 text-xs text-gray-700 lg:mt-7 dark:text-gray-400 lg:text-base">
                                     Need an account?
                                     <a href="/register" class="font-semibold text-blue-400 hover:text-blue-600">
                                         Create an account</a>
                                 </p>
-                            </form>
+                            </div>
+
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
-
-
-    <script>
+    <!-- <script>
       document.getElementById('loginForm').addEventListener('submit', function (event) {
           const errorContainer = document.getElementById('errorContainer');
           errorContainer.innerHTML = ''; // Clear previous error messages
@@ -151,7 +89,6 @@
           // Validate form fields (You can also use HTML5 validation attributes)
           const email = document.querySelector('input[name="email"]').value;
           const password = document.querySelector('input[name="password"]').value;
-
 
           if (!email || !password) {
               errorContainer.innerHTML = '<p>All fields are required</p>';
@@ -173,7 +110,43 @@
 
           
       });
-  </script>
+  </script> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.5/axios.min.js"
+        integrity="sha512-TjBzDQIDnc6pWyeM1bhMnDxtWH0QpOXMcVooglXrali/Tj7W569/wd4E8EDjk1CwOAOPSJon1VfcEt1BI4xIrA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+
+        // Validate form fields
+        function submitLogin() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            axios.post("/api/login", {
+                email, password,
+            })
+                .then(data => {
+                    let errorModal = document.getElementById('errorpopup')
+                    errorModal.innerText = data.data.message
+                    errorModal.classList.remove('hidden')
+                    if(data.data == "login successfully"){
+                        window.location.href = "/homepage1"
+                    }
+                })
+                .catch((error) => {
+                    if (error?.response?.data?.errStatus) {
+                        let errorModal = document.getElementById('errorpopup')
+                        errorModal.innerText = error.response.data.message
+                        return errorModal.classList.remove('hidden')
+                    }
+                    console.log(error);
+                })
+
+        }
+    </script>
 
 </body>
+
 </html>

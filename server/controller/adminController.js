@@ -6,32 +6,47 @@ import cloudinaryUploadImage from "../helper/cloudinary.js";
 export async function adminUsers(req, res) {
   try {
     const data = await Userdb.find();
-    res.send(data);
+    res.status(200).send(data);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error" );
+    res.status(500).send("Internal Server Error");
   }
 }
 
 export async function blockuser(req, res) {
-  const data = await Userdb.updateOne(
-    { _id: req.query.userid },
-    { $set: { status: false } }
-  );
-  res.redirect("/adminUsers");
+  try {
+    const data = await Userdb.updateOne(
+      { _id: req.query.userid },
+      { $set: { status: false } }
+    );
+    res.status(200).redirect("/adminUsers");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 }
 
 export async function unblockuser(req, res) {
-  const data = await Userdb.updateOne(
-    { _id: req.query.userid },
-    { $set: { status: true } }
-  );
-  res.redirect("/adminUsers");
+  try {
+    const data = await Userdb.updateOne(
+      { _id: req.query.userid },
+      { $set: { status: true } }
+    );
+    res.status(200).redirect("/adminUsers");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 }
 
 export async function adminshowcategory(req, res) {
-  const data = await Categorydb.find();
-  res.send(data);
+  try {
+    const data = await Categorydb.find();
+    res.status(200).send(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 }
 
 export async function addcategory(req, res) {
@@ -40,9 +55,10 @@ export async function addcategory(req, res) {
       categoryname: req.body.categoryName,
     });
     await newCat.save();
-    res.redirect("/adminCategory");
+    res.status(200).redirect("/adminCategory");
   } catch (error) {
-    res.send(error);
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 }
 
@@ -53,9 +69,10 @@ export async function deleteCategory(req, res) {
       { $set: { isHidden: true } }
     );
 
-    if (data) res.send(false);
+    if (data) res.status(200).send(false);
   } catch (error) {
-    res.send(error);
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 }
 
@@ -65,9 +82,10 @@ export async function restoreCategory(req, res) {
       { _id: req.body.id },
       { $set: { isHidden: false } }
     );
-    if (data) res.send(true);
+    if (data) res.status(200).send(true);
   } catch (error) {
-    res.send(error);
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 }
 
@@ -88,34 +106,36 @@ export async function addproduct(req, res) {
       category,
     });
     const val = await newCat.save();
-    if (val) res.send(true);
+    if (val) res.status(200).send(true);
   } catch (error) {
-    res.send(error);
-    // console.error("Error saving product:");
-    // res.status(500).send("Error occurred while saving the product.");
+    console.error(error);
+    res.status(500).send("Internal Server Error");
   }
 }
 
 export async function showproduct(req, res) {
-  const data = await Productdb.find();
-  res.send(data);
-  // res.render('adminProducts',{data})
+  try {
+    const data = await Productdb.find();
+    res.status(200).send(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 }
 
 export async function editproduct(req, res) {
-  const data = await Productdb.findOne({ _id: req.params.id });
-  res.send(data);
-  // res.render('adminProducts',{data})
+  try {
+    const data = await Productdb.findOne({ _id: req.params.id });
+    res.status(200).send(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 }
 
 export async function updateproduct(req, res) {
-
-   console.log(req.body);
-
-   try{
-
-    let { productname, description, price, stock, images, category } =
-      req.body;
+  try {
+    let { productname, description, price, stock, images, category } = req.body;
 
     await Productdb.updateOne(
       { _id: req.params.id },
@@ -130,15 +150,16 @@ export async function updateproduct(req, res) {
       }
     );
 
-    if(images.length > 0){
-      await Productdb.updateOne({ _id: req.params.id }, {$push:{images: images}}, {upsert: true});
+    if (images.length > 0) {
+      await Productdb.updateOne(
+        { _id: req.params.id },
+        { $push: { images: images } },
+        { upsert: true }
+      );
     }
-    res.send(true);
+    res.status(200).send(true);
   } catch (error) {
-    console.error("Error updating product:", error);
+    console.error(error);
     res.status(500).send("Internal Server Error");
   }
-
 }
-  
-
