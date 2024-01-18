@@ -1,5 +1,4 @@
 import session from "express-session";
-import userSchema from "../model/userSchema.js";
 import Productdb from "../model/productSchema.js";
 import "dotenv/config";
 import Cartdb from "../model/cartSchema.js";
@@ -30,45 +29,50 @@ export function login(req, res) {
 
 export async function homepage(req, res) {
   try {
-    const data = await Productdb.find();
-    res.status(200).render("homePage.ejs", { product: data });
+    const product = await Productdb.find();
+    const user = req.session.userId;
+    res.status(200).render("homePage.ejs", { product , user });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
 }
+
+
+
 
 export async function profile(req, res) {
   try {
-    res.status(200).render("prosample.ejs");
+    const user = await Userdb.findById({ _id: req.session.userId });
+    res.status(200).render("prosample.ejs", { user });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
 }
 
-export async function homepage1(req, res) {
-  try {
-    const data = await Productdb.find();
-    const userid = req.session.userId;
-    const userdata = await Userdb.findById(userid);
-    res.status(200).render("homePage1.ejs", { product: data , user: userdata});
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-}
+// export async function homepage1(req, res) {
+//   try {
+//     const product = await Productdb.find();
+//     const userid = req.session.userId;
+//     const user = await Userdb.findById(userid);
+//     res.status(200).render("homePage1.ejs", { product , user });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// }
 
-export async function logoutUser(req, res) {
-  try {
-    req.session.destroy();
-    const data = await Productdb.find();
-    res.status(200).render("homePage.ejs", { product: data });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-}
+// export async function logoutUser(req, res) {
+//   try {
+//     req.session.destroy();
+//     const product = await Productdb.find();
+//     res.status(200).render("homePage.ejs", { product });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// }
 
 // //logout for home user
 // export function logout  (req, res)  {
@@ -84,22 +88,24 @@ export async function logoutUser(req, res) {
 
 // };
 
-export async function showprofile(req, res) {
-  try {
-    const data = await Userdb.findOne({ _id: req.params.id });
-    res.status(200).render("prosample.ejs", { user: data });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-}
+// export async function showprofile(req, res) {
+//   try {
+//     const data = await Userdb.findOne({ _id: req.params.id });
+//     res.status(200).render("prosample.ejs", { user: data });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// }
 
 export async function productpage(req, res) {
   try {
     const data = await Productdb.findOne({ _id: req.params.id });
     const userid = req.session.userId;
     const userdata = await Userdb.findById(userid);
-    res.status(200).render("productpreview.ejs", { product: data, user: userdata });
+    res
+      .status(200)
+      .render("productpreview.ejs", { product: data, user: userdata });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -137,11 +143,10 @@ export async function cart(req, res) {
   }
 }
 
-export async function checkout(req,res){
+export async function checkout(req, res) {
   try {
-    
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
-  } 
+  }
 }

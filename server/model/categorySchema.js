@@ -1,10 +1,8 @@
-// const mongoose = require('mongoose');
-
 import mongoose from 'mongoose';
 
 
 const categorySchema = new mongoose.Schema({
-  categoryname: {
+  name: {
     type: String,
     required: true,
     unique:true,

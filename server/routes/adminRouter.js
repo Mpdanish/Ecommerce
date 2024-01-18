@@ -2,6 +2,7 @@ import express, { Router } from "express";
 import {
   adminAddProduct,
   adminCategory,
+  adminDeletedProduct,
   adminEditProduct,
   adminHome,
   adminOrder,
@@ -24,6 +25,9 @@ import {
   restoreCategory,
   showproduct,
   unblockuser,
+  deleteImage,
+  restoreProduct,
+  deleteProduct,
 } from "../controller/adminController.js";
 
 const router = Router();
@@ -33,6 +37,7 @@ router.get("/adminlogout", logoutAdmin);
 router.get("/adminHome", adminHome);
 router.get("/adminUsers", adminUser);
 router.get("/adminProducts", adminProduct);
+router.get("/adminDeletedProducts", adminDeletedProduct);
 router.get("/adminCategory", adminCategory);
 router.get("/adminUnlistedCategory", adminUnlistedCategory);
 router.get("/adminOrder", adminOrder);
@@ -52,9 +57,13 @@ router.get("/api/adminshowCategoty", adminshowcategory);
 router.post("/api/addcategory", addcategory);
 router.post("/api/deletecategory", deleteCategory);
 router.post("/api/restorecategory", restoreCategory);
+router.post("/api/deleteproduct", deleteProduct);
+router.post("/api/restoreproduct", restoreProduct);
 router.post("/api/addproduct", addproduct);
 router.post("/api/showproduct", showproduct);
 
 router.put("/api/updateproduct/:id", updateproduct);
+
+router.delete("/deleteimage/:id/:productid", deleteImage)
 
 export default router;

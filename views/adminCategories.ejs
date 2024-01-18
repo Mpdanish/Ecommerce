@@ -1,9 +1,9 @@
 <%- include('include/_header') %>
 
 
-        <%- include('include/_nav') %>
+    <%- include('include/_nav') %>
 
-        
+
         <%- include('include/_topheader') %>
 
 
@@ -15,7 +15,8 @@
                     </div>
                     <div>
                         <div class="d-grid">
-                          <a href="/adminUnlistedCategory"> <button  class="btn btn-primary">Unlisted Categories</button> </a>  
+                            <a href="/adminUnlistedCategory"> <button class="btn btn-primary">Unlisted
+                                    Categories</button> </a>
                         </div>
                     </div>
                     <div>
@@ -26,15 +27,20 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-3">
-                                <form action="/api/addcategory"  method="post">
-                                    <div class="mb-4">
-                                        <label for="product_name" class="form-label">Category Name</label>
-                                        <input type="text" placeholder="Type here" name="categoryName" class="form-control" id="product_name" />
+                                <div class="mb-4">
+                                    <label for="product_name" class="form-label">Category Name</label>
+                                    
+                                    <input type="text" placeholder="Type here" name="categoryName" class="form-control"
+                                        id="category" />
+                                        <br>
+                                        <div class="bg-danger position-relative z-10 top-5 py-1.5 px-3 rounded-lg text-white d-none"
+                                        id="errorpopup">
                                     </div>
-                                    <div class="d-grid">
-                                        <button class="btn btn-primary">Add Category</button>
-                                    </div>
-                                </form>
+                                </div>
+                                <div class="d-grid">
+                                    <button class="btn btn-primary" onclick="add()">Add Category</button>
+                                </div>
+
                             </div>
                             <div class="col-md-9">
                                 <div class="table-responsive">
@@ -47,24 +53,27 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <% for( let i = 0; i < category.length; i++ ) { %>
+                                            <% for( let i=0; i < category.length; i++ ) { %>
                                                 <% if (category[i].isHidden==false) { %>
-                                                <tr>
-                                                    <td>
-                                                        <%= i+1 %>
-                                                    </td>
-                                                    <td>
-                                                        <p><%= category[i].categoryname  %></p>
-                                                    </td>
-                                                    <td>
-                                                        
-                                                        <button type="button" class="btn btn-danger" onclick="handlelist('<%= category[i]._id %>')">Unlist</button>
-                    
+                                                    <tr>
+                                                        <td>
+                                                            <%= i+1 %>
+                                                        </td>
+                                                        <td>
+                                                            <p>
+                                                                <%= category[i].name %>
+                                                            </p>
+                                                        </td>
+                                                        <td>
+
+                                                            <button type="button" class="btn btn-danger"
+                                                                onclick="handlelist('<%= category[i]._id %>')">Unlist</button>
+
                                                             <% } %>
-                                                    </td>
-                                                </tr>
-                                            
-                                            <% } %>
+                                                        </td>
+                                                    </tr>
+
+                                                    <% } %>
                                         </tbody>
                                     </table>
                                 </div>
@@ -76,8 +85,8 @@
                     <!-- card body .// -->
                 </div>
                 <!-- card .// -->
-                <% if (category.length!=0) { %>
- 
+                <% if (category.length > 10) { %>
+
                     <div class="pagination-area mt-30 mb-50">
                         <nav aria-label="Page navigation example">
                             <ul class="pagination justify-content-center">
@@ -85,20 +94,51 @@
                                 <li class="page-item">
                                     <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
                                 </li>
-                            </ul>  
+                            </ul>
                         </nav>
                     </div>
-                    <% } else { %>
+                    <% } else if ( category.length == 0 ) { %>
                      
+
                         <div>
                             <h3 class="text-center text-danger">No Data Available..!!</h3>
                         </div>
-                
-                
-                <% } %>
-            </section>
 
+
+                        <% } %>
+            </section>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.5/axios.min.js"
+                integrity="sha512-TjBzDQIDnc6pWyeM1bhMnDxtWH0QpOXMcVooglXrali/Tj7W569/wd4E8EDjk1CwOAOPSJon1VfcEt1BI4xIrA=="
+                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
             <script>
+
+                function add() {
+                    const name = document.getElementById("category").value
+
+                    axios.post("/api/addcategory", {
+                        name
+                    })
+                        .then((data) => {
+                            if (data) {
+                                Swal.fire("Category Added", "Click the button", "success").then(
+                                    () => {
+                                        window.location.reload();
+                                    }
+                                );
+                            }
+                            let errorModal = document.getElementById('errorpopup')
+                            errorModal.innerText = data.data.message
+                            errorModal.classList.remove('d-none')
+                        })
+                        .catch((error) => {
+                            if (error?.response?.data?.errStatus) {
+                                let errorModal = document.getElementById('errorpopup')
+                                errorModal.innerText = error.response.data.message
+                                return errorModal.classList.remove('d-none')
+                            }
+                            console.log(error);
+                        })
+                }
 
                 function handlelist(id) {
                     axios.post('/api/deletecategory', { id })

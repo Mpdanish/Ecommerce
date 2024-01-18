@@ -51,10 +51,27 @@ export async function adminshowcategory(req, res) {
 
 export async function addcategory(req, res) {
   try {
+    const { name } = req.body;
+    const dupcategory = await Categorydb.findOne({ name: name.toUpperCase() });
+
+    if (!name) {
+      return res
+        .status(401)
+        .json({ errStatus: true, message: "Enter Category Name" });
+    }
+
+    if (dupcategory) {
+      return res
+        .status(401)
+        .json({ errStatus: true, message: "Category already exist" });
+    }
+
     const newCat = new Categorydb({
-      categoryname: req.body.categoryName,
+      name: name.toUpperCase(),
     });
+
     await newCat.save();
+
     res.status(200).redirect("/adminCategory");
   } catch (error) {
     console.error(error);
@@ -91,21 +108,30 @@ export async function restoreCategory(req, res) {
 
 export async function addproduct(req, res) {
   try {
-    let { productname, description, price, stock, ImageArr, category } =
-      req.body;
+    let { name, description, price, stock, ImageArr, category } = req.body;
     (stock = parseInt(stock)), (price = parseInt(price));
+
+    if ( !name || !description || !price || !stock || !ImageArr || !category ) {
+      return res
+        .status(401)
+        .json({ errStatus: true, message: "Content cannot be empty" });
+    }
+
+    const catID = await Categorydb.findById(category);
 
     const url = await cloudinaryUploadImage(ImageArr);
 
     const newCat = new Productdb({
-      productname,
+      name,
       description,
       price,
       stock,
       images: url,
-      category,
+      category: catID,
     });
+
     const val = await newCat.save();
+    
     if (val) res.status(200).send(true);
   } catch (error) {
     console.error(error);
@@ -114,6 +140,16 @@ export async function addproduct(req, res) {
 }
 
 export async function showproduct(req, res) {
+  try {
+    const data = await Productdb.find();
+    res.status(200).send(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function showdeletedproduct(req, res) {
   try {
     const data = await Productdb.find();
     res.status(200).send(data);
@@ -137,6 +173,8 @@ export async function updateproduct(req, res) {
   try {
     let { productname, description, price, stock, images, category } = req.body;
 
+    const url = await cloudinaryUploadImage(images);
+
     await Productdb.updateOne(
       { _id: req.params.id },
       {
@@ -150,14 +188,70 @@ export async function updateproduct(req, res) {
       }
     );
 
-    if (images.length > 0) {
-      await Productdb.updateOne(
-        { _id: req.params.id },
-        { $push: { images: images } },
-        { upsert: true }
-      );
-    }
+    await Productdb.updateOne(
+      { _id: req.params.id },
+      { $push: { images: { $each: url } } },
+      { upsert: true }
+    );
+
     res.status(200).send(true);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function deleteImage(req, res) {
+  try {
+    const imagePublicId = req.params.id;
+    const { productid } = req.params;
+    await Productdb.updateOne(
+      { _id: productid },
+      {
+        $unset: {
+          [`images.${Number(imagePublicId)}`]: 1,
+        },
+      }
+    );
+
+    await Productdb.findOneAndUpdate(
+      { _id: productid },
+      {
+        $pull: {
+          images: null,
+        },
+      }
+    );
+
+    res.status(200).send(true);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error deleting image reference");
+  }
+}
+
+export async function deleteProduct(req, res) {
+  try {
+    const data = await Productdb.updateOne(
+      { _id: req.body.id },
+      { $set: { isHidden: true } }
+    );
+
+    if (data) res.status(200).send(false);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function restoreProduct(req, res) {
+  try {
+    const data = await Productdb.updateOne(
+      { _id: req.body.id },
+      { $set: { isHidden: false } }
+    );
+
+    if (data) res.status(200).send(true);
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");

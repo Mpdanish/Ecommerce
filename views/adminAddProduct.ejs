@@ -21,17 +21,36 @@
                                 <h4>Product Details</h4>
 
                             </div>
+                            <div>
+                                <h2 class="text-danger" id="errorContainer">
+
+                                </h2>
+                            </div>
+                            <!-- <div class="bg-danger position-relative z-10 top-5 py-1.5 px-3 rounded-lg text-white d-none"
+                                        id="errorpopup">
+                                    </div> -->
                             <div class="card-body">
                                 <form action="/api/addproduct" id="addProductForm" method="post">
+                                    
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Product Name</label>
                                         <input type="text" placeholder="Type here" name="productname"
                                             class="form-control" id="productname" >
+                                            <div>
+                                                <h2 class="text-danger" id="errorName">
+                
+                                                </h2>
+                                            </div>
                                     </div>
                                     <div class="mb-4">
                                         <label class="form-label">Description</label>
                                         <textarea placeholder="Type here" name="description" class="form-control"
                                             rows="4" id="description" ></textarea>
+                                            <div>
+                                                <h2 class="text-danger" id="errorDescription">
+                
+                                                </h2>
+                                            </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-4" style="width: 50%;">
@@ -40,6 +59,11 @@
                                                 <div class="row gx-2">
                                                     <input placeholder="₹" name="price" type="number"
                                                         class="form-control" id="price"  />
+                                                        <div>
+                                                            <h2 class="text-danger" id="errorPrice">
+                            
+                                                            </h2>
+                                                        </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -49,6 +73,11 @@
                                                 <div class="row gx-2">
                                                     <input placeholder="0" type="number" name="stock"
                                                         class="form-control" id="stock"  />
+                                                        <div>
+                                                            <h2 class="text-danger" id="errorStock">
+                            
+                                                            </h2>
+                                                        </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -60,23 +89,21 @@
                                             </div>
                                             <div class="card-body">
 
-                                                <div class="input-upload mb-4">
-                                                    <img src="/images/theme/upload.svg" alt="" />
-                                                    <label for="formFile" class="form-label">Upload Images</label>
+                                                <div class=" mb-4">
+                                                    <label class="form-label">Upload Images: </label>
+                                                    <div>
+                                                        <h2 class="text-danger" id="errorImage">
+                        
+                                                        </h2>
+                                                    </div>
                                                     <input name="images" class="form-control" type="file" id="Image"
                                                         multiple />
+                                                        
                                                 </div>
 
-                                                <!-- <div class="input-upload mb-4">
-                                                    <input class="form-control" type="file" id="img1" />
-                                                </div>
-                                                <div class="input-upload mb-4">
-                                                    <input class="form-control" type="file" id="img2" />
-                                                </div>
-                                                <div class="input-upload mb-4">
-                                                    <input class="form-control" type="file" id="img3" />
-                                                </div> -->
+                                              
                                             </div>
+
                                             <div class="card mb-4">
                                                 <div class="card-header">
                                                     <h4>Category</h4>
@@ -84,15 +111,19 @@
                                                 <div class="card-body">
                                                     <select class="form-select" name="category" id="category">
                                                         <% for (let i of category) { %>
-                                                            <option>
-                                                                <%= i.categoryname %>
+                                                            <option value="<%= i._id %>">
+                                                                <%= i.name %>
                                                             </option>
                                                             <% } %>
                                                     </select>
                                                 </div>
+                                                <div>
+                                                    <h2 class="text-danger" id="errorCategory">
+                    
+                                                    </h2>
+                                                </div>
                                             </div>
                                         </div>
-                            <!-- <div id="errorContainer" style="color: red;"></div> -->
 
                                         <div class="justify-content-center">
                                             
@@ -145,24 +176,15 @@
 
                 addProductForm.addEventListener("submit", async (e) => {
                     e.preventDefault();
-                    //  for(let i = 0 ; i < Image.length ; i++) {
-                    //     console.log(Image.files[i]);
-                    //  }
-
-                    // if(!productname || !description || !price || !stock || !category || !ImageArr){
-                    //     errorContainer.innerHTML = '<p>All fields are required</p>';
-                    // }else{
 
                         let ImageArr = []
                     for (let i = 0; i < Image.files.length; i++) {
                         ImageArr[i] = await convertBase64(Image.files[i]);
                     }
 
-                    // const images = [coverimg];
-
                     axios
                         .post("/api/addproduct", {
-                            productname: productname.value,
+                            name: productname.value,
                             description: description.value,
                             price: price.value,
                             stock: stock.value,
@@ -178,9 +200,20 @@
                                     }
                                 );
                             }
-                        });
+                            let errorModal = document.getElementById('errorpopup')
+                            errorModal.innerText = data.data.message
+                            errorModal.classList.remove('d-none')
+                        })
+                        .catch((error) => {
+                            if (error?.response?.data?.errStatus) {
+                                let errorModal = document.getElementById('errorpopup')
+                                errorModal.innerText = error.response.data.message
+                                return errorModal.classList.remove('d-none')
+                            }
+                            console.log(error);
+                        })
 
-                    // }
+                    
                     
                 });
 
@@ -197,60 +230,72 @@
                     });
                 }
 
-                function imageUpload(img) { }
 
 
-                // document.getElementById('addProductForm').addEventListener('submit', function (event) {
-                //     const errorContainer = document.getElementById('errorContainer');
-                //     errorContainer.innerHTML = ''; // Clear previous error messages
+                document.getElementById('addProductForm').addEventListener('submit', function (event) {
+                    const errorContainer = document.getElementById('errorContainer');
+                    const errorName = document.getElementById('errorName');
+                    const errorDescription = document.getElementById('errorDescription');
+                    const errorPrice = document.getElementById('errorPrice');
+                    const errorStock = document.getElementById('errorStock');
+                    const errorImage = document.getElementById('errorImage');
+                    const errorCategory = document.getElementById('errorCategory');
+                    errorContainer.innerHTML = '';
+                    errorName.innerHTML = '';
+                    errorDescription.innerHTML = '';
+                    errorPrice.innerHTML = '';
+                    errorStock.innerHTML = '';
+                    errorImage.innerHTML = '';
+                    errorCategory.innerHTML = '';
 
-                //     // Validate form fields (You can also use HTML5 validation attributes)
-                //     const productname = document.querySelector('input[name="productname"]').value;
-                //     const description = document.querySelector('input[name="description"]').value;
-                //     const price = document.querySelector('input[name="price"]').value;
-                //     const stock = document.querySelector('input[name="stock"]').value;
-                //     const category = document.querySelector('input[name="category"]').value;
-                //     const Image = document.querySelector('input[name="Image"]').value;
+                    // Validate form fields (You can also use HTML5 validation attributes)
+                    const name = productname.value;
+                    const desc = description.value;
+                    const pricevalue = price.value;
+                    const stockvalue = stock.value;
+                    const cat = category.value;
+                    const images = Image.value;
+                    
+
+                    if (!name || !desc || !pricevalue || !stockvalue || !cat || !images) {
+                        
+                        errorContainer.innerHTML = '<p>All fields are required</p>';
+                        event.preventDefault();
+                    }
+
+                    if (!name) {
+                        errorName.innerHTML = '<p>Product Name is required</p>';
+                        event.preventDefault();
+                    }
+
+                    if (!desc) {
+                        errorDescription.innerHTML = '<p>Description is required</p>';
+                        event.preventDefault();
+                    }
+
+                    if (!pricevalue) {
+                        errorPrice.innerHTML = '<p>Price is required</p>';
+                        event.preventDefault();
+                    }
+
+                    if (!stockvalue) {
+                        errorStock.innerHTML = '<p>Stock is required</p>';
+                        event.preventDefault();
+                    }
+
+                    if (!cat) {
+                        errorCategory.innerHTML = '<p>Category is required</p>';
+                        event.preventDefault();
+                    }
+
+                    if (!images) {
+                        errorImage.innerHTML = '<p>Image is required</p>';
+                        event.preventDefault();
+                    }
+
+                });
 
 
-                //     if (!productname || !description || !price || !stock || !category || !Image) {
-                //         errorContainer.innerHTML = '<p>All fields are required</p>';
-                //         event.preventDefault();
-                //         return;
-                //     }
-
-                    // if (!name) {
-                    //     errorContainer.innerHTML = '<p>Name is required</p>';
-                    //     event.preventDefault();
-                    //     return;
-                    // }
-
-                    // if (!email) {
-                    //     errorContainer.innerHTML = '<p>Email is required</p>';
-                    //     event.preventDefault();
-                    //     return;
-                    // }
-
-                    // if (!password) {
-                    //     errorContainer.innerHTML = '<p>Password is required</p>';
-                    //     event.preventDefault();
-                    //     return;
-                    // }
-
-                    // if (!confirmPassword) {
-                    //     errorContainer.innerHTML = '<p>Confirm Password is required</p>';
-                    //     event.preventDefault();
-                    //     return;
-                    // }
-
-                    // if (password !== confirmPassword) {
-                    //     errorContainer.innerHTML = '<p>Password and Confirm Password do not match</p>';
-                    //     event.preventDefault();
-                    //     return;
-                    // }
-
-
-                // });
 
             </script>
 

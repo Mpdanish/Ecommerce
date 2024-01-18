@@ -3,7 +3,6 @@ import Otpdb from "../model/otpSchema.js";
 import Productdb from "../model/productSchema.js";
 import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
-import { homepage1 } from "../services/userRender.js";
 
 // Function to generate a random OTP
 const generateOTP = () => {
@@ -15,7 +14,6 @@ export async function newuser(req, res) {
     const { name, email, password, confirmPassword } = req.body;
 
     const dupemail = await Userdb.findOne({ email });
-    console.log(dupemail);
 
     if (!name || !email || !password || !confirmPassword) {
       return res
@@ -148,10 +146,8 @@ export async function otp(req, res) {
         { email: req.session.email },
         { $set: { verified: true } }
       );
-      console.log(updateResult);
-      res.redirect("/homepage1");
+      res.redirect("/");
     } else {
-      console.log("OTP does not match");
       res.status(400).send({ message: "Invalid OTP" });
     }
   } catch (err) {
@@ -185,3 +181,14 @@ function sendOtpEmail(email, otp) {
     }
   });
 }
+
+export async function logoutUser(req, res){
+  req.session.destroy((err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.redirect('/'); // Redirect to login page after logout
+  });
+};

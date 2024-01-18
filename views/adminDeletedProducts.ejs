@@ -10,15 +10,11 @@
             <section class="content-main">
                 <div class="content-header">
                     <div>
-                        <h2 class="content-title card-title">Products</h2>
-                    </div>
-                    <div>
-                        <a href="/adminAddProduct" class="btn btn-primary btn-sm rounded">Add Product</a>
+                        <h2 class="content-title card-title">Deleted Products</h2>
                     </div>
                     <div>
                         <div class="d-grid">
-                            <a href="/adminDeletedProducts"> <button class="btn btn-primary">Unlisted
-                                    Products</button> </a>
+                            <a href="/adminProducts"> <button class="btn btn-primary">Go Back</button> </a>
                         </div>
                     </div>
                 </div>
@@ -61,16 +57,15 @@
                                         <th>Price</th>
                                         <th>Stock</th>
                                         <th>Category</th>
-                                        <th>Edit</th>
-                                        <th>Delete</th>
-                                        
+                                        <th>Action</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                  
                                 
                                 <tbody>
                                     <% for( let i=0; i < product.length; i++ ) { %>
-                                <% if (product[i].isHidden == false) { %>
+                                <% if (product[i].isHidden == true) { %>
 
                                         <tr>
                                             <td>
@@ -113,7 +108,7 @@
                                             <td>
                                                 
                                                 <button type="button" class="btn btn-danger btn-sm"
-                                                    onclick="deleteproduct('<%= product[i]._id %>')">Delete</button>
+                                                    onclick="restoreproduct('<%= product[i]._id %>')">Restore</button>
 
                                             </td>
                                         </tr>
@@ -121,9 +116,10 @@
 
                                         <% } %>
                         </div>
-                        <%  } %>
+                        <% } %>
 
                         </tbody>
+
                         </table>
                     </div>
                 </div>
@@ -157,9 +153,8 @@
             </section>
 
             <script>
-                
-                function deleteproduct(id) {
-                    axios.post('/api/deleteproduct', { id })
+                function restoreproduct(id) {
+                    axios.post('/api/restoreproduct', { id })
                         .then((data) => {
                             Swal.fire({
                                 title: "Good job!",

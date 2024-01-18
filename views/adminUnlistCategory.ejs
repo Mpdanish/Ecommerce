@@ -43,7 +43,7 @@
                                                         </td>
                                                         <td>
                                                             <p>
-                                                                <%= category[i].categoryname %>
+                                                                <%= category[i].name %>
                                                             </p>
                                                         </td>
                                                         <td>
@@ -68,7 +68,7 @@
                     <!-- card body .// -->
                 </div>
                 <!-- card .// -->
-                <% if (category.length!=0) { %>
+                <% if (category.length > 10) { %>
 
                     <div class="pagination-area mt-30 mb-50">
                         <nav aria-label="Page navigation example">
@@ -80,7 +80,8 @@
                             </ul>
                         </nav>
                     </div>
-                    <% } else { %>
+                    <% } else if (category.length == 0) { %>
+                     
 
                         <div>
                             <h3 class="text-center text-danger">No Data Available..!!</h3>
