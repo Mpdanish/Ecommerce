@@ -3,6 +3,7 @@ import {
   adminAddProduct,
   adminCategory,
   adminDeletedProduct,
+  adminEditCategory,
   adminEditProduct,
   adminHome,
   adminOrder,
@@ -28,6 +29,7 @@ import {
   deleteImage,
   restoreProduct,
   deleteProduct,
+  updatecategory,
 } from "../controller/adminController.js";
 
 const router = Router();
@@ -39,6 +41,7 @@ router.get("/adminUsers", adminUser);
 router.get("/adminProducts", adminProduct);
 router.get("/adminDeletedProducts", adminDeletedProduct);
 router.get("/adminCategory", adminCategory);
+router.get("/adminEditCategory/:id", adminEditCategory)
 router.get("/adminUnlistedCategory", adminUnlistedCategory);
 router.get("/adminOrder", adminOrder);
 router.get("/adminAddProduct", adminAddProduct);
@@ -63,6 +66,7 @@ router.post("/api/addproduct", addproduct);
 router.post("/api/showproduct", showproduct);
 
 router.put("/api/updateproduct/:id", updateproduct);
+router.put("/api/updatecategory/:id", updatecategory);
 
 router.delete("/deleteimage/:id/:productid", deleteImage)
 

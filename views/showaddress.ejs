@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+
+    <style>
+        /* Hide the arrow icon for number input */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <nav class="bg-white border-gray-200 dark:bg-gray-900">
+        
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+            <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
+                <img src="/images/electronic-store-logo.svg" class="h-8" alt="OtronMart Logo" />
+            </a>
+
+            <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-search">
+
+                <ul
+                    class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                    <li>
+                        <a href="/"
+                            class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500"
+                            aria-current="page">Home</a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Product</a>
+                    </li>
+
+
+                    <li>
+                        <a href="/cart"
+                            class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Cart</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+   
+    <div class="bg-gray-100 font-sans max-w-2xl mx-auto p-8 bg-white mt-10 rounded-md shadow-md">
+        <a href="#" onclick="goBack()"
+                class="inline-flex items-center mb-5 px-4 py-2 text-base font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back
+            </a>
+        <h2 class=" text-2xl font-semibold mb-4">Shipping Address</h2>
+        <a href="/addaddress">
+            <button class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Add Address</button>
+        </a>
+        <% for( let i = 0; i < address.length; i++ ) { %>
+        
+        <div class="max-w-2xl mx-auto justify-center p-8 bg-white mt-10 rounded-md shadow-md">
+            <div class="mb-4">
+                <p class="text-gray-600">Name: <%= address[i].name %></p>
+                <p class="text-gray-600">Phone Number: <%= address[i].phonenumber %></p>
+                <p class="text-gray-600">Locality: <%= address[i].locality %></p>
+                <p class="text-gray-600">District: <%= address[i].district %></p>
+                <p class="text-gray-600">State: <%= address[i].state %></p>
+                <p class="text-gray-600">Pincode: <%= address[i].pincode %></p>
+                <p class="text-gray-600">Address Type: <%= address[i].addressType %></p>
+            </div>
+
+            <div class="flex justify-between items-center mt-4">
+                
+                <button class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Delete Address</button>
+               <a href="/editaddress/<%= address[i]._id %>"> <button class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">Edit Address</button></a>
+            </div>
+        </div>
+        <% } %>
+    </div>
+    <footer class="bg-gray-800 text-white p-4 text-center mt-8 fixed bottom-0 w-full">
+        <p>&copy;
+            <script>
+                document.write(new Date().getFullYear());
+            </script> OtronMart E-Commerce. All rights reserved.
+        </p>
+    </footer>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+         function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

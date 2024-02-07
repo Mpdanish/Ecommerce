@@ -31,26 +31,26 @@
                                     </div> -->
                             <div class="card-body">
                                 <form action="/api/addproduct" id="addProductForm" method="post">
-                                    
+
                                     <div class="mb-4">
                                         <label for="product_name" class="form-label">Product Name</label>
                                         <input type="text" placeholder="Type here" name="productname"
-                                            class="form-control" id="productname" >
-                                            <div>
-                                                <h2 class="text-danger" id="errorName">
-                
-                                                </h2>
-                                            </div>
+                                            class="form-control" id="productname">
+                                        <div>
+                                            <h2 class="text-danger" id="errorName">
+
+                                            </h2>
+                                        </div>
                                     </div>
                                     <div class="mb-4">
                                         <label class="form-label">Description</label>
                                         <textarea placeholder="Type here" name="description" class="form-control"
-                                            rows="4" id="description" ></textarea>
-                                            <div>
-                                                <h2 class="text-danger" id="errorDescription">
-                
-                                                </h2>
-                                            </div>
+                                            rows="4" id="description"></textarea>
+                                        <div>
+                                            <h2 class="text-danger" id="errorDescription">
+
+                                            </h2>
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-4" style="width: 50%;">
@@ -58,12 +58,12 @@
                                                 <label class="form-label">Price</label>
                                                 <div class="row gx-2">
                                                     <input placeholder="₹" name="price" type="number"
-                                                        class="form-control" id="price"  />
-                                                        <div>
-                                                            <h2 class="text-danger" id="errorPrice">
-                            
-                                                            </h2>
-                                                        </div>
+                                                        class="form-control" id="price" />
+                                                    <div>
+                                                        <h2 class="text-danger" id="errorPrice">
+
+                                                        </h2>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -72,12 +72,12 @@
                                                 <label class="form-label">Stock</label>
                                                 <div class="row gx-2">
                                                     <input placeholder="0" type="number" name="stock"
-                                                        class="form-control" id="stock"  />
-                                                        <div>
-                                                            <h2 class="text-danger" id="errorStock">
-                            
-                                                            </h2>
-                                                        </div>
+                                                        class="form-control" id="stock" />
+                                                    <div>
+                                                        <h2 class="text-danger" id="errorStock">
+
+                                                        </h2>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -93,15 +93,15 @@
                                                     <label class="form-label">Upload Images: </label>
                                                     <div>
                                                         <h2 class="text-danger" id="errorImage">
-                        
+
                                                         </h2>
                                                     </div>
                                                     <input name="images" class="form-control" type="file" id="Image"
                                                         multiple />
-                                                        
+
                                                 </div>
 
-                                              
+
                                             </div>
 
                                             <div class="card mb-4">
@@ -119,15 +119,15 @@
                                                 </div>
                                                 <div>
                                                     <h2 class="text-danger" id="errorCategory">
-                    
+
                                                     </h2>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="justify-content-center">
-                                            
-                                            <button class="btn btn-md rounded font-sm hover-up submit" type="submit">Add
+
+                                            <button onclick="validateAddress()" class="btn btn-md rounded font-sm hover-up submit" type="submit">Add
                                                 Product</button>
                                         </div>
                                 </form>
@@ -177,7 +177,7 @@
                 addProductForm.addEventListener("submit", async (e) => {
                     e.preventDefault();
 
-                        let ImageArr = []
+                    let ImageArr = []
                     for (let i = 0; i < Image.files.length; i++) {
                         ImageArr[i] = await convertBase64(Image.files[i]);
                     }
@@ -203,18 +203,24 @@
                             let errorModal = document.getElementById('errorpopup')
                             errorModal.innerText = data.data.message
                             errorModal.classList.remove('d-none')
+                            if (data.data.message == "Product Added") {
+                                errorModal.classList.add('d-none')
+                            }
                         })
                         .catch((error) => {
                             if (error?.response?.data?.errStatus) {
                                 let errorModal = document.getElementById('errorpopup')
                                 errorModal.innerText = error.response.data.message
                                 return errorModal.classList.remove('d-none')
+                                if (error.response.data.message == "Product Added") {
+                                    errorModal.classList.add('d-none')
+                                }
                             }
                             console.log(error);
                         })
 
-                    
-                    
+
+
                 });
 
                 function convertBase64(file) {
@@ -255,10 +261,10 @@
                     const stockvalue = stock.value;
                     const cat = category.value;
                     const images = Image.value;
-                    
+
 
                     if (!name || !desc || !pricevalue || !stockvalue || !cat || !images) {
-                        
+
                         errorContainer.innerHTML = '<p>All fields are required</p>';
                         event.preventDefault();
                     }

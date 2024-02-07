@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Information</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 font-sans flex flex-col min-h-screen">
+
+    <nav class="bg-white border-gray-200 dark:bg-gray-900">
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+            <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
+                <img src="/images/electronic-store-logo.svg" class="h-8" alt="OtronMart Logo" />
+            </a>
+
+            <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-search">
+
+                <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                    <li>
+                        <a href="/" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">Home</a>
+                    </li>
+                    <li>
+                        <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Product</a>
+                    </li>
+                    <li>
+                        <a href="/cart" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Cart</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+        <div class="flex-grow">
+            <div class="container mx-auto my-8 p-8 bg-white rounded-lg shadow-md">
+                 <!-- Back button -->
+            <a href="#" onclick="goBack()"
+            class="inline-flex items-center mb-5 px-4 py-2 text-base font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back
+        </a>
+        <!-- Order Information Header -->
+        <div class="flex justify-between items-center mb-8">
+           
+            <h1 class="text-3xl font-semibold">Order Information</h1>
+            <!-- Add your logo or navigation links here -->
+        </div>
+
+        <!-- Order Summary and Shipping Information -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div>
+                <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+                <!-- Add order summary details here -->
+                <!-- Example: -->
+                <p>Order ID: 123456789009876</p>
+                <p>Total Items: 3</p>
+                <p>Subtotal: $150.00</p>
+                <p>Discount: -$10.00</p>
+                <p class="text-xl font-semibold mt-4">Order Total: $140.00</p>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold mb-4">Shipping Information</h2>
+                <!-- Add shipping information details here -->
+                <!-- Example: -->
+                <p>John Doe</p>
+                <p>123 Main Street</p>
+                <p>City, Country, ZIP</p>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold mb-4">Billing Information</h2>
+                <!-- Add billing information details here -->
+                <!-- Example: -->
+                <p>John Doe</p>
+                <p>123 Main Street</p>
+                <p>City, Country, ZIP</p>
+            </div>
+        </div>
+
+        <!-- Order Status with Progress Bar -->
+        <div class="mt-8">
+            <h2 class="text-xl font-semibold mb-4">Order Status</h2>
+            <p class="text-lg">
+                Status:
+                <span id="orderStatus" class="text-blue-500 font-semibold">Loading...</span>
+                <!-- You can dynamically change the status color based on the order status -->
+            </p>
+
+            <!-- Progress Bar -->
+            <progress id="orderProgressBar" class="w-full h-5 mt-2" value="0" max="100"></progress>
+        </div>
+
+        <!-- Order Status -->
+        <!-- <div class="mt-8" id="orderStatusContainer">
+            <h2 class="text-xl font-semibold mb-4">Order Status</h2>
+            <p class="text-lg" id="orderStatus">
+                Status: <span class="text-blue-500 font-semibold">Ordered</span> -->
+                <!-- You can dynamically change the status color based on the order status -->
+            <!-- </p>
+        </div> -->
+
+        <!-- Order Items -->
+        <div class="mt-8">
+            <h2 class="text-xl font-semibold mb-4">Order Items</h2>
+            <!-- Add a loop for each item in the order -->
+            <!-- Example for a single product -->
+            <div class="flex items-center justify-between border-b border-gray-300 py-4">
+                <div class="flex items-center">
+                    <img src="/images/IMG-20231221-WA0001.jpg" alt="Product Image" class="w-16 h-16 object-cover rounded-md mr-4">
+                    <div>
+                        <p class="text-lg font-semibold">Product Name</p>
+                        <p class="text-gray-600">Quantity: 1</p>
+                    </div>
+                </div>
+                <p class="text-lg font-semibold">$49.99</p>
+            </div>
+            <!-- Repeat the above block for each item in the order -->
+
+            <!-- Order Total -->
+            <div class="flex justify-end mt-8">
+                <p class="text-2xl font-semibold">Order Total: $140.00</p>
+            </div>
+        </div>
+    </div>
+        <footer class="bg-gray-800 text-white p-4 text-center">
+            <p>&copy; <script>
+                    document.write(new Date().getFullYear());
+                </script> OtronMart E-Commerce. All rights reserved.</p>
+        </footer>
+        <script>
+             function goBack() {
+            window.history.back();
+        }
+            // Simulating dynamic order status change (replace this with actual data retrieval)
+            // setTimeout(() => {
+            //     const orderStatusElement = document.getElementById('orderStatus');
+            //     orderStatusElement.innerHTML = 'Status: <span class="text-green-500 font-semibold">Shipped</span>';
+            // }, 10000); 
+
+            // Simulating dynamic order status change and progress update (replace this with actual data retrieval)
+            let progressValue = 0;
+            // const orderStatusElement = document.getElementById('orderStatus');
+            // const orderProgressBar = document.getElementById('orderProgressBar');
+
+            // function updateOrderStatus(status, percentage) {
+            //     orderStatusElement.innerHTML = `<span class="text-${status.color}-500 font-semibold">${status.text}</span>`;
+            //     orderProgressBar.value = percentage;
+            // }
+
+            function updateOrderStatus(status, progress) {
+                const orderStatusElement = document.getElementById('orderStatus');
+                const orderProgressBar = document.getElementById('orderProgressBar');
+
+                orderStatusElement.innerHTML = `<span class="font-semibold">${status.text}</span>`;
+                orderProgressBar.value = progress;
+
+                // Conditionally set the color based on the status
+                if (status.toLowerCase() === 'cancelled') {
+                    orderProgressBar.classList.add('bg-red-500');
+                } else {
+                    // Reset to default color (if previously set to red)
+                    orderProgressBar.classList.remove('bg-red-500');
+                }
+            }
+
+            // Simulate order progress
+            setTimeout(() => {
+                updateOrderStatus({ text: 'Ordered', color: 'blue' }, 25);
+            }, 0);
+
+            setTimeout(() => {
+                updateOrderStatus({ text: 'Shipped', color: 'green' }, 50);
+            }, 15000);
+
+            setTimeout(() => {
+                updateOrderStatus({ text: 'Delivered', color: 'purple' }, 75);
+            }, 30000);
+
+            setTimeout(() => {
+                updateOrderStatus({ text: 'Cancelled', color: 'red' }, 100);
+            }, 50000);
+        </script>
+    
+    </div>
+    <script src="https://cdn.tailwindcss.com"></script>
+</body>
+</html>

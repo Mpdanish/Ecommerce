@@ -1,0 +1,91 @@
+<%- include('include/_header') %>
+
+
+  <%- include('include/_nav') %>
+
+
+    <%- include('include/_topheader') %>
+
+      <section class="content-main">
+        <div class="container my-5 foot" id="form">
+          <div class="row justify-content-center" id="form-2">
+            <div class="col-lg-9">
+              <h1 class="mb-3"> Edit category</h1>
+              <!-- <form id="main-form" method="put" action=""> -->
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <input type="hidden" name="category_id" id="id" data-bs="<%=// category._id %>"
+                    value="<%= // category._id %>">
+                  <label for="categoryname" class="form-label">category Name</label>
+                  <p id="warning-for-existence" class="text-danger"></p>
+                  <input name="categoryname" value="<%=  category.name %>" type="text" class="form-control border"
+                    id="categoryname" required>
+                  <div class="text-center bg-danger position-relative z-10 top-5 py-1.5 px-3 rounded-lg text-white d-none"
+                    id="errorpopup">
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <button type="submit" onclick="editcategory('<%= category._id %>')"
+                        class="btn btn-success w-100 fw-bold my-2">Update</button>
+                      <a href="/adminCategory">
+                        <button onclick="" type="button" class="btn btn-dark w-100 fw-bold" id="go-back-btn"> Go
+                          back</button>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- </form> -->
+            </div>
+          </div>
+        </div>
+      </section>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.4/axios.min.js"
+        integrity="sha512-ANd7ZJmixP2T0hxOP4bS6hkci01fxyrQSyRdaY7IsWq1WlKsD0WwWBDVDZbnMR7CJZVKCTkDx/q5D5n2C2C+vg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+      <script>
+        function editcategory(id) {
+          console.log("........");
+          const name = document.getElementById("categoryname").value
+          const  errorModal = document.getElementById('errorpopup')
+          errorModal.innerHTML='';
+
+
+          axios.put(`/api/updatecategory/${id}`, {
+            name,
+          })
+            .then((data) => {
+              console.log("success");
+              if (data) {
+                Swal.fire("Category Updated", "Click the button", "success").then(
+                  () => {
+                    window.location.href = "/adminCategory"
+                  }
+                );
+              }
+              
+              errorModal.innerText = data.data.message
+              errorModal.classList.remove('d-none')
+              if (data.data.message == "Category Changed") {
+                errorModal.classList.add('d-none')
+              }
+            })
+            .catch((error) => {
+              if (error?.response?.data?.errStatus) {
+                errorModal.innerText = error.response.data.message
+                return errorModal.classList.remove('d-none')
+
+                if (error.response.data.message == "Category Changed") {
+                  errorModal.classList.add('d-none')
+
+                }
+              }
+              console.log("failddd");
+              console.log(error);
+            })
+        }
+      </script>
+      <%- include('include/_footer') %>

@@ -133,13 +133,21 @@
                     errorModal.classList.remove('hidden')
                     if(data.data == "login successfully"){
                         window.location.href = "/"
+                        errorModal.classList.add('hidden')
+
                     }
+                    // if(data.data.message == "login successfully"){
+                        // errorModal.classList.add('hidden')
+                    // }
                 })
                 .catch((error) => {
                     if (error?.response?.data?.errStatus) {
                         let errorModal = document.getElementById('errorpopup')
                         errorModal.innerText = error.response.data.message
                         return errorModal.classList.remove('hidden')
+                        if(error.response.data.message == "login successfully"){
+                        errorModal.classList.add('hidden')
+                    }
                     }
                     console.log(error);
                 })

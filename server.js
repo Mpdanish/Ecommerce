@@ -8,9 +8,7 @@ import MongoStore from 'connect-mongo';
 // import validator from './server/validator.js';
 import "dotenv/config"
 
-
 const app = express();
-
 
 const PORT = process.env.PORT || 8080;
 const __dirname = path.resolve();
@@ -40,7 +38,7 @@ app.use(express.urlencoded({extended: true}));
 
 // set view engine
 app.set('view engine', 'ejs');
-// app.set('views' ,path.resolve(__dirname, "views/ejs"));
+// app.set('views' ,path.resolve(__dirname, "views/ejs"));j
 
 app.use(express.static(__dirname + "/assets"));
 
@@ -48,7 +46,6 @@ app.use(express.static(__dirname + "/assets"));
 app.use('/', userRouter)
 app.use('/', adminRouter)
  
-
 app.listen(PORT, () => 
     console.log(`Server is running on http://localhost:${PORT}`)
 );

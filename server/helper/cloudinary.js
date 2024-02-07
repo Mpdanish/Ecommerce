@@ -17,7 +17,6 @@ cloudinary.config({
           new Promise((resolve, reject) => {
             cloudinary.uploader.upload(image, (error, result) => {
               if (result && result.secure_url) {
-                console.log(result.secure_url);
                 resolve(result.secure_url);
               } else {
                 reject(error);

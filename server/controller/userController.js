@@ -1,6 +1,7 @@
 import Userdb from "../model/userSchema.js";
 import Otpdb from "../model/otpSchema.js";
 import Productdb from "../model/productSchema.js";
+import Addressdb from "../model/addressSchema.js";
 import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
 
@@ -11,7 +12,7 @@ const generateOTP = () => {
 
 export async function newuser(req, res) {
   try {
-    const { name, email, password, confirmPassword } = req.body;
+    const { name, email, phoneNumber, password, confirmPassword } = req.body;
 
     const dupemail = await Userdb.findOne({ email });
 
@@ -41,20 +42,21 @@ export async function newuser(req, res) {
 
     const otpInfo = await otpp.save();
     req.session.email = req.body.email;
-
+    console.log(otpInfo);
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
     // Create a new user with hashed password and save it
     const user = new Userdb({
       name,
       email,
+      phoneNumber,
       password: hashedPassword,
     });
 
-    const data = await user.save();
-
+    await user.save();
+    // res.redirect('/otp')
     // Send email with OTP
-    sendOtpEmail(req.body.email, otp);
+    await sendOtpEmail(req.body.email, otp);
 
     // Render OTP entry page
     res.status(200).render("otpentry");
@@ -87,10 +89,6 @@ export async function isUser(req, res) {
         .json({ errStatus: true, message: "Enter Password" });
     }
 
-    // if (!email || !password) {
-    //   return res.status(401).json({ errStatus: true, message: "Content cannot be empty" });
-    // }
-
     const user = await Userdb.findOne({ email });
 
     if (!user) {
@@ -104,6 +102,7 @@ export async function isUser(req, res) {
         .status(401)
         .json({ errStatus: true, message: "User is blocked by admin" });
     }
+
     const data = await Userdb.findOne({ email });
 
     const isPasswordMatch = await bcrypt.compare(password, data.password);
@@ -112,7 +111,7 @@ export async function isUser(req, res) {
       // Set session and redirect to home
       req.session.userId = user.id;
       req.session.email = email;
-      res.send("login successfully")
+      res.send("login successfully");
     } else {
       res.status(401).json({ errStatus: true, message: "Invalid password" });
     }
@@ -182,13 +181,111 @@ function sendOtpEmail(email, otp) {
   });
 }
 
-export async function logoutUser(req, res){
+export async function logoutUser(req, res) {
+  req.session.userId = null;
   req.session.destroy((err) => {
     if (err) {
       console.error(err);
-      res.status(500).send('Internal Server Error');
+      res.status(500).send("Internal Server Error");
       return;
     }
-    res.redirect('/'); // Redirect to login page after logout
+    res.redirect("/");
   });
-};
+}
+
+export async function addAddress(req, res) {
+  try {
+    let { name, phonenumber, pincode, locality, district, state, addressType } =
+      req.body;
+    (phonenumber = parseInt(phonenumber)), (pincode = parseInt(pincode));
+
+    if (!name || !phonenumber || !pincode || !locality || !district || !state || !addressType) {
+      return res
+        .status(401)
+        .json({ errStatus: true, message: "Content cannot be empty" });
+    }
+
+    let user = req.session.userId;
+
+    const userId = await Userdb.findById(user);
+
+    const newAddress = new Addressdb({
+      userId: userId,
+      name,
+      phonenumber,
+      pincode,
+      locality,
+      district,
+      state,
+      addressType,
+    });
+    const saved = await newAddress.save();
+
+    // if (saved) res.status(200).send(true);
+    if (saved) {
+      res.status(201).json({ message: "Address Added" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function updateaddress(req, res) {
+  try {
+    let { name, phonenumber, pincode, locality, district, state, addressType } =
+      req.body;
+
+    const newAdd = await Addressdb.updateOne(
+      { _id: req.session.addressId },
+      {
+        $set: {name,phonenumber,pincode,locality,district,state,addressType},
+      }
+    );
+
+    // console.log(newAdd);
+
+    res.status(200).send(true);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function updateprofile(req, res) {
+  try {
+    const { name, email, phoneNumber } = req.body;
+
+    // Update the profile in the database
+    const result = await Userdb.updateOne(
+      { _id: req.session.userId },
+      { $set: { name, email, phoneNumber } }
+    );
+
+    console.log(result);
+
+    res.json({ success: true, message: "Profile updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
+
+export async function filterproduct(req,res){
+  try {
+    const selectedCategory = req.query.category;
+    let filteredProducts;
+
+    if (selectedCategory && selectedCategory !== 'All') {
+      filteredProducts = await Productdb.find({ category: selectedCategory });
+    } else {
+      filteredProducts = await Productdb.find();
+    }
+
+    res.json(filteredProducts);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).send('Internal Server Error');
+  }
+}
+

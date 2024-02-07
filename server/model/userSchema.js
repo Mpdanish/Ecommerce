@@ -1,5 +1,3 @@
-// const mongoose = require('mongoose');
-
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
@@ -12,9 +10,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
-    // phone:{
-    //     type:Number
-    // },
+    phoneNumber:{
+        type:Number,
+        required: true,
+    },
     password:{
         type:String
     },

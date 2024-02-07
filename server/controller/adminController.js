@@ -52,9 +52,10 @@ export async function adminshowcategory(req, res) {
 export async function addcategory(req, res) {
   try {
     const { name } = req.body;
-    const dupcategory = await Categorydb.findOne({ name: name.toUpperCase() });
+    const Name = name.trim();
+    const dupcategory = await Categorydb.findOne({ name: Name.toUpperCase() });
 
-    if (!name) {
+    if (!Name) {
       return res
         .status(401)
         .json({ errStatus: true, message: "Enter Category Name" });
@@ -67,12 +68,52 @@ export async function addcategory(req, res) {
     }
 
     const newCat = new Categorydb({
-      name: name.toUpperCase(),
+      name: Name.toUpperCase(),
     });
 
     await newCat.save();
 
-    res.status(200).redirect("/adminCategory");
+    // res.status(200).redirect("/adminCategory");
+    res.status(200).json({ message: "Category Added" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function updatecategory(req, res) {
+  try {
+    let {name} = req.body;
+    const Name = name.trim();
+    const dupcategory = await Categorydb.findOne({ name: Name.toUpperCase() });
+
+    if (!Name) {
+      return res
+        .status(401)
+        .json({ errStatus: true, message: "Enter Category Name" });
+    }
+
+    if (dupcategory) {
+      return res
+        .status(401)
+        .json({ errStatus: true, message: "Category already exist" });
+    }
+
+    const newcat = await Categorydb.updateOne(
+      { _id: req.params.id },
+      {
+        $set: {name: Name.toUpperCase()},
+      }
+    );
+
+    // const save =  await newcat.save();
+    if (newcat) {
+      res.status(201).json({ message: "Category Updated" });
+    }
+
+    // console.log(newcat);
+
+    // res.status(200).send(true);
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -130,9 +171,12 @@ export async function addproduct(req, res) {
       category: catID,
     });
 
-    const val = await newCat.save();
+    const saved = await newCat.save();
     
-    if (val) res.status(200).send(true);
+    // if (saved) res.status(200).send(true);
+    if (saved) {
+      res.status(201).json({ message: "Product Added" });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");

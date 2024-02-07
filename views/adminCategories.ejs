@@ -29,11 +29,11 @@
                             <div class="col-md-3">
                                 <div class="mb-4">
                                     <label for="product_name" class="form-label">Category Name</label>
-                                    
+
                                     <input type="text" placeholder="Type here" name="categoryName" class="form-control"
                                         id="category" />
-                                        <br>
-                                        <div class="bg-danger position-relative z-10 top-5 py-1.5 px-3 rounded-lg text-white d-none"
+                                    <br>
+                                    <div class="bg-danger position-relative z-10 top-5 py-1.5 px-3 rounded-lg text-white d-none"
                                         id="errorpopup">
                                     </div>
                                 </div>
@@ -50,6 +50,7 @@
                                                 <th>ID</th>
                                                 <th>Name</th>
                                                 <th>Action</th>
+                                                <th>Edit</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -71,6 +72,56 @@
 
                                                             <% } %>
                                                         </td>
+                                                        <% if (category[i].isHidden==false) { %>
+                                                         
+                                                        
+                                                        <td>
+                                                            <a href="/adminEditCategory/<%= category[i]._id %>"><button type="button" class="btn btn-primary"
+                                                                >
+                                                                Edit
+                                                            </button></a>
+                                                            
+
+
+                                                            <!-- Modal
+                                                            <div class="modal fade" id="editModal<%=// i %>" tabindex="-1"
+                                                                role="dialog" aria-labelledby="editModalLabel"
+                                                                aria-hidden="true">
+
+                                                                <div class="modal-dialog" role="document">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="editModalLabel">
+                                                                                Edit Category</h5>
+                                                                            <button type="button" class="close"
+                                                                                data-dismiss="modal" aria-label="Close">
+                                                                                <span aria-hidden="true">&times;</span>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="modal-body"> -->
+                                                                            <!-- Input field -->
+                                                                            <!-- <div class="form-group">
+                                                                                <label for="editInput">Edit
+                                                                                    Category:</label>
+                                                                                <input type="text" class="form-control"
+                                                                                    id="editInput"
+                                                                                    value="<%=// category[i].name %>">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button"
+                                                                                class="btn btn-secondary"
+                                                                                data-dismiss="modal">Close</button> -->
+                                                                            <!-- Submit button -->
+                                                                            <!-- <button type="button"
+                                                                                class="btn btn-primary"
+                                                                                onclick="submitEdit()">Submit</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div> -->
+                                                        </td>
+                                                        <% } %>
                                                     </tr>
 
                                                     <% } %>
@@ -85,7 +136,7 @@
                     <!-- card body .// -->
                 </div>
                 <!-- card .// -->
-                <% if (category.length > 10) { %>
+                <% if (category.length> 10) { %>
 
                     <div class="pagination-area mt-30 mb-50">
                         <nav aria-label="Page navigation example">
@@ -97,8 +148,8 @@
                             </ul>
                         </nav>
                     </div>
-                    <% } else if ( category.length == 0 ) { %>
-                     
+                    <% } else if ( category.length==0 ) { %>
+
 
                         <div>
                             <h3 class="text-center text-danger">No Data Available..!!</h3>
@@ -129,12 +180,20 @@
                             let errorModal = document.getElementById('errorpopup')
                             errorModal.innerText = data.data.message
                             errorModal.classList.remove('d-none')
+                            if (data.data.message == "Category Added") {
+                                errorModal.classList.add('d-none')
+                            }
                         })
                         .catch((error) => {
                             if (error?.response?.data?.errStatus) {
                                 let errorModal = document.getElementById('errorpopup')
                                 errorModal.innerText = error.response.data.message
                                 return errorModal.classList.remove('d-none')
+
+                                if (error.response.data.message == "Category Added") {
+                                    errorModal.classList.add('d-none')
+
+                                }
                             }
                             console.log(error);
                         })
@@ -155,6 +214,31 @@
                             console.log(err);
                         })
                 }
+
+                // function openModal(index) {
+                //     $('#editModal' + index).modal('show');
+                // }
+                // // Function to handle the submission of the edit form
+                // function submitEdit() {
+                //     // Get the edited content from the input field
+                //     var editedCategory = document.getElementById('editInput').value;
+
+                //     // Use Axios to make an asynchronous request to handle the submission
+                //     axios.put('/editcategory', {
+                //         category: editedCategory
+                //     })
+                //         .then(function (response) {
+                //             // Handle the response from the server
+                //             console.log(response.data);
+
+                //             // Close the modal
+                //             $('#editModal').modal('hide');
+                //         })
+                //         .catch(function (error) {
+                //             // Handle errors
+                //             console.error(error);
+                //         });
+                // }
 
             </script>
 

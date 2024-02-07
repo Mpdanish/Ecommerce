@@ -125,6 +125,17 @@ export async function adminCategory(req, res) {
   }
 }
 
+export async function adminEditCategory(req, res) {
+  try {
+    const category = await Categorydb.findOne({_id: req.params.id});
+    // console.log(category);
+    res.status(200).render("adminEditCategory.ejs", { category });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
 export async function adminUnlistedCategory(req, res) {
   try {
     const category = await Categorydb.find();
