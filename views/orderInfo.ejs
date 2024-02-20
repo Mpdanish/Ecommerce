@@ -54,31 +54,27 @@
 
         <!-- Order Summary and Shipping Information -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div>
+            <div class="w-full">
                 <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
                 <!-- Add order summary details here -->
                 <!-- Example: -->
-                <p>Order ID: 123456789009876</p>
-                <p>Total Items: 3</p>
-                <p>Subtotal: $150.00</p>
-                <p>Discount: -$10.00</p>
-                <p class="text-xl font-semibold mt-4">Order Total: $140.00</p>
+                <p>Order ID: <%= details._id.toString().split('').slice(18,24).join('') %></p>
+                <p>Total Items: <%= details.orderDetails[0].quantity %></p>
+                <p>Subtotal: <%= details.orderDetails[0].price %> </p>
+                <!-- <p>Discount: -$10.00</p> -->
+                <p class="text-xl font-semibold mt-4">Order Total:  <%= details.orderDetails[0].quantity * details.orderDetails[0].price %></p>
             </div>
-            <div>
+            <div class="w-full">
                 <h2 class="text-xl font-semibold mb-4">Shipping Information</h2>
                 <!-- Add shipping information details here -->
                 <!-- Example: -->
-                <p>John Doe</p>
-                <p>123 Main Street</p>
-                <p>City, Country, ZIP</p>
+                <p style="word-wrap: break-word;"> <%= details.orderDetails[0].address %></p>
             </div>
-            <div>
+            <div class="w-full">
                 <h2 class="text-xl font-semibold mb-4">Billing Information</h2>
                 <!-- Add billing information details here -->
                 <!-- Example: -->
-                <p>John Doe</p>
-                <p>123 Main Street</p>
-                <p>City, Country, ZIP</p>
+                <p style="word-wrap: break-word;" > <%= details.orderDetails[0].address %></p>
             </div>
         </div>
 
@@ -87,12 +83,12 @@
             <h2 class="text-xl font-semibold mb-4">Order Status</h2>
             <p class="text-lg">
                 Status:
-                <span id="orderStatus" class="text-blue-500 font-semibold">Loading...</span>
+                <span id="orderStatus" class="text-blue-500 font-semibold"> <%= details.orderDetails[0].orderStatus %></span>
                 <!-- You can dynamically change the status color based on the order status -->
             </p>
 
             <!-- Progress Bar -->
-            <progress id="orderProgressBar" class="w-full h-5 mt-2" value="0" max="100"></progress>
+            <progress id="orderProgressBar" class="w-full h-5 mt-2 bg-green-500" value="0" max="100"></progress>
         </div>
 
         <!-- Order Status -->
@@ -111,19 +107,19 @@
             <!-- Example for a single product -->
             <div class="flex items-center justify-between border-b border-gray-300 py-4">
                 <div class="flex items-center">
-                    <img src="/images/IMG-20231221-WA0001.jpg" alt="Product Image" class="w-16 h-16 object-cover rounded-md mr-4">
+                    <img src=" <%= details.orderDetails[0].pImage %>" alt="Product Image" class="w-16 h-16 object-cover rounded-md mr-4">
                     <div>
-                        <p class="text-lg font-semibold">Product Name</p>
-                        <p class="text-gray-600">Quantity: 1</p>
+                        <p class="text-lg font-semibold"> <%= details.orderDetails[0].pName %></p>
+                        <p class="text-gray-600">Quantity:  <%= details.orderDetails[0].quantity %></p>
                     </div>
                 </div>
-                <p class="text-lg font-semibold">$49.99</p>
+                <p class="text-lg font-semibold"> <%= details.orderDetails[0].price %></p>
             </div>
             <!-- Repeat the above block for each item in the order -->
 
             <!-- Order Total -->
             <div class="flex justify-end mt-8">
-                <p class="text-2xl font-semibold">Order Total: $140.00</p>
+                <p class="text-2xl font-semibold">Order Total:  <%= details.orderDetails[0].price  *  details.orderDetails[0].quantity %></p>
             </div>
         </div>
     </div>
@@ -133,57 +129,36 @@
                 </script> OtronMart E-Commerce. All rights reserved.</p>
         </footer>
         <script>
+            const orderStatusElement = document.getElementById('orderStatus').innerText;
              function goBack() {
-            window.history.back();
-        }
-            // Simulating dynamic order status change (replace this with actual data retrieval)
-            // setTimeout(() => {
-            //     const orderStatusElement = document.getElementById('orderStatus');
-            //     orderStatusElement.innerHTML = 'Status: <span class="text-green-500 font-semibold">Shipped</span>';
-            // }, 10000); 
+                window.history.back();
+            }
 
-            // Simulating dynamic order status change and progress update (replace this with actual data retrieval)
-            let progressValue = 0;
-            // const orderStatusElement = document.getElementById('orderStatus');
-            // const orderProgressBar = document.getElementById('orderProgressBar');
-
-            // function updateOrderStatus(status, percentage) {
-            //     orderStatusElement.innerHTML = `<span class="text-${status.color}-500 font-semibold">${status.text}</span>`;
-            //     orderProgressBar.value = percentage;
-            // }
+            if(orderStatusElement === 'Cancelled'){
+                updateOrderStatus({ text: 'Cancelled', color: 'red' }, 100);
+            }
+            if(orderStatusElement === 'Delivered'){
+                updateOrderStatus({ text: 'Delivered', color: 'purple' }, 100);
+            }
+            if(orderStatusElement === 'Shipped'){
+                updateOrderStatus({ text: 'Shipped', color: 'green' }, 66);
+            }
+            if(orderStatusElement === 'Ordered'){
+                updateOrderStatus({ text: 'Ordered', color: 'blue' }, 33);
+            }
 
             function updateOrderStatus(status, progress) {
-                const orderStatusElement = document.getElementById('orderStatus');
-                const orderProgressBar = document.getElementById('orderProgressBar');
-
-                orderStatusElement.innerHTML = `<span class="font-semibold">${status.text}</span>`;
-                orderProgressBar.value = progress;
+                const progressBar = document.querySelector('#orderProgressBar');
+                progressBar.value = progress;
 
                 // Conditionally set the color based on the status
-                if (status.toLowerCase() === 'cancelled') {
-                    orderProgressBar.classList.add('bg-red-500');
-                } else {
-                    // Reset to default color (if previously set to red)
-                    orderProgressBar.classList.remove('bg-red-500');
+                if (status.text === 'Cancelled') {
+                    progressBar.classList.remove('bg-green-500');
+                    progressBar.classList.add('bg-red-500');
                 }
             }
 
-            // Simulate order progress
-            setTimeout(() => {
-                updateOrderStatus({ text: 'Ordered', color: 'blue' }, 25);
-            }, 0);
-
-            setTimeout(() => {
-                updateOrderStatus({ text: 'Shipped', color: 'green' }, 50);
-            }, 15000);
-
-            setTimeout(() => {
-                updateOrderStatus({ text: 'Delivered', color: 'purple' }, 75);
-            }, 30000);
-
-            setTimeout(() => {
-                updateOrderStatus({ text: 'Cancelled', color: 'red' }, 100);
-            }, 50000);
+        
         </script>
     
     </div>

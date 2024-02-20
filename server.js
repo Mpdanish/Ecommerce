@@ -11,7 +11,6 @@ import "dotenv/config"
 const app = express();
 
 const PORT = process.env.PORT || 8080;
-const __dirname = path.resolve();
 
 app.use(
     session({
@@ -38,8 +37,9 @@ app.use(express.urlencoded({extended: true}));
 
 // set view engine
 app.set('view engine', 'ejs');
-// app.set('views' ,path.resolve(__dirname, "views/ejs"));j
+// app.set('views' ,path.resolve(__dirname, "views/ejs"));
 
+const __dirname = path.resolve();
 app.use(express.static(__dirname + "/assets"));
 
 // load routers

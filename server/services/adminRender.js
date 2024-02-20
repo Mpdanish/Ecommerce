@@ -3,6 +3,7 @@ import "dotenv/config";
 import Productdb from "../model/productSchema.js";
 import Categorydb from "../model/categorySchema.js";
 import Userdb from "../model/userSchema.js";
+import Orderdb from "../model/orderSchema.js";
 
 const adminEmail = process.env.ADMIN_ID;
 const adminPassword = process.env.ADMIN_PASS;
@@ -35,7 +36,6 @@ export function isAdmin(req, res) {
   }
 }
 
-
 export function logoutAdmin(req, res) {
   try {
     req.session.destroy();
@@ -67,7 +67,7 @@ export async function adminUser(req, res) {
 
 export async function adminProduct(req, res) {
   try {
-    const product = await Productdb.find().populate('category');
+    const product = await Productdb.find().populate("category");
     res.status(200).render("adminProducts.ejs", { product });
   } catch (error) {
     console.error(error);
@@ -77,7 +77,7 @@ export async function adminProduct(req, res) {
 
 export async function adminDeletedProduct(req, res) {
   try {
-    const product = await Productdb.find().populate('category');
+    const product = await Productdb.find().populate("category");
     res.status(200).render("adminDeletedProducts.ejs", { product });
   } catch (error) {
     console.error(error);
@@ -106,9 +106,26 @@ export async function adminEditProduct(req, res) {
   }
 }
 
-export function adminOrder(req, res) {
+export async function adminOrder(req, res) {
   try {
-    res.status(200).render("adminOrders.ejs");
+    const orders = await Orderdb.aggregate([
+      {
+        $unwind: "$orderDetails",
+      },
+      {
+        $lookup: {
+          from: Userdb.collection.name,
+          localField: "userId",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      {
+        $unwind: "$userDetails",
+      },
+    ]);
+
+    res.status(200).render("adminOrders.ejs", { orders });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -127,7 +144,7 @@ export async function adminCategory(req, res) {
 
 export async function adminEditCategory(req, res) {
   try {
-    const category = await Categorydb.findOne({_id: req.params.id});
+    const category = await Categorydb.findOne({ _id: req.params.id });
     // console.log(category);
     res.status(200).render("adminEditCategory.ejs", { category });
   } catch (error) {

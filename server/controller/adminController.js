@@ -2,6 +2,7 @@ import Userdb from "../model/userSchema.js";
 import Categorydb from "../model/categorySchema.js";
 import Productdb from "../model/productSchema.js";
 import cloudinaryUploadImage from "../helper/cloudinary.js";
+import Orderdb from "../model/orderSchema.js";
 
 export async function adminUsers(req, res) {
   try {
@@ -154,7 +155,7 @@ export async function addproduct(req, res) {
 
     if ( !name || !description || !price || !stock || !ImageArr || !category ) {
       return res
-        .status(401)
+        .status(400)
         .json({ errStatus: true, message: "Content cannot be empty" });
     }
 
@@ -300,4 +301,27 @@ export async function restoreProduct(req, res) {
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
+}
+
+export async function updateorder(req,res) {
+  try {
+
+    const { orderId, orderStatus } = req.body;
+    console.log(req.body);
+    const data = await Orderdb.aggregate([
+      {
+        $unwind: "$orderDetails"
+      }
+    ])
+    await Orderdb.updateOne({"orderDetails._id":orderId},{$set:{"orderDetails.$.orderStatus":orderStatus}})
+
+    
+    res.status(200).json({ message: "Successfully Changed!" });
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+    
+  }
+  
 }

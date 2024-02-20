@@ -4,7 +4,8 @@ import Cartdb from "../model/cartSchema.js";
 import mongoose from "mongoose";
 import Userdb from "../model/userSchema.js";
 import Addressdb from "../model/addressSchema.js";
-import Categorydb, {  } from "../model/categorySchema.js";
+import Categorydb from "../model/categorySchema.js";
+import Orderdb from "../model/orderSchema.js";
 
 //Register User Page
 export function register(req, res) {
@@ -18,10 +19,8 @@ export function register(req, res) {
 
 export function login(req, res) {
   try {
-    req.session.emailIsValid = false;
-    res
-      .status(200)
-      .render("userLogin.ejs", { isValidate: req.session.isValidate });
+    req.session.status = true;
+    res.status(200).render("userLogin.ejs");
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -89,69 +88,11 @@ export async function editaddress(req, res) {
   }
 }
 
-// export async function profile(req, res) {
-//   try {
-//     const user = await Userdb.findById({ _id: req.session.userId });
-//     res.status(200).render("prosample.ejs", { user });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// }
-
-// export async function homepage1(req, res) {
-//   try {
-//     const product = await Productdb.find();
-//     const userid = req.session.userId;
-//     const user = await Userdb.findById(userid);
-//     res.status(200).render("homePage1.ejs", { product , user });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// }
-
-// export async function logoutUser(req, res) {
-//   try {
-//     req.session.destroy();
-//     const product = await Productdb.find();
-//     res.status(200).render("homePage.ejs", { product });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// }
-
-// //logout for home user
-// export function logout  (req, res)  {
-//   req.session.isauth = false;
-//   axios.get(`http://localhost:${process.env.PORT}/api/logout?email=${req.query.email}`).then()
-//   req.session.email = ''
-//   res.redirect("/login");
-// };
-
-//   export async function UserProduct  (req, res)  {
-//     const data=await Productdb.find()
-//     res.render('homePage.ejs',{product:data});
-
-// };
-
-// export async function showprofile(req, res) {
-//   try {
-//     const data = await Userdb.findOne({ _id: req.params.id });
-//     res.status(200).render("prosample.ejs", { user: data });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// }
-
 export async function productpage(req, res) {
   try {
     const data = await Productdb.findOne({ _id: req.params.id });
     const userid = req.session.userId;
 
-    console.log(userid);
     const userdata = await Userdb.findById(userid);
     res
       .status(200)
@@ -186,16 +127,21 @@ export async function cart(req, res) {
       },
     ]);
 
-    // res.status(200).render("userCart.ejs", { products });
-    res.status(200).render("cart.ejs", { products });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-}
+    console.log(products);
 
-export async function checkout(req, res) {
-  try {
+    // const sum = products[0].products.quantity * products[0].productsDetails.price
+    const sum = products.reduce((total, product) => {
+      // Ensure product and productDetails exist
+      if (product.products && product.productsDetails) {
+        total += product.products.quantity * product.productsDetails.price;
+      }
+      return total;
+    }, 0);
+
+    // console.log(sum, "sum");
+
+    // res.status(200).render("userCart.ejs", { products });
+    res.status(200).render("cart.ejs", { products, sum });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -204,7 +150,37 @@ export async function checkout(req, res) {
 
 export async function orderslist(req, res) {
   try {
-    res.render("ordersList.ejs");
+    const cartItems = await Cartdb.aggregate([
+      {
+        $match: { userId: new mongoose.Types.ObjectId(req.session.userId) },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $lookup: {
+          from: Productdb.collection.name,
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "productsDetails",
+        },
+      },
+      {
+        $unwind: "$productsDetails",
+      },
+    ]);
+
+    console.log(cartItems, "wert");
+
+    const userid = req.session.userId;
+    const orders = await Orderdb.aggregate([
+      {
+        $match: { userId: new mongoose.Types.ObjectId(userid) },
+      },
+      { $unwind: "$orderDetails" },
+    ]);
+    console.log(orders);
+    res.render("ordersList.ejs", { orders });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -213,7 +189,14 @@ export async function orderslist(req, res) {
 
 export async function orderinfo(req, res) {
   try {
-    res.render("orderInfo.ejs");
+    console.log(req.params.id);
+    const proid = req.params.id;
+    const details = await Orderdb.findOne(
+      { "orderDetails._id": new mongoose.Types.ObjectId(proid) },
+      { "orderDetails.$": 1, _id: 1, userId: 1 }
+    );
+    console.log(details, "123456");
+    res.render("orderInfo.ejs", { details });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");

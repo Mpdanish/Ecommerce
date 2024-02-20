@@ -193,13 +193,58 @@ export async function logoutUser(req, res) {
   });
 }
 
+export async function changepassowrd(req, res) {
+  const { currentPassword, newPassword } = req.body;
+  console.log(req.body);
+
+  try {
+    // Find user by email
+    const user = await Userdb.findOne({ email: req.session.email });
+
+    // Check if user exists
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    if (!currentPassword) {
+      return res.status(400).json({ error: "Required Current Password" });
+    }
+    // Check if current password is correct
+
+    const passwordmatch = await bcrypt.compare(currentPassword, user.password);
+    if (!passwordmatch) {
+      return res.status(400).json({ error: "Invalid current password" });
+    }
+
+    // Hash the password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update user's password
+    user.password = hashedNewPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 export async function addAddress(req, res) {
   try {
     let { name, phonenumber, pincode, locality, district, state, addressType } =
       req.body;
     (phonenumber = parseInt(phonenumber)), (pincode = parseInt(pincode));
 
-    if (!name || !phonenumber || !pincode || !locality || !district || !state || !addressType) {
+    if (
+      !name ||
+      !phonenumber ||
+      !pincode ||
+      !locality ||
+      !district ||
+      !state ||
+      !addressType
+    ) {
       return res
         .status(401)
         .json({ errStatus: true, message: "Content cannot be empty" });
@@ -239,7 +284,15 @@ export async function updateaddress(req, res) {
     const newAdd = await Addressdb.updateOne(
       { _id: req.session.addressId },
       {
-        $set: {name,phonenumber,pincode,locality,district,state,addressType},
+        $set: {
+          name,
+          phonenumber,
+          pincode,
+          locality,
+          district,
+          state,
+          addressType,
+        },
       }
     );
 
@@ -252,17 +305,25 @@ export async function updateaddress(req, res) {
   }
 }
 
+export async function deleteaddress(req, res) {
+  try {
+    const id = req.params.id;
+    console.log(id, "address id");
+    await Addressdb.findByIdAndDelete(id);
+    res.status(200).json({ message: "Address deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 export async function updateprofile(req, res) {
   try {
     const { name, email, phoneNumber } = req.body;
-
     // Update the profile in the database
     const result = await Userdb.updateOne(
       { _id: req.session.userId },
       { $set: { name, email, phoneNumber } }
     );
-
-    console.log(result);
 
     res.json({ success: true, message: "Profile updated successfully" });
   } catch (error) {
@@ -271,12 +332,12 @@ export async function updateprofile(req, res) {
   }
 }
 
-export async function filterproduct(req,res){
+export async function filterproduct(req, res) {
   try {
     const selectedCategory = req.query.category;
     let filteredProducts;
 
-    if (selectedCategory && selectedCategory !== 'All') {
+    if (selectedCategory && selectedCategory !== "All") {
       filteredProducts = await Productdb.find({ category: selectedCategory });
     } else {
       filteredProducts = await Productdb.find();
@@ -284,8 +345,7 @@ export async function filterproduct(req,res){
 
     res.json(filteredProducts);
   } catch (error) {
-    console.error('Error fetching products:', error);
-    res.status(500).send('Internal Server Error');
+    console.error("Error fetching products:", error);
+    res.status(500).send("Internal Server Error");
   }
 }
-

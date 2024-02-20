@@ -16,6 +16,8 @@ import {
 } from "../services/userRender.js";
 import {
   addAddress,
+  changepassowrd,
+  deleteaddress,
   filterproduct,
   isUser,
   logoutUser,
@@ -25,28 +27,29 @@ import {
   updateprofile,
 } from "../controller/userController.js";
 
-import { addToCart, removeFromCart, removeproductfromcart } from "../controller/cartController.js";
-// import userAuth from '../middleware/authMiddleware.js';
+import { addToCart, reloadTotalAmount, removeFromCart, removeproductfromcart, updatequantity } from "../controller/cartController.js";
+import { cancelOrder, checkaddress, checkout, placeorder, returnOrder } from "../controller/orderController.js";
+import { checkBlocked } from "../middleware/userAuth.js";
 
 const router = Router();
 
-router.get("/", homepage);
+router.get("/", homepage); //checkBlocked
 // router.get("/homepage1", homepage1);
 
 router.get("/login", login);
 router.get("/logout",logoutUser);
 router.get("/register", register);
-router.get("/product/:id", productpage);
-router.get("/cart", cart);
-router.get("/checkout");
-router.get("/profile", profile);
-router.get("/address", showaddress);
-router.get("/addaddress", addaddress)
-router.get("/editaddress/:id", editaddress );
+router.get("/product/:id",checkBlocked, productpage);
+router.get("/cart",checkBlocked, cart);
+router.get("/profile",checkBlocked, profile);
+router.get("/address",checkBlocked, showaddress);
+router.get("/addaddress",checkBlocked, addaddress)
+router.get("/editaddress/:id",checkBlocked, editaddress );
 router.get("/otp", otppage );
-router.get("/orders", orderslist)
-router.get("/orderinformation", orderinfo)
-router.get("/products",productlist)
+router.get("/orders",checkBlocked, orderslist)
+router.get("/orderinformation/:id",checkBlocked, orderinfo)
+router.get("/products",checkBlocked,productlist)
+router.get("/checkout",checkBlocked,checkout)
 
 
 //API
@@ -56,12 +59,18 @@ router.post("/api/login", isUser);
 router.post("/api/addtocart", addToCart);
 router.post("/api/removeFromCart", removeFromCart );
 router.post("/api/addaddress", addAddress );
+router.delete("/deleteaddress/:id",deleteaddress)
 router.post("/updateprofile",updateprofile );
 router.put("/api/updateaddress",updateaddress )
 router.delete("/removeProduct", removeproductfromcart)
 router.get('/api/products',filterproduct)
-
-
+router.get('/getUpdatedTotalAmount',reloadTotalAmount)
+router.get('/checkaddress',checkaddress)
+router.post('/placeorder',placeorder)
+router.post('/cancelOrder',cancelOrder)
+router.post('/returnOrder',returnOrder)
+router.post('/changepassword',changepassowrd)
+router.post("/updatequantity",updatequantity)
 router.post("/verifyotp", otp);
 
 export default router;

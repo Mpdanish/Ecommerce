@@ -30,6 +30,7 @@ import {
   restoreProduct,
   deleteProduct,
   updatecategory,
+  updateorder,
 } from "../controller/adminController.js";
 
 const router = Router();
@@ -64,6 +65,7 @@ router.post("/api/deleteproduct", deleteProduct);
 router.post("/api/restoreproduct", restoreProduct);
 router.post("/api/addproduct", addproduct);
 router.post("/api/showproduct", showproduct);
+router.post("/updateOrderStatus",updateorder)
 
 router.put("/api/updateproduct/:id", updateproduct);
 router.put("/api/updatecategory/:id", updatecategory);
