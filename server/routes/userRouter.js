@@ -13,9 +13,12 @@ import {
   profile,
   register,
   showaddress,
+  successpage,
+  wallet,
 } from "../services/userRender.js";
 import {
   addAddress,
+  addToWallet,
   changepassowrd,
   deleteaddress,
   filterproduct,
@@ -23,12 +26,14 @@ import {
   logoutUser,
   newuser,
   otp,
+  resendOtp,
   updateaddress,
   updateprofile,
+  walletRazorpayVerification,
 } from "../controller/userController.js";
 
 import { addToCart, reloadTotalAmount, removeFromCart, removeproductfromcart, updatequantity } from "../controller/cartController.js";
-import { cancelOrder, checkaddress, checkout, placeorder, returnOrder } from "../controller/orderController.js";
+import { cancelOrder, checkaddress, checkout, orderRazorpayVerification, placeorder, returnOrder } from "../controller/orderController.js";
 import { checkBlocked } from "../middleware/userAuth.js";
 
 const router = Router();
@@ -39,17 +44,20 @@ router.get("/", homepage); //checkBlocked
 router.get("/login", login);
 router.get("/logout",logoutUser);
 router.get("/register", register);
-router.get("/product/:id",checkBlocked, productpage);
-router.get("/cart",checkBlocked, cart);
+router.get("/successpage",checkBlocked, successpage)
+router.get("/product/:id", productpage);
+router.get("/cart", cart);
 router.get("/profile",checkBlocked, profile);
 router.get("/address",checkBlocked, showaddress);
 router.get("/addaddress",checkBlocked, addaddress)
 router.get("/editaddress/:id",checkBlocked, editaddress );
 router.get("/otp", otppage );
-router.get("/orders",checkBlocked, orderslist)
-router.get("/orderinformation/:id",checkBlocked, orderinfo)
-router.get("/products",checkBlocked,productlist)
-router.get("/checkout",checkBlocked,checkout)
+router.get("/orders", checkBlocked, orderslist)
+router.get("/orderinformation/:id", checkBlocked, orderinfo)
+router.get("/products", productlist)
+router.get("/checkout",checkBlocked, checkout)
+router.get("/wallet",checkBlocked, wallet)
+
 
 
 //API
@@ -72,5 +80,9 @@ router.post('/returnOrder',returnOrder)
 router.post('/changepassword',changepassowrd)
 router.post("/updatequantity",updatequantity)
 router.post("/verifyotp", otp);
+router.post("/resendotp", resendOtp)
+router.post("/verifyrazorpay", orderRazorpayVerification)
+router.post("/addToWallet",addToWallet)
+router.post("/walletRazorpay",walletRazorpayVerification)
 
 export default router;

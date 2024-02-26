@@ -1,0 +1,76 @@
+<%- include('include/_header') %>
+<%- include('include/_nav') %> 
+<%- include('include/_topheader') %> 
+
+
+    <!-- My CSS -->
+    <link rel="stylesheet" href="/css/adminAddOffer.css" />
+
+
+<!-- CONTENT -->
+<section id="content">
+
+    <!-- MAIN -->
+    <main>
+      <div class="head-title">
+        <div class="left">
+          <h1>Add Offer</h1>
+        </div>
+      </div>
+
+      <div class="manageOptions">
+        <a href="/adminOffers">
+          <button>Go Back</button>
+        </a>
+      </div>
+
+      <div class="table-data justify-content-center">
+        <div id="addProduct" class="order">
+          <form class="addProductForm" action="/adminAddOffer" method="post">
+              <div class="d-flex align-items-center formRow">
+                  <div class="w-50 <%#= errMesg?.productName?'errDiv':'' %>">
+                      <label for="productName" class="d-block">Product</label>
+                      <input type="text" name="productName" value="<%#= savedDetails?.productName?savedDetails.productName:'' %>">
+                      <p class="err"><%#= errMesg?.productName %></p>
+                  </div>
+                  <div class="w-50 <%#= errMesg?.category?'errDiv':'' %>">
+                      <label for="category" class="d-block">Category</label>
+                      <select name="category">
+                        <option value="" hidden>---select a category---</option>
+                        <option value="All">All</option>
+                        <%# for( let i = 0; i < category.length; i++ ) { %>
+                            <option class="text-capitalize" value="<%#= category[i].name %>" <%#= (savedDetails?.category === category[i].name)?'selected':'' %>><%#= category[i].name %></option>
+                        <%# } %>
+                      </select>
+                      <p class="err"><%#= errMesg?.category %></p>
+                  </div>
+              </div>
+
+              <div class="d-flex align-items-center formRow">
+                  <div class="w-50 <%#= errMesg?.discount?'errDiv':'' %>">
+                      <label for="discount" class="d-block">Discount</label>
+                      <input type="number" name="discount" value="<%#= savedDetails?.discount?savedDetails.discount:'' %>">
+                      <p class="err"><%#= errMesg?.discount %></p>
+                  </div>
+                  <div class="w-50 <%#= errMesg?.expiry?'errDiv':'' %>">
+                    <label for="expiry" class="d-block">Offer Expiry</label>
+                    <input type="date" name="expiry" value="<%#= savedDetails?.expiry?savedDetails?.expiry:'' %>">
+                    <p class="err"><%#= errMesg?.expiry %></p>
+                  </div>
+              </div>
+
+              <div class="d-flex justify-content-center">
+                  <button type="submit" class="addBtn" id="addBtn">Add Offer</button>
+              </div>
+          </form>
+        </div>
+      </div>
+    </main>
+    <!-- MAIN -->
+  </section>
+  <!-- CONTENT -->
+
+  <script src="/js/adminAddOffer.js"></script>
+
+
+<%- include('include/_footer') %>

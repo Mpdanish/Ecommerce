@@ -1,81 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
-  <title>OTP Entry</title>
-  <style>
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background-color: #f8f9fa;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <title>OTP Entry</title>
+    <style>
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #f8f9fa;
+      }
 
-    .otp-input {
-      width: 40px;
-      text-align: center;
-      margin: 0 5px;
-    }
+      .otp-input {
+        width: 40px;
+        text-align: center;
+        margin: 0 5px;
+      }
 
-    .otp-container {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-    }
-  </style>
-</head>
-<body>
+      .otp-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container text-center">
+      <h2>Enter OTP</h2>
+      <% if (typeof error !== 'undefined') { %>
+      <div class="alert alert-danger"><%= error %></div>
+      <% } %>
 
-  <div class="container text-center">
-    <h2>Enter OTP</h2>
-    <% if (typeof error !== 'undefined') { %>
-      <div class="alert alert-danger">
-        <%= error %>
-      </div>
-    <% } %>
+      <p>We've sent a 6-digit OTP to your email : <%= email %>. OTP expires within 60 seconds.</p>
 
-    <p>We've sent a 6-digit OTP to your Email Address.</p>
+      <form id="otpForm" action="/verifyotp" method="POST">
+        <div class="otp-container">
+          <input
+            type="text"
+            class="form-control otp-input"
+            name="a"
+            maxlength="1"
+            pattern="\d*"
+            inputmode="numeric"
+            required
+            oninput="moveToNextOrPreviousField(this, event)"
+          />
+          <input
+            type="text"
+            class="form-control otp-input"
+            name="b"
+            maxlength="1"
+            pattern="\d*"
+            inputmode="numeric"
+            required
+            oninput="moveToNextOrPreviousField(this, event)"
+          />
+          <input
+            type="text"
+            class="form-control otp-input"
+            name="c"
+            maxlength="1"
+            pattern="\d*"
+            inputmode="numeric"
+            required
+            oninput="moveToNextOrPreviousField(this, event)"
+          />
+          <input
+            type="text"
+            class="form-control otp-input"
+            name="d"
+            maxlength="1"
+            pattern="\d*"
+            inputmode="numeric"
+            required
+            oninput="moveToNextOrPreviousField(this, event)"
+          />
+          <input
+            type="text"
+            class="form-control otp-input"
+            name="e"
+            maxlength="1"
+            pattern="\d*"
+            inputmode="numeric"
+            required
+            oninput="moveToNextOrPreviousField(this, event)"
+          />
+          <input
+            type="text"
+            class="form-control otp-input"
+            name="f"
+            maxlength="1"
+            pattern="\d*"
+            inputmode="numeric"
+            required
+            oninput="moveToNextOrPreviousField(this, event)"
+          />
+        </div>
 
-    <form id="otpForm" action="/verifyotp" method="POST">
-      <div class="otp-container">
-  
-          <input type="text" class="form-control otp-input" name="a" maxlength="1" pattern="\d*" inputmode="numeric" required oninput="moveToNextOrPreviousField(this, event)">
-          <input type="text" class="form-control otp-input" name="b" maxlength="1" pattern="\d*" inputmode="numeric" required oninput="moveToNextOrPreviousField(this, event)">
-          <input type="text" class="form-control otp-input" name="c" maxlength="1" pattern="\d*" inputmode="numeric" required oninput="moveToNextOrPreviousField(this, event)">
-          <input type="text" class="form-control otp-input" name="d" maxlength="1" pattern="\d*" inputmode="numeric" required oninput="moveToNextOrPreviousField(this, event)">
-          <input type="text" class="form-control otp-input" name="e" maxlength="1" pattern="\d*" inputmode="numeric" required oninput="moveToNextOrPreviousField(this, event)">
-          <input type="text" class="form-control otp-input" name="f" maxlength="1" pattern="\d*" inputmode="numeric" required oninput="moveToNextOrPreviousField(this, event)">
+        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+      </form>
+      <!-- Countdown Timer -->
+      <div id="countdownTimer" class="mt-2"></div>
+      <!-- Resend OTP Button -->
+      <button id="resendOTPBtn" class="btn btn-secondary mt-3" disabled>
+        Resend OTP
+      </button>
+    </div>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.4/axios.min.js"
+      integrity="sha512-ANd7ZJmixP2T0hxOP4bS6hkci01fxyrQSyRdaY7IsWq1WlKsD0WwWBDVDZbnMR7CJZVKCTkDx/q5D5n2C2C+vg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
 
-      </div>
+    <script>
+      function moveToNextOrPreviousField(currentInput, event) {
+        const maxLength = parseInt(currentInput.getAttribute("maxlength"));
+        const inputValue = currentInput.value;
 
-      <button type="submit" class="btn btn-primary mt-3">Submit</button>
-    </form>
-  </div>
+        if (event.key === "Backspace" && inputValue.length === 0) {
+          const previousField = currentInput.previousElementSibling;
 
-  <script>
-    function moveToNextOrPreviousField(currentInput, event) {
-      const maxLength = parseInt(currentInput.getAttribute('maxlength'));
-      const inputValue = currentInput.value;
+          if (previousField) {
+            previousField.focus();
+            event.preventDefault();
+          }
+        } else if (inputValue.length === maxLength) {
+          const nextField = currentInput.nextElementSibling;
 
-      if (event.key === 'Backspace' && inputValue.length === 0) {
-        const previousField = currentInput.previousElementSibling;
-
-        if (previousField) {
-          previousField.focus();
-          event.preventDefault();
-        }
-      } else if (inputValue.length === maxLength) {
-        const nextField = currentInput.nextElementSibling;
-
-        if (nextField) {
-          nextField.focus();
+          if (nextField) {
+            nextField.focus();
+          }
         }
       }
-    }
-  </script>
 
-</body>
+
+       // Function to enable the Resend OTP button after the timer ends
+    function enableResendOTPButton() {
+      document.getElementById("resendOTPBtn").disabled = false;
+    }
+
+    // Start or resume the countdown timer
+    function startCountdown() {
+      const startTime = localStorage.getItem("startTime");
+      const currentTime = new Date().getTime();
+      const elapsedTime = (currentTime - startTime) / 1000;
+      const remainingTime = 60 - elapsedTime;
+
+      if (remainingTime > 0) {
+        updateCountdown(remainingTime);
+      } else {
+        enableResendOTPButton();
+        document.getElementById("countdownTimer").innerText = "";
+      }
+    }
+
+    // Update the countdown timer display
+    function updateCountdown(remainingTime) {
+      const countdownTimer = document.getElementById("countdownTimer");
+      countdownTimer.innerText = `Resend OTP in ${Math.floor(remainingTime)} seconds`;
+
+      if (remainingTime > 0) {
+        setTimeout(() => updateCountdown(remainingTime - 1), 1000);
+      } else {
+        enableResendOTPButton();
+        countdownTimer.innerText = "";
+      }
+    }
+
+      document
+        .getElementById("resendOTPBtn")
+        .addEventListener("click", function () {
+          // Send POST request to /resendotp endpoint
+          axios
+            .post("/resendotp")
+            .then(function (response) {
+              // Handle successful response, if needed
+              console.log(response);
+              // alert('OTP Resent Successfully!');
+            })
+            .catch(function (error) {
+              // Handle error
+              console.error("Error resending OTP:", error);
+              // alert('Failed to resend OTP. Please try again later.');
+            });
+        });
+
+        // Initialize or resume the countdown timer on page load
+    window.onload = function() {
+      startCountdown();
+      localStorage.setItem("startTime", new Date().getTime());
+    };
+    </script>
+  </body>
 </html>

@@ -3,7 +3,15 @@ import Cartdb from "../model/cartSchema.js";
 import Orderdb from "../model/orderSchema.js";
 import Productdb from "../model/productSchema.js";
 import mongoose from "mongoose";
+import "dotenv/config";
 import Userdb from "../model/userSchema.js";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+
+var instance = new Razorpay({
+  key_id: process.env.rzp_key_id,
+  key_secret: process.env.rzp_key_secret,
+});
 
 export async function checkout(req, res) {
   try {
@@ -88,10 +96,29 @@ export async function placeorder(req, res) {
     const pricee = priceMatch ? parseInt(priceMatch[1]) : 0;
     const quantityy = quantityMatch ? parseInt(quantityMatch[1]) : 0;
 
+    
+
     // Check if address and paymentMethod are provided
     if (!paymentMethod || !address || !totalsum) {
       throw new Error("Payment method, address, and total sum are required.");
     }
+
+    if (paymentMethod === "Razorpay") {
+      var instance = new Razorpay({
+        key_id: process.env.rzp_key_id,
+        key_secret: process.env.rzp_key_secret,
+      });
+
+      var options = {
+        amount: pricee * 100, // amount in the smallest currency unit
+        currency: "INR",
+        receipt: "order_rcptid_11",
+      };
+      instance.orders.create(options, function (err, order) {
+        return res.json({ order });
+      });
+    }
+
 
     let user = req.session.userId;
 
@@ -123,6 +150,7 @@ export async function placeorder(req, res) {
       },
     ]);
 
+
     const orderItems = cartItems.map((element) => {
       const orderItem = {
         productId: element.products.productId,
@@ -151,23 +179,60 @@ export async function placeorder(req, res) {
     await newOrder.save();
 
     await clearUserCart(req.session.userId);
+    
+    if (paymentMethod !== "Razorpay") {
+      res.status(200).json({ message: "Order placed successfully!" });
+    }
 
-    res.status(200).json({ message: "Order placed successfully!" });
+
+
+    
   } catch (error) {
     console.error("Error saving order:", error);
     res.status(400).json({ error: error.message });
   }
 }
 
+export async function orderRazorpayVerification(req, res) {
+  try {
+    const instance = new Razorpay({
+      key_id: process.env.rzp_key_id,
+      key_secret: process.env.rzp_key_secret,
+    });
+
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
+      req.body;
+
+    const body_data = razorpay_order_id + "|" + razorpay_payment_id;
+
+    const generated_signature = crypto
+      .createHmac("sha256", process.env.rzp_key_secret)
+      .update(body_data)
+      .digest("hex");
+
+    const isValid = generated_signature === razorpay_signature;
+    if (isValid) {
+      res.status(200).redirect("/successpage");
+    }
+  } catch (error) {
+    // If there's an error, send an error response
+    console.error("Error while verifying", error);
+    res.status(500).send("Error verifiying razorpay payment");
+  }
+}
+
 export async function cancelOrder(req, res) {
   const orderId = req.body.orderId;
-  console.log(orderId,"idd");
+  console.log(orderId, "idd");
 
   try {
     // Find the order by ID
-    const order = await Orderdb.findOneAndUpdate({"orderDetails._id": orderId}, {$set:{"orderDetails.$.orderStatus": "Cancelled"}},{projection: {"orderDetails.$": 1}});
-    console.log(order,"orderr");
-    
+    const order = await Orderdb.findOneAndUpdate(
+      { "orderDetails._id": orderId },
+      { $set: { "orderDetails.$.orderStatus": "Cancelled" } },
+      { projection: { "orderDetails.$": 1 } }
+    );
+    console.log(order, "orderr");
 
     // Add the quantity back to product stock
     const product = await Productdb.findOneAndUpdate(
@@ -175,7 +240,7 @@ export async function cancelOrder(req, res) {
       { $inc: { quantity: order.orderDetails[0].quantity } }
     );
 
-    console.log(product,"prodct");
+    console.log(product, "prodct");
 
     // Save the updated order
     // await res.save();
@@ -191,13 +256,16 @@ export async function cancelOrder(req, res) {
 
 export async function returnOrder(req, res) {
   const orderId = req.body.orderId;
-  console.log(orderId,"idd");
+  console.log(orderId, "idd");
 
   try {
     // Find the order by ID
-    const order = await Orderdb.findOneAndUpdate({"orderDetails._id": orderId}, {$set:{"orderDetails.$.orderStatus": "Returned"}},{projection: {"orderDetails.$": 1}});
-    console.log(order,"orderr");
-    
+    const order = await Orderdb.findOneAndUpdate(
+      { "orderDetails._id": orderId },
+      { $set: { "orderDetails.$.orderStatus": "Returned" } },
+      { projection: { "orderDetails.$": 1 } }
+    );
+    console.log(order, "orderr");
 
     // Add the quantity back to product stock
     const product = await Productdb.findOneAndUpdate(
@@ -205,7 +273,7 @@ export async function returnOrder(req, res) {
       { $inc: { quantity: order.orderDetails[0].quantity } }
     );
 
-    console.log(product,"prodct");
+    console.log(product, "prodct");
 
     // Save the updated order
     // await res.save();

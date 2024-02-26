@@ -4,6 +4,10 @@ import Productdb from "../model/productSchema.js";
 import Addressdb from "../model/addressSchema.js";
 import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
+import Walletdb from "../model/walletSchema.js";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+import flash from "express-flash";
 
 // Function to generate a random OTP
 const generateOTP = () => {
@@ -40,9 +44,11 @@ export async function newuser(req, res) {
       otp: otp,
     });
 
+    console.log(otp);
+
     const otpInfo = await otpp.save();
     req.session.email = req.body.email;
-    console.log(otpInfo);
+
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
     // Create a new user with hashed password and save it
@@ -123,7 +129,6 @@ export async function isUser(req, res) {
 
 export async function otp(req, res) {
   try {
-    const otp = generateOTP();
     const otptyped =
       req.body.a +
       req.body.b +
@@ -135,7 +140,7 @@ export async function otp(req, res) {
     const otpDocument = await Otpdb.findOne({ email: req.session.email });
 
     if (!otpDocument) {
-      return res.status(400).send({ message: "No OTP found for the user" });
+      return res.status(400).send({ message: "OTP Expired" });
     }
 
     const storedOTP = otpDocument.otp;
@@ -152,6 +157,29 @@ export async function otp(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).send({ message: "Internal Server Error" });
+  }
+}
+
+export async function resendOtp(req, res) {
+  try {
+    const email = req.session.email;
+
+    await Otpdb.findOneAndDelete({ email: email });
+
+    // Generate a new OTP
+    const newOTP = generateOTP();
+
+    // Save the new OTP to the database
+    await Otpdb.create({ email, otp: newOTP });
+    await sendOtpEmail(email, newOTP);
+
+    console.log(`New OTP generated for ${email}: ${newOTP}`);
+
+    // Redirect back to the page with a success message or handle it as needed
+    res.send();
+  } catch (error) {
+    console.error("Error while resending OTP:", error);
+    res.status(500).send("Internal Server Error");
   }
 }
 
@@ -195,7 +223,6 @@ export async function logoutUser(req, res) {
 
 export async function changepassowrd(req, res) {
   const { currentPassword, newPassword } = req.body;
-  console.log(req.body);
 
   try {
     // Find user by email
@@ -296,8 +323,6 @@ export async function updateaddress(req, res) {
       }
     );
 
-    // console.log(newAdd);
-
     res.status(200).send(true);
   } catch (error) {
     console.error(error);
@@ -308,7 +333,6 @@ export async function updateaddress(req, res) {
 export async function deleteaddress(req, res) {
   try {
     const id = req.params.id;
-    console.log(id, "address id");
     await Addressdb.findByIdAndDelete(id);
     res.status(200).json({ message: "Address deleted successfully" });
   } catch (err) {
@@ -325,7 +349,9 @@ export async function updateprofile(req, res) {
       { $set: { name, email, phoneNumber } }
     );
 
-    res.json({ success: true, message: "Profile updated successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Profile updated successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -347,5 +373,99 @@ export async function filterproduct(req, res) {
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function addToWallet(req, res) {
+  try {
+    const { amount } = req.body;
+
+    const money = Number(amount);
+    req.session.amount = money;
+
+    var instance = new Razorpay({
+      key_id: process.env.rzp_key_id,
+      key_secret: process.env.rzp_key_secret,
+    });
+
+    var options = {
+      amount: money * 100, // amount in the smallest currency unit
+      currency: "INR",
+      receipt: "order_rcptid_11",
+    };
+
+    instance.orders.create(options, function (err, order) {
+      return res.json({ order });
+    });
+
+    const walletdb = await Walletdb.find();
+  } catch (error) {
+    console.error("Error adding to wallet:", error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function walletRazorpayVerification(req, res) {
+  try {
+    const instance = new Razorpay({
+      key_id: process.env.rzp_key_id,
+      key_secret: process.env.rzp_key_secret,
+    });
+
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
+      req.body;
+
+    const body_data = razorpay_order_id + "|" + razorpay_payment_id;
+
+    const generated_signature = crypto
+      .createHmac("sha256", process.env.rzp_key_secret)
+      .update(body_data)
+      .digest("hex");
+
+    const isValid = generated_signature === razorpay_signature;
+    if (isValid) {
+      const newTransaction = { amount: req.session.amount, type: "+ CREDIT" };
+
+      const wallet = await Walletdb.updateOne(
+        { userId: req.session.userId },
+        {
+          $push: { transactions: newTransaction },
+          $inc: { walletBalance: req.session.amount },
+        },
+        { upsert: true }
+      );
+
+      // const newTransactionAmount = req.session.amount;
+
+      // const creditTransactionsSum = await Walletdb.aggregate([
+      //   { $match: { userId: req.session.userId } },
+      //   { $unwind: "$transactions" },
+      //   { $match: { "transactions.type": "+ CREDIT" } },
+      //   { $group: { _id: null, total: { $sum: "$transactions.amount" } } },
+      // ]);
+
+      // console.log(creditTransactionsSum,"sum");
+
+      // const walletBalance =
+      //   creditTransactionsSum.length > 0 ? creditTransactionsSum[0].total : 0;
+
+      // const wallet = await Walletdb.updateOne(
+      //   { userId: req.session.userId },
+      //   {
+      //     $push: { transactions: newTransaction },
+      //     $set: { walletBalance: walletBalance + newTransactionAmount },
+      //   },
+      //   { upsert: true }
+      // );
+
+      delete req.session?.amount;
+      req.flash("success", true);
+      res.redirect("/wallet");
+    }
+  } catch (error) {
+    // If there's an error, send an error response
+    delete req.session?.amount;
+    console.error("Error while verifying", error);
+    res.status(500).send("Error verifiying razorpay payment");
   }
 }

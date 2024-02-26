@@ -7,6 +7,7 @@ import connectDB from './server/database/connection.js';
 import MongoStore from 'connect-mongo';
 // import validator from './server/validator.js';
 import "dotenv/config"
+import flash from 'express-flash';
 
 const app = express();
 
@@ -41,7 +42,7 @@ app.set('view engine', 'ejs');
 
 const __dirname = path.resolve();
 app.use(express.static(__dirname + "/assets"));
-
+app.use(flash())
 // load routers
 app.use('/', userRouter)
 app.use('/', adminRouter)

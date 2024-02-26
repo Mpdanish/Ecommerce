@@ -323,5 +323,12 @@ export async function updateorder(req,res) {
     res.status(500).send("Internal Server Error");
     
   }
-  
+}
+
+export async function getProductData(req,res) {
+  let payload = req.body.payload.trim();
+  console.log(payload);
+  let search = await Productdb.find({name: {$regex: new RegExp('^'+payload+'.*','i')}}).exec();
+  search = search.slice(0,10)
+  res.send({payload: search});
 }

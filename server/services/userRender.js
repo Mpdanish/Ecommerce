@@ -6,6 +6,7 @@ import Userdb from "../model/userSchema.js";
 import Addressdb from "../model/addressSchema.js";
 import Categorydb from "../model/categorySchema.js";
 import Orderdb from "../model/orderSchema.js";
+import Walletdb from "../model/walletSchema.js";
 
 //Register User Page
 export function register(req, res) {
@@ -38,9 +39,19 @@ export async function homepage(req, res) {
   }
 }
 
+export async function successpage(req, res) {
+  try {
+    res.status(200).render("successpage.ejs");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
 export async function otppage(req, res) {
   try {
-    res.status(200).render("otpentry.ejs");
+    const email = req.session.email;
+    res.status(200).render("otpentry.ejs", { email });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -127,8 +138,6 @@ export async function cart(req, res) {
       },
     ]);
 
-    console.log(products);
-
     // const sum = products[0].products.quantity * products[0].productsDetails.price
     const sum = products.reduce((total, product) => {
       // Ensure product and productDetails exist
@@ -137,8 +146,6 @@ export async function cart(req, res) {
       }
       return total;
     }, 0);
-
-    // console.log(sum, "sum");
 
     // res.status(200).render("userCart.ejs", { products });
     res.status(200).render("cart.ejs", { products, sum });
@@ -170,8 +177,6 @@ export async function orderslist(req, res) {
       },
     ]);
 
-    console.log(cartItems, "wert");
-
     const userid = req.session.userId;
     const orders = await Orderdb.aggregate([
       {
@@ -179,7 +184,6 @@ export async function orderslist(req, res) {
       },
       { $unwind: "$orderDetails" },
     ]);
-    console.log(orders);
     res.render("ordersList.ejs", { orders });
   } catch (error) {
     console.error(error);
@@ -189,13 +193,11 @@ export async function orderslist(req, res) {
 
 export async function orderinfo(req, res) {
   try {
-    console.log(req.params.id);
     const proid = req.params.id;
     const details = await Orderdb.findOne(
       { "orderDetails._id": new mongoose.Types.ObjectId(proid) },
       { "orderDetails.$": 1, _id: 1, userId: 1 }
     );
-    console.log(details, "123456");
     res.render("orderInfo.ejs", { details });
   } catch (error) {
     console.error(error);
@@ -213,3 +215,16 @@ export async function productlist(req, res) {
     res.status(500).send("Internal Server Error");
   }
 }
+
+export async function wallet(req, res) {
+  try {
+    const wallet = await Walletdb.find({ userId: req.session.userId });
+    console.log(wallet);
+    console.log(wallet[0].walletBalance);
+    res.render("wallet.ejs", { wallet });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+

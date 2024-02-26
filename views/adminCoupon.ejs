@@ -1,0 +1,132 @@
+<%- include('include/_header') %>
+
+<%- include('include/_nav') %>
+
+<%- include('include/_topheader') %> 
+
+<h1 style="margin-top: 20px; margin-bottom: 20px; color: rgb(35, 34, 43);">COUPON MANAGEMENT</h1>
+	<section id="main-content" style="width: 1150px;">
+
+		<div>
+			<a href="/addCoupon"><button class="btn btn-primary" style="border: none;
+            padding: 10px 20px; background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;" id="add-coupon-btn">Add Coupon</button></a>
+
+		</div>
+		<table style=" width: 100%;
+		border-collapse: collapse;
+		margin-top: 20px; ">
+			<thead>
+				<tr>
+					<th style=" padding: 15px;
+            text-align: left;   background-color: #e03636;
+            color: #ffffff;
+            border-bottom: 1px solid #ddd;">Coupon Code</th>
+					<th style=" padding: 15px;
+            text-align: left;   background-color: #e03636;
+            color: #ffffff;
+            border-bottom: 1px solid #ddd;">Discount</th>
+					<th style=" padding: 15px;
+            text-align: left;   background-color: #e03636;
+            color: #ffffff;
+            border-bottom: 1px solid #ddd;">Created Date</th>
+					<th style=" padding: 15px;
+            text-align: left;   background-color: #e03636;
+            color: #ffffff;
+            border-bottom: 1px solid #ddd;">Expiry Date</th>
+					<!-- <th style=" padding: 15px;
+            text-align: left;   background-color: #e03636;
+            color: #ffffff;
+            border-bottom: 1px solid #ddd;">Max Use</th> -->
+					<th style=" padding: 15px;
+            text-align: left;   background-color: #e03636;
+            color: #ffffff;
+            border-bottom: 1px solid #ddd;">Max Price</th>
+					<th style=" padding: 15px;
+            text-align: left;   background-color: #e03636;
+            color: #ffffff;
+            border-bottom: 1px solid #ddd;">Status</th>
+					<th style=" padding: 15px;
+            text-align: left;   background-color: #e03636;
+            color: #ffffff;
+            border-bottom: 1px solid #ddd;">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% if(typeof coupons !=='undefined' ){ %>
+					<% for (let i=0; i < coupons.length; i++){ %>
+						<tr>
+							<td style=" padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;">
+								<%= coupons[i].Code %>
+							</td>
+							<td style=" padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;">
+								<%= coupons[i].Discount %>%
+							</td>
+							<td style=" padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;">
+								<%= new Date(coupons[i].createdDate).toLocaleDateString() %>
+							</td>
+							<td style=" padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;">
+								<%= new Date(coupons[i].expiryDate).toLocaleDateString() %>
+							</td>
+							<!-- <td style=" padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;">
+								<%#= coupons[i].Maxuse %>
+							</td> -->
+							<td style=" padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;">
+								<%= coupons[i].MaxPrice %>
+							</td>
+							<% if(coupons[i].status===true) { %>
+								<td style="color: green;">
+									<h3>Active</h3>
+								</td>
+								<% } else { %>
+									<td style="color: #c82333;">
+										<h3>Expired</h3>
+									</td>
+									<% } %>
+										</td>
+
+
+
+
+										<td style=" padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;">
+											<a href="/EditCoupon?id=<%= coupons[i]._id %>"><button style="border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px; background-color: #17a2b8;
+            color: #fff;
+            transition: background-color 0.3s;" class="btn btn-info"><i class="bx bxs-edit"></i></button></a>
+											<button onclick="confirmDelete('<%= coupons[i]._id %>');" style="border: none;
+												padding: 10px 20px;
+												cursor: pointer;
+												border-radius: 5px; background-color: #dc3545;
+												color: #fff;
+												transition: background-color 0.3s;" class="btn btn-danger">
+												<i class="bx bxs-trash"></i>
+											</button>
+											
+										</td>
+						</tr>
+						<% } %>
+							<% } %>
+			</tbody>
+		</table>
+        </section>
+
+<%- include('include/_footer') %>
