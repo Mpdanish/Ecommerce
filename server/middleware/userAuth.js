@@ -8,7 +8,7 @@ export async function checkBlocked(req, res, next) {
 
     const user = await Userdb.findOne({_id: userid})
 
-    console.log(user);
+    // console.log(user);
 
     if (!userid || user.status === false) {
       req.session.destroy();

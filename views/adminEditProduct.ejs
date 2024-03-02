@@ -139,10 +139,10 @@
                 }
 
                 function deleteImage(i, productId) {
-                    console.log(productId);
+                    // console.log(productId);
                     axios.delete(`/deleteimage/${i}/${productId}`)
                         .then(response => {
-                            console.log('Image deleted successfully');
+                            // console.log('Image deleted successfully');
                             location.reload();
                         })
                         .catch(error => {

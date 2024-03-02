@@ -1,7 +1,7 @@
 import Productdb from "../model/productSchema.js";
 import "dotenv/config";
 import Cartdb from "../model/cartSchema.js";
-import mongoose from "mongoose";
+import mongoose, { isObjectIdOrHexString } from "mongoose";
 import Userdb from "../model/userSchema.js";
 import Addressdb from "../model/addressSchema.js";
 import Categorydb from "../model/categorySchema.js";
@@ -22,6 +22,15 @@ export function login(req, res) {
   try {
     req.session.status = true;
     res.status(200).render("userLogin.ejs");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export function pagenotfound(req, res) {
+  try {
+    res.status(200).render("404page.ejs");
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -101,14 +110,28 @@ export async function editaddress(req, res) {
 
 export async function productpage(req, res) {
   try {
-    const data = await Productdb.findOne({ _id: req.params.id });
-    const userid = req.session.userId;
 
-    const userdata = await Userdb.findById(userid);
-    res
-      .status(200)
-      .render("productpreview.ejs", { product: data, user: userdata });
+    if (!isObjectIdOrHexString(req.params.id)) {
+      return res.status(404).redirect("/404page");
+    } 
+
+    const product = await Productdb.findOne({
+      _id: req.params.id,
+    }).populate("offer");
+
+    if (!product) {
+      return res.status(404).redirect("/404page");
+    } 
+    
+    const userid = req.session.userId;
+      
+    const user = await Userdb.findOne({ _id: userid });
+
+    res.status(200).render("productpreview", { product, user });
+
+    
   } catch (error) {
+    console.log("err");
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
@@ -183,7 +206,9 @@ export async function orderslist(req, res) {
         $match: { userId: new mongoose.Types.ObjectId(userid) },
       },
       { $unwind: "$orderDetails" },
+      { $sort: { "orderDetails.orderDate": -1 } }
     ]);
+    // console.log(orders);
     res.render("ordersList.ejs", { orders });
   } catch (error) {
     console.error(error);
@@ -220,11 +245,9 @@ export async function wallet(req, res) {
   try {
     const wallet = await Walletdb.find({ userId: req.session.userId });
     console.log(wallet);
-    console.log(wallet[0].walletBalance);
     res.render("wallet.ejs", { wallet });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
 }
-

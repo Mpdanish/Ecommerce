@@ -44,7 +44,7 @@ export async function newuser(req, res) {
       otp: otp,
     });
 
-    console.log(otp);
+    // console.log(otp);
 
     const otpInfo = await otpp.save();
     req.session.email = req.body.email;

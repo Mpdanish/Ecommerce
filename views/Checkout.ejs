@@ -212,8 +212,7 @@
                 >
                   <div class="ml-5">
                     <span class="font-semibold">Razorpay</span>
-                    <!-- <p class="text-gray-600 text-sm">Secure online payment</p> -->
-                    <p class="text-red-600 text-sm">Under Construction</p>
+                    <p class="text-gray-600 text-sm">Secure online payment</p>
                   </div>
                 </label>
               </div>
@@ -224,6 +223,31 @@
         <!-- Order Summary -->
         <div class="mt-8 bg-white shadow-md rounded-lg p-6">
           <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+          <!-- Coupon Section -->
+          <div class="mb-4">
+            <label
+              for="couponCode"
+              class="block text-sm font-medium text-gray-700"
+              >Coupon Code</label
+            >
+            <div class="mt-1 flex rounded-md shadow-sm">
+              <input
+                type="text"
+                id="couponCode"
+                name="couponCode"
+                class="focus:ring-blue-500 focus:border-blue-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300"
+                placeholder="Enter coupon code..."
+              />
+              <button
+                id="applyCouponButton"
+                type="button"
+                class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+          <!-- End Coupon Section -->
           <div class="border-t border-b py-2">
             <div class="flex items-center justify-between">
               <p class="text-sm font-medium text-gray-700">Subtotal</p>
@@ -231,7 +255,18 @@
             </div>
             <div class="flex items-center justify-between">
               <p class="text-sm font-medium text-gray-700">Shipping</p>
-              <p class="font-semibold text-green-700">Free Shipping</p>
+              <p class="font-semibold text-blue-700">Free Shipping</p>
+            </div>
+            <!-- Coupon Discount Display -->
+            <div
+              id="couponDiscount"
+              class="flex items-center justify-between hidden"
+            >
+              <p class="text-sm font-medium text-gray-700">Coupon Discount</p>
+              <p
+                id="couponDiscountValue"
+                class="font-semibold text-green-500"
+              ></p>
             </div>
           </div>
           <div class="flex items-center justify-between">
@@ -279,7 +314,7 @@
               // Make a GET request to fetch address data
               const response = await axios.get("/checkaddress");
               const address = response.data;
-              console.log(address, "res");
+              // console.log(address, "res");
               // Show the modal
               addressModal.classList.remove("hidden");
             } catch (error) {
@@ -347,27 +382,89 @@
           });
         });
 
+        // JavaScript Functionality
+        document.addEventListener("DOMContentLoaded", function () {
+          const applyCouponButton =
+            document.getElementById("applyCouponButton");
+          const removeCouponButton =
+            document.getElementById("removeCouponButton");
+          const couponCodeInput = document.getElementById("couponCode");
+          const couponDiscountSection =
+            document.getElementById("couponDiscount");
+          const couponDiscountValue = document.getElementById(
+            "couponDiscountValue"
+          );
+
+          // Apply Coupon Button Click Event
+          applyCouponButton.addEventListener("click", function () {
+            const couponCode = couponCodeInput.value;
+            // Perform coupon validation and fetch discount from server
+            // Here you can add your logic to validate the coupon code and fetch the discount
+            // For example:
+            const discountAmount = calculateDiscount(couponCode); // You need to define calculateDiscount() function
+            if (discountAmount > 0) {
+              couponDiscountSection.classList.remove("hidden");
+              couponDiscountValue.textContent = `INR ${discountAmount}`;
+              // Update total with discount applied
+              updateTotalWithDiscount(discountAmount);
+            } else {
+              // Display error message if coupon is invalid
+              alert("Invalid coupon code. Please try again.");
+            }
+          });
+
+          // Remove Coupon Button Click Event
+          removeCouponButton.addEventListener("click", function () {
+            couponDiscountSection.classList.add("hidden");
+            couponDiscountValue.textContent = "";
+            // Update total with coupon removed
+            updateTotalWithDiscount(0);
+            // Clear coupon code input
+            couponCodeInput.value = "";
+          });
+
+          // Function to update total with discount applied
+          function updateTotalWithDiscount(discount) {
+            const totalSum = document.getElementById("totalSum");
+            const currentTotal = parseFloat(
+              totalSum.textContent.replace("INR ", "")
+            );
+            totalSum.textContent = `INR ${currentTotal - discount}`;
+          }
+
+          // Function to calculate discount (Example function, you need to implement your own logic)
+          function calculateDiscount(couponCode) {
+            // Here you should implement logic to calculate the discount based on the coupon code
+            // For demonstration purposes, let's assume a fixed discount for a specific coupon code
+            if (couponCode === "SAVE10") {
+              return 10; // Example: INR 10 discount
+            } else {
+              return 0; // No discount
+            }
+          }
+        });
+
         function placeOrder(sum) {
           const selectedPaymentMethod = document.querySelector(
             'input[name="payment_method"]:checked'
           ).value;
-          console.log(selectedPaymentMethod,'1');
+          // console.log(selectedPaymentMethod,'1');
           const totalSum = sum;
           const selectedAddress =
             document.getElementById("selectedAddress").innerText;
-          console.log(totalSum);
+          // console.log(totalSum);
           // Get the image source
           const image = document.getElementById("imageproduct").src;
-          console.log("Image Source:", image);
+          // console.log("Image Source:", image);
 
           const name = document.getElementById("prdname").innerText;
-          console.log("name: ", name);
+          // console.log("name: ", name);
 
           const price = document.getElementById("prdsum").innerText;
-          console.log("price:", price);
+          // console.log("price:", price);
 
           const quantity = document.getElementById("prdquantity").innerText;
-          console.log("quantity:", quantity);
+          // console.log("quantity:", quantity);
 
           if (selectedPaymentMethod) {
             var paymentMethod = selectedPaymentMethod;
@@ -386,12 +483,11 @@
                   image: image,
                 })
                 .then(function (response) {
-                  console.log(response.data.order);
+                  // console.log(response.data.order);
                   if (response.data?.order) {
-                    
                     var options = {
-                      key: 'rzp_test_MfFcU2xZ3MrlD6', 
-                      amount: response.data?.order.amount, 
+                      key: "rzp_test_MfFcU2xZ3MrlD6",
+                      amount: response.data?.order.amount,
                       currency: "INR",
                       name: "Acme Corp",
                       description: "Test Transaction",
@@ -412,18 +508,16 @@
                     };
                     var rzp1 = new Razorpay(options);
                     rzp1.open();
-             
-                     
-                     
-                
                   }
 
-                  console.log("Order placed successfully!");
-                  // window.location.href = "/";
+                  // console.log("Order placed successfully!");
+                  if (paymentMethod === cod) {
+                    window.location.href = "/successpage";
+                  }
                 })
                 .catch(function (error) {
                   console.error("Error:", error);
-                  console.log("Failed to place order. Please try again later.");
+                  // console.log("Failed to place order. Please try again later.");
                 });
             } else {
               console.log("Payment method selected:", paymentMethod);

@@ -92,11 +92,11 @@
         function addToCart(id) {
             axios.post('/api/addtocart', { id })
             .then(response => {
-                console.log(response);
+                // console.log(response);
                 // Check if the product was successfully added or already exists
                 if (response.data.message === 'Product already in cart') {
-                    console.log(response,"response");
-                    console.log(response.data,"response data");
+                    // console.log(response,"response");
+                    // console.log(response.data,"response data");
                     // Redirect the user to the cart page
                     window.location.href = '/cart';
                 } else if(response.data.message === "Please Login"){

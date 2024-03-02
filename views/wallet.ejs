@@ -83,10 +83,19 @@
 
         <!-- Add Transaction Form -->
         <div class="bg-white p-4 rounded-md shadow-md mb-6">
-          <h2 class="text-xl font-semibold mb-4">Wallet Balance: ₹ <%= wallet[0].walletBalance %></h2>
+          <% if (wallet && wallet.length > 0) { %>
+            <h2 class="text-xl font-semibold mb-4">
+              Wallet Balance: ₹ <%= wallet[0].walletBalance %>
+            </h2>
+            <% } else { %>
+              <h2 class="text-xl font-semibold mb-4">
+                Wallet Balance: ₹ 0
+              </h2>
+          <% } %>
+          
           <div class="flex items-center mb-2">
             <label for="amount" class="mr-4">Amount:</label>
-            
+
             <input
               type="number"
               id="amount"
@@ -95,9 +104,9 @@
             />
           </div>
           <div
-              class=" mb-4 text-center relative text-red-600 hidden"
-              id="errorpopup"
-            ></div>
+            class="mb-4 text-center relative text-red-600 hidden"
+            id="errorpopup"
+          ></div>
           <div class="flex justify-end">
             <button
               type="submit"
@@ -112,14 +121,42 @@
         <!-- Transaction History -->
         <div class="bg-white p-4 rounded-md shadow-md">
           <h2 class="text-xl font-semibold mb-4">Transaction History</h2>
-          <ul>
-            <%# transactions.forEach(transaction => { %>
-            <li class="flex justify-between items-center py-2 border-b">
-              <span>Amount: </span>
-              <span>Type: </span>
-            </li>
-            <%# }) %>
-          </ul>
+          <table class="w-full">
+            <% if (wallet && wallet.length > 0) { %>
+
+            <thead>
+              <tr>
+                <th class="py-2">Amount</th>
+                <th class="py-2">Type</th>
+                <th class="py-2">Date</th>
+              </tr>
+            </thead>
+             
+            
+            <tbody>
+              <% wallet[0].transactions.forEach(transaction => { %>
+              <tr class="border-b">
+                <td class="py-2">₹ <%= transaction.amount %></td>
+                <% if (transaction.type == '+ CREDIT') { %>
+                <td class="py-2 text-green-600"><%= transaction.type %></td>
+                <% } else if (transaction.type == '- DEBIT') { %>
+                <td class="py-2 text-red-600"><%= transaction.type %></td>
+                <% } %>
+
+                <td class="py-2">
+                  <%=
+                  transaction.transactionDate.toISOString().split('T')[0].split('-').reverse().join('-')
+                  %>
+                </td>
+              </tr>
+              <% }) %>
+            </tbody>
+            <% } else { %>
+              <h2 class="text-xl font-semibold mb-4">
+                No Transaction
+              </h2>
+            <% } %>
+          </table>
         </div>
       </div>
     </div>
@@ -143,7 +180,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
-      console.log("<%=messages?.success%>");
+      // console.log("<%=messages?.success%>");
       if ("<%=messages?.success%>") {
         Swal.fire(
           "Successfully Added To Wallet",
@@ -168,7 +205,7 @@
               amount,
             })
             .then(function (response) {
-              console.log(response.data);
+              // console.log(response.data);
               if (response.data?.order) {
                 var options = {
                   key: "rzp_test_MfFcU2xZ3MrlD6",
@@ -198,7 +235,7 @@
             .catch(function (error) {
               console.error("Error:", error);
               console.log(
-                "Failed to adding amount to wallet. Please try again later."
+                // "Failed to adding amount to wallet. Please try again later."
               );
             });
         }

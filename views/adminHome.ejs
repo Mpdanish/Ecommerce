@@ -1,56 +1,91 @@
-        <%- include('include/_header') %>
-  
-        
-        <%- include('include/_nav') %>
+<%- include('include/_header') %> <%- include('include/_nav') %> <%-
+include('include/_topheader') %>
 
+<section class="content-main">
+  <div class="content-header">
+    <div>
+      <h2 class="content-title card-title">Dashboard</h2>
+    </div>
+    <div>
+      <a href="#" class="btn btn-primary"
+        ><i class="text-muted material-icons md-post_add"></i>Create report</a
+      >
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-4">
+      <div class="card card-body mb-4">
+        <article class="icontext">
+          <span class="icon icon-sm rounded-circle bg-primary-light"
+            ><i class="text-primary material-icons md-monetization_on"></i
+          ></span>
+          <div class="text">
+            <h6 class="mb-1 card-title">Users</h6>
+            <span><%= userCount %></span>
+          </div>
+        </article>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card card-body mb-4">
+        <article class="icontext">
+          <span class="icon icon-sm rounded-circle bg-success-light"
+            ><i class="text-success material-icons md-local_shipping"></i
+          ></span>
+          <div class="text">
+            <h6 class="mb-1 card-title">Orders</h6>
+            <span><%= totalOrderCount %></span>
+          </div>
+        </article>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card card-body mb-4">
+        <article class="icontext">
+          <span class="icon icon-sm rounded-circle bg-warning-light"
+            ><i class="text-warning material-icons md-qr_code"></i
+          ></span>
+          <div class="text">
+            <h6 class="mb-1 card-title">Products</h6>
+            <span><%= productCount %></span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+<div style="width: 800px"><canvas id="acquisitions"></canvas></div>
 
-        <%- include('include/_topheader') %>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
 
+  (async function () {
 
-            <section class="content-main">
-                <div class="content-header">
-                    <div>
-                        <h2 class="content-title card-title">Dashboard</h2>
-                    </div>
-                    <div>
-                        <a href="#" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Create report</a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-4">
-                        <div class="card card-body mb-4">
-                            <article class="icontext">
-                                <span class="icon icon-sm rounded-circle bg-primary-light"><i class="text-primary material-icons md-monetization_on"></i></span>
-                                <div class="text">
-                                    <h6 class="mb-1 card-title">Revenue</h6>
-                                    <span>$13,456.5</span>
-                                </div>
-                            </article>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="card card-body mb-4">
-                            <article class="icontext">
-                                <span class="icon icon-sm rounded-circle bg-success-light"><i class="text-success material-icons md-local_shipping"></i></span>
-                                <div class="text">
-                                    <h6 class="mb-1 card-title">Orders</h6>
-                                    <span>53.668</span>
-                                </div>
-                            </article>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="card card-body mb-4">
-                            <article class="icontext">
-                                <span class="icon icon-sm rounded-circle bg-warning-light"><i class="text-warning material-icons md-qr_code"></i></span>
-                                <div class="text">
-                                    <h6 class="mb-1 card-title">Products</h6>
-                                    <span>9.856</span>
-                                </div>
-                            </article>
-                        </div>
-                    </div>
-                </div>
-            </section>
+    const ctx = document.getElementById("acquisitions");
+    
 
-        <%- include('include/_footer') %>
+    const newChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"],
+      datasets: [
+        {
+          label: "Total Sales",
+          data: [1,2,3,4,5,6,7],
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+
+  })();
+</script>
+
+<%- include('include/_footer') %>

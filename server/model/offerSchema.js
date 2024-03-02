@@ -5,6 +5,10 @@ const offerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  type: {
+    type: String,
+    required: true,
+  },
   discount: {
     type: Number,
     required: true,

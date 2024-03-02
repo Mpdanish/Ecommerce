@@ -87,7 +87,6 @@ export async function updatequantity(req, res) {
 
     const inventory = await Productdb.findOne({_id: productId})
 
-    console.log(inventory);
 
     if(inventory.stock<quantity){
       return res.status(404).json({ message: "Out of Stock" });

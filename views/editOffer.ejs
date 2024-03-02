@@ -88,39 +88,56 @@
       button:hover {
         background-color: rgb(53, 48, 48);
       }
-
-      #errorpopup {
-        background-color: red;
-        color: white;
-        margin-bottom: 5px;
-        width: fit-content;
-        margin-left: 50%;
-        transform: translate(-50%, -50%);
-      }
     </style>
   </head>
 
   <body>
-    <form id="form">
+    <form id="form" action="/updateOffer/<%= offer._id %>">
+      <% if (offer.type === 'Product Offer') { %>
       <label for="productName">Product Name</label>
       <input
         type="text"
         name="product"
         id="productName"
         onkeyup="sendData(this)"
+        value="<%= offer.name %>"
       />
       <section id="searchResults"></section>
       <p id="productError" style="color: red"></p>
+      <% } else if (offer.type === 'Category Offer') { %>
+      <label for="categoryName">Category Name</label>
+      <select
+        style="height: 40px"
+        class="form-control"
+        name="category"
+        id="categoryName"
+      >
+        <% for( let i = 0; i < category.length; i++ ) { %>
+
+        <option><%= category[i].name %></option>
+        <% } %>
+      </select>
+      <p id="categoryError" style="color: red"></p>
+      <% } %>
 
       <label for="discount">Discount (%)</label>
-      <input type="number" id="discount" name="discount" />
+      <input
+        type="number"
+        id="discount"
+        name="discount"
+        value="<%= offer.discount%>"
+      />
       <p id="discountError" style="color: red"></p>
 
       <label for="expiryDate">Expiry Date</label>
-      <input type="date" id="expiryDate" name="expiryDate" />
+      <input
+        type="date"
+        id="expiryDate"
+        name="expiryDate"
+        value="<%= offer.expiry.toISOString().split('T')[0] %>"
+      />
       <p id="expiryDateError" style="color: red"></p>
-      <div id="errorpopup" class="d-none"></div>
-      <button type="submit">Add</button>
+      <button type="submit">Update</button>
       <!-- Back Button -->
       <button type="button" onclick="window.history.back()">Back</button>
     </form>
@@ -174,43 +191,37 @@
       function addToInput(value) {
         document.getElementById("productName").value = value;
       }
-      // Function to handle clicking the select button
-      function handleSelect() {
-        const inputBox = document.getElementById("inputBox");
-        const selectedValue = inputBox.value;
-        if (selectedValue) {
-          // Do something with the selected value, for example:
-          // console.log("Selected value:", selectedValue);
-          // Clear the input box
-          inputBox.value = "";
-          // Remove the suggestion list
-          const searchResults = document
-            .getElementById("searchResults")
-            .classList.add("d-none");
-          searchResults.innerHTML = "";
-        }
-      }
 
       const form = document.querySelector("#form");
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();
         let flag = false;
-        const name = document.getElementById("productName").value.trim();
+        let name;
+        if (document.getElementById("productName")) {
+          name = document.getElementById("productName").value.trim();
+        } else {
+          name = document.getElementById("categoryName").value.trim();
+        }
         const discount = document.getElementById("discount").value.trim();
         const expiry = document.getElementById("expiryDate").value.trim();
 
         // Clear previous error messages
-        const productError = document.getElementById("productError");
+        let err;
+        if (document.getElementById("productError")) {
+          err = document.getElementById("productError");
+        } else {
+          err = document.getElementById("categoryError");
+        }
         const discountError = document.getElementById("discountError");
         const dateError = document.getElementById("expiryDateError");
         discountError.innerText = "";
-        productError.innerText = "";
+        err.innerText = "";
         dateError.innerText = "";
 
         // Validate Product Name
         if (!name) {
-          productError.innerText = "Please select a product.";
+          err.innerText = "Please select a product.";
           flag = true;
         }
 
@@ -243,7 +254,7 @@
           return;
         }
         axios
-          .post("/addProductOffer", {
+          .put(form.getAttribute("action"), {
             name,
             discount,
             expiry,
@@ -251,38 +262,25 @@
           .then((data) => {
             if (data) {
               Swal.fire(
-                "Offer Successfully Added",
+                "Offer Updated Added",
                 "Click the button",
                 "success"
               ).then(() => {
                 window.location.href = "/offer";
               });
             }
-            let errorModal = document.getElementById("errorpopup");
-            errorModal.innerText = data.data.message;
-            errorModal.classList.remove("d-none");
-            if (data.data.message == "Offer Added") {
-              errorModal.classList.add("d-none");
-            }
           })
           .catch((error) => {
-            if (error?.response?.data?.errStatus) {
-              let errorModal = document.getElementById("errorpopup");
-              errorModal.innerText = error.response.data.message;
-              return errorModal.classList.remove("d-none");
-              if (error.response.data.message == "Offer Added") {
-                errorModal.classList.add("d-none");
-              }
-            }
             console.log(error);
           });
       });
 
-      const searchResults = document.getElementById("searchResults");
-
-      searchResults.addEventListener("click", function (e) {
-        searchResults.classList.add("d-none");
-      });
+      let searchResults;
+      if (document.getElementById("searchResults")) {
+        searchResults.addEventListener("click", function (e) {
+          searchResults.classList.add("d-none");
+        });
+      }
     </script>
   </body>
 </html>

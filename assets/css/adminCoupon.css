@@ -75,9 +75,6 @@ body {
 #sidebar.hide {
 	width: 60px;
 }
-.pagenationButton{
-	padding-top: 36px;
-}
 #sidebar .brand {
 	font-size: 24px;
 	font-weight: 700;
@@ -188,7 +185,9 @@ body {
 
 
 
-
+.pagenationButton{
+	padding-top: 36px;
+}
 /* NAVBAR */
 .brand{
 	padding-left: 60px;
@@ -600,7 +599,7 @@ body {
 .description p{
 	color: #000;
 	font-family: Ubuntu;
-	font-size: 0.625rem;
+	font-size: medium;
 	font-style: normal;
 	font-weight: bold;
 	line-height: normal;
@@ -608,7 +607,7 @@ body {
 .description p:last-child{
 	color: #000;
 	font-family: Inter;
-	font-size: small;
+	font-size: medium;
 	font-style: normal;
 	font-weight: 400;
 	line-height: normal;
@@ -621,7 +620,7 @@ body {
 .dPrice p{
 	color: #000;
 	font-family: Lato;
-	font-size: small;
+	font-size: medium;
 	font-style: normal;
 	font-weight: 400;
 	line-height: normal;
@@ -664,93 +663,7 @@ a{
 	cursor: pointer;
 }
 
-.statusfiller{
-	outline: transparent;
-	padding: 0.2rem;
-	color: #000;
-    font-family: Ubuntu;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-	border: transparent;
-	background: rgba(211, 211, 211, 0.30);
-	border-radius: 4px;
-}
-.order div form .filler{
-	width: fit-content;
-	height: fit-content;
-	padding: 0.4rem 0.65rem;
-	background: rgba(211, 211, 211, 0.30);
-	border-radius: 4px;
-	outline: transparent;
-	transition: all 0.4s ease-in-out;
-}
-.order div form .filler:hover{
-	background: rgba(211, 211, 211, 1);
-}
 
-.textTable{
-	color: #000;
-	font-family: Lato;
-	font-size: 0.9375rem;
-	font-style: normal;
-	font-weight: 600;
-	line-height: normal;
-	text-transform: capitalize;
-	text-wrap: pretty;
-}
-p{
-	margin: 0;
-}
-.email{
-	text-transform: none;
-}
-.statusUser{
-	position: absolute;
-	left: -3%;
-    padding: 4px;
-    bottom: 0px;
-    z-index: 0;
-}
-#content main .table-data .order table tr td .blockUnblock {
-	color: black;
-	font-family: Lato;
-	font-size: 0.75rem;
-	font-style: normal;
-	font-weight: 600;
-	line-height: normal;
-	text-transform: capitalize;
-	text-wrap: pretty;
-	margin-right: 0.9rem;
-	border-radius: 5px;
-}
-.status a{
-	color: black;
-	font-family: Lato;
-	font-size: 0.75rem;
-	font-style: normal;
-	font-weight: 600;
-	line-height: normal;
-	text-transform: capitalize;
-	text-wrap: pretty;
-	border-radius: 5px;
-}
-#content main .table-data .order table tr td .red.completed {
-	background-color: red;
-}
-#content main .table-data .order table tr td .green.completed{
-	background-color: #00E509;
-}
-.colo{
-	background-color: red;
-}
-.proImg .description .userInfo p{
-	font-size: 0.75rem;
-	font-weight: 500;
-}
-.cText{
-	font-size: 0.7rem;
-}
 /* MAIN */
 /* CONTENT */
 

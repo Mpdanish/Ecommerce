@@ -2,19 +2,21 @@ import express, { Router } from "express";
 import {
   addCategoryOffer,
   addProductOffer,
-  adminAddOffer,
+  adminAddCoupon,
   adminAddProduct,
   adminCategory,
+  adminCoupon,
   adminDeletedProduct,
   adminEditCategory,
+  adminEditCoupon,
   adminEditProduct,
   adminHome,
-  adminOffer,
   adminOrder,
   adminProduct,
   adminUnlistedCategory,
   adminUser,
   adminlogin,
+  editOffer,
   isAdmin,
   logoutAdmin,
   offer,
@@ -39,7 +41,9 @@ import {
   getProductData,
 } from "../controller/adminController.js";
 import { checkAdmin } from "../middleware/adminAuth.js";
-import { addOffer } from "../controller/offerController.js";
+import { CategoryOffer, ProductOffer, deleteOffer, updateOffer } from "../controller/offerController.js";
+import { addCoupon, updateCoupon } from "../controller/couponController.js";
+
 
 const router = Router();
 
@@ -55,11 +59,14 @@ router.get("/adminUnlistedCategory",checkAdmin, adminUnlistedCategory);
 router.get("/adminOrder",checkAdmin, adminOrder);
 router.get("/adminAddProduct",checkAdmin, adminAddProduct);
 router.get("/adminEditProduct/:id",checkAdmin, adminEditProduct);
-router.get("/adminOffers",checkAdmin, adminOffer)
-router.get("/adminAddOffer",checkAdmin, adminAddOffer)
-router.get("/offer",checkAdmin, offer)
-router.get("/addCategoryOffer",checkAdmin, addCategoryOffer)
-router.get("/addProductOffer",checkAdmin, addProductOffer)
+router.get("/offer",checkAdmin, offer);
+router.get("/addCategoryOffer",checkAdmin, addCategoryOffer);
+router.get("/addProductOffer",checkAdmin, addProductOffer);
+router.get("/editoffer/:id",checkAdmin, editOffer);
+router.get("/adminCoupon", adminCoupon ); //checkAdmin,
+router.get("/adminAddCoupon", adminAddCoupon ); //checkAdmin,
+router.get("/editCoupon/:id", adminEditCoupon); //checkAdmin,
+
 
 router.post("/adminlogincheck", isAdmin);
 
@@ -78,13 +85,19 @@ router.post("/api/deleteproduct", deleteProduct);
 router.post("/api/restoreproduct", restoreProduct);
 router.post("/api/addproduct", addproduct);
 router.post("/api/showproduct", showproduct);
-router.post("/updateOrderStatus",updateorder)
-router.post("/addoffer", addOffer )
-router.post('/getproductname',getProductData)
+router.post("/updateOrderStatus", updateorder)
+router.post("/addCategoryOffer", CategoryOffer)
+router.post('/getproductname', getProductData)
+router.post('/addProductOffer', ProductOffer)
+router.post('/addCoupon', addCoupon)
+
 
 router.put("/api/updateproduct/:id", updateproduct);
 router.put("/api/updatecategory/:id", updatecategory);
+router.put("/updateOffer/:id", updateOffer);
+router.put("/updateCoupon/:id", updateCoupon);
 
 router.delete("/deleteimage/:id/:productid", deleteImage)
+router.delete("/deleteoffer/:id", deleteOffer)
 
 export default router;

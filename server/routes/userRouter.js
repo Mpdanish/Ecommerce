@@ -8,6 +8,7 @@ import {
   orderinfo,
   orderslist,
   otppage,
+  pagenotfound,
   productlist,
   productpage,
   profile,
@@ -42,8 +43,9 @@ router.get("/", homepage); //checkBlocked
 // router.get("/homepage1", homepage1);
 
 router.get("/login", login);
-router.get("/logout",logoutUser);
+router.get("/logout", logoutUser);
 router.get("/register", register);
+router.get("/404page", pagenotfound);
 router.get("/successpage",checkBlocked, successpage)
 router.get("/product/:id", productpage);
 router.get("/cart", cart);

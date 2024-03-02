@@ -100,9 +100,9 @@
                     id="errorpopup">
                   </div> -->
                   <p
-        class="relative z-10 text-red-600 hidden error-popup"
-        id="errorpopup_<%= element.products.productId %>"
-    ></p>
+                    class="relative z-10 text-red-600 hidden error-popup"
+                    id="errorpopup_<%= element.products.productId %>"
+                  ></p>
                   <div class="flex items-center">
                     <button
                       class="bg-gray-500 text-white px-3 py-2 rounded-l"
@@ -112,10 +112,11 @@
                     </button>
                     <input
                       onchange="reloadContent('<%= element.products.productId %>')"
-                      type="number" class="quantityInput"
+                      type="number"
+                      class="quantityInput"
                       id="quantityInput_<%= element.products.productId %>"
                       class="w-16 p-2 border border-gray-300 rounded text-center"
-                      style="width: 4rem;"
+                      style="width: 4rem"
                       value="<%= element.products.quantity %>"
                     />
                     <button
@@ -155,7 +156,10 @@
             Total: INR&nbsp;
             <p id="totalAmount"><%-sum %></p>
           </div>
-          <div id="outOfStockMessage" class="text-red-500 align-items-right hidden text-right animate-bounce">
+          <div
+            id="outOfStockMessage"
+            class="text-red-500 align-items-right hidden text-right animate-bounce"
+          >
             Some products are out of stock.
           </div>
 
@@ -190,13 +194,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        console.log('qwer');
+        // console.log("qwer");
         document
           .getElementById("checkoutButton")
           .addEventListener("click", function () {
-            console.log('123');
+            // console.log("123");
             // Get stock and quantity
             const stockElement = document.querySelector("[data-stock]");
             const stock = stockElement
@@ -206,12 +211,12 @@
               document.querySelector(".quantityInput").value
             );
 
-            console.log("Stock:", stock);
-            console.log("Quantity:", quantity);
+            // console.log("Stock:", stock);
+            // console.log("Quantity:", quantity);
 
             // Check if quantity is greater than stock
             if (quantity < stock) {
-              console.log("Quantity is less than or equal to stock");
+              // console.log("Quantity is less than or equal to stock");
               // // If quantity is less than or equal to stock, enable the button
               // document
               //   .getElementById("checkoutButton")
@@ -221,7 +226,7 @@
                 .getElementById("outOfStockMessage")
                 .classList.add("hidden");
             } else {
-              console.log("Quantity is greater than stock");
+              // console.log("Quantity is greater than stock");
               event.preventDefault();
               // document
               //   .getElementById("checkoutButton")
@@ -234,7 +239,6 @@
           });
       });
 
-
       function goBack() {
         window.history.back();
       }
@@ -243,7 +247,22 @@
         axios
           .delete("/removeProduct", { data: { userId, productId } })
           .then((response) => {
-            console.log(response.data.message);
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                  toast.onmouseenter = Swal.stopTimer;
+                  toast.onmouseleave = Swal.resumeTimer;
+                },
+              });
+              Toast.fire({
+                icon: "success",
+                title: "Product Removed From Cart",
+              });
+            // console.log(response.data.message);
             window.location.reload();
           })
           .catch((error) => {
@@ -252,7 +271,9 @@
       }
 
       function updateQuantity(change, productId) {
-        const quantityInput = document.getElementById("quantityInput_" + productId);
+        const quantityInput = document.getElementById(
+          "quantityInput_" + productId
+        );
         let currentValue = parseInt(quantityInput.value, 10);
         if (!isNaN(currentValue)) {
           currentValue += change;
@@ -261,21 +282,20 @@
           }
           quantityInput.value = currentValue;
           reloadContent(productId);
-          // Reload total amount after updating the quantity
           reloadTotalAmount();
         }
       }
 
-      function updateQuantityAndReload(productId) {
-        const quantityInput = document.getElementById("quantityInput_" + productId);
-        let currentValue = parseInt(quantityInput.value, 10);
-        if (!isNaN(currentValue) && currentValue >= 1) {
-          reloadContent(productId);
-        } else {
-          // Handle invalid quantity input if needed
-          console.error("Invalid quantity input");
-        }
-      }
+      // function updateQuantityAndReload(productId) {
+      //   const quantityInput = document.getElementById("quantityInput_" + productId);
+      //   let currentValue = parseInt(quantityInput.value, 10);
+      //   if (!isNaN(currentValue) && currentValue >= 1) {
+      //     reloadContent(productId);
+      //   } else {
+      //     // Handle invalid quantity input if needed
+      //     console.error("Invalid quantity input");
+      //   }
+      // }
 
       function reloadTotalAmount() {
         axios
@@ -293,61 +313,40 @@
           });
       }
 
-      // function reloadContent(productId) {
-      //   const quantity = document.getElementById("quantityInput_" + productId).value;
-
-      //   axios
-      //     .post("/updatequantity", {
-      //       productId,
-      //       quantity,
-      //     })
-      //     .then(function (response) {
-      //       console.log(response);
-      //       let errorModal = document.getElementById("errorpopup_" + productId);
-      //       errorModal.innerText = "";
-      //     })
-      //     .catch(function (error) {
-      //       console.error("Error fetching data:", error);
-      //       console.log(error.response.data.message, "message");
-      //       if (error?.response?.data) {
-      //         let errorModal = document.getElementById("errorpopup_" + productId);
-      //         errorModal.innerText = error.response.data.message;
-      //         return errorModal.classList.remove("hidden");
-      //       }
-      //     });
-      // }
-
       function reloadContent(productId) {
-    const quantity = document.getElementById("quantityInput_" + productId).value;
+        const quantity = document.getElementById(
+          "quantityInput_" + productId
+        ).value;
 
-    axios
-        .post("/updatequantity", {
+        axios
+          .post("/updatequantity", {
             productId,
             quantity,
-        })
-        .then(function (response) {
-            console.log(response);
+          })
+          .then(function (response) {
+            // console.log(response);
             let errorModal = document.getElementById("errorpopup_" + productId);
             errorModal.innerText = "";
             if (response.data.outOfStock) {
-                errorModal.innerText = "Product is out of stock.";
-                errorModal.classList.remove("hidden");
-                return; // Exit the function if the product is out of stock
+              errorModal.innerText = "Product is out of stock.";
+              errorModal.classList.remove("hidden");
+              return; // Exit the function if the product is out of stock
             }
             // If the product is not out of stock, continue with other actions
             errorModal.classList.add("hidden");
             // Continue with any other actions if needed
-        })
-        .catch(function (error) {
+          })
+          .catch(function (error) {
             console.error("Error fetching data:", error);
             if (error.response?.data) {
-                let errorModal = document.getElementById("errorpopup_" + productId);
-                errorModal.innerText = error.response.data.message;
-                errorModal.classList.remove("hidden");
+              let errorModal = document.getElementById(
+                "errorpopup_" + productId
+              );
+              errorModal.innerText = error.response.data.message;
+              errorModal.classList.remove("hidden");
             }
-        });
-}
-
+          });
+      }
     </script>
   </body>
 </html>

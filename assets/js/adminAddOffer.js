@@ -7,7 +7,6 @@ const lErr = document.querySelector('.lErr');
 
 lPrice.addEventListener('keyup', () => {
 	if(Number(fPrice.value) >= Number(lPrice.value)){
-		console.log(fPrice.value, typeof fPrice.value, lPrice.value, typeof lPrice.value);
 		errMesg.style.display = 'none';
 		errMesg.innerHTML = ``;
 		fPrice.style.border = `none`
@@ -126,7 +125,6 @@ inputBox.addEventListener('change', () => {
 		inputBox.files = dataTransfer.files;
 		showImg();
 	}
-	console.log(inputBox.files);
 });
 
 function deleteImg(index) {

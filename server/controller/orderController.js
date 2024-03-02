@@ -7,6 +7,7 @@ import "dotenv/config";
 import Userdb from "../model/userSchema.js";
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import Walletdb from "../model/walletSchema.js";
 
 var instance = new Razorpay({
   key_id: process.env.rzp_key_id,
@@ -84,19 +85,18 @@ export async function placeorder(req, res) {
   try {
     const { paymentMethod, address, totalsum, name, price, quantity, image } =
       req.body;
-    console.log(req.body, "body");
     const sum = parseInt(totalsum);
     const totalprice = parseInt(price);
     const count = parseInt(quantity);
 
     const priceMatch = price.match(/₹(\d+)/);
     const quantityMatch = quantity.match(/(\d+)/);
+    const sumMatch = totalsum.match(/(\d+)/);
 
     // Parse the matched values into numbers
     const pricee = priceMatch ? parseInt(priceMatch[1]) : 0;
     const quantityy = quantityMatch ? parseInt(quantityMatch[1]) : 0;
-
-    
+    const summ = sumMatch ? parseInt(sumMatch[1]) : 0;
 
     // Check if address and paymentMethod are provided
     if (!paymentMethod || !address || !totalsum) {
@@ -110,7 +110,7 @@ export async function placeorder(req, res) {
       });
 
       var options = {
-        amount: pricee * 100, // amount in the smallest currency unit
+        amount: summ * 100, // amount in the smallest currency unit
         currency: "INR",
         receipt: "order_rcptid_11",
       };
@@ -118,7 +118,6 @@ export async function placeorder(req, res) {
         return res.json({ order });
       });
     }
-
 
     let user = req.session.userId;
 
@@ -150,7 +149,6 @@ export async function placeorder(req, res) {
       },
     ]);
 
-
     const orderItems = cartItems.map((element) => {
       const orderItem = {
         productId: element.products.productId,
@@ -173,20 +171,15 @@ export async function placeorder(req, res) {
       totalsum: sum,
     });
 
-    console.log(newOrder);
 
     // Save the order to the database
     await newOrder.save();
 
     await clearUserCart(req.session.userId);
-    
+
     if (paymentMethod !== "Razorpay") {
       res.status(200).json({ message: "Order placed successfully!" });
     }
-
-
-
-    
   } catch (error) {
     console.error("Error saving order:", error);
     res.status(400).json({ error: error.message });
@@ -223,7 +216,7 @@ export async function orderRazorpayVerification(req, res) {
 
 export async function cancelOrder(req, res) {
   const orderId = req.body.orderId;
-  console.log(orderId, "idd");
+  // console.log(orderId, "idd");
 
   try {
     // Find the order by ID
@@ -232,7 +225,6 @@ export async function cancelOrder(req, res) {
       { $set: { "orderDetails.$.orderStatus": "Cancelled" } },
       { projection: { "orderDetails.$": 1 } }
     );
-    console.log(order, "orderr");
 
     // Add the quantity back to product stock
     const product = await Productdb.findOneAndUpdate(
@@ -240,7 +232,31 @@ export async function cancelOrder(req, res) {
       { $inc: { quantity: order.orderDetails[0].quantity } }
     );
 
-    console.log(product, "prodct");
+    if (order.orderDetails[0].orderStatus == "Cancelled") {
+      if (order.orderDetails[0].paymentMethod == "Razorpay") {
+        const user = await Userdb.findOne({_id : req.session.userId});
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        const wallet = await Walletdb.findOne({userId:req.session.userId})
+
+        // Update wallet balance
+        wallet.walletBalance += amount;
+
+        // Add transaction record
+        wallet.transactions.push({
+          amount: amount,
+          type: "+ CREDIT", // Assuming we are adding money to the wallet
+          transactionDate: new Date(),
+        });
+
+        // Save the updated user document
+        await wallet.save();
+      }
+    }
+
+    
 
     // Save the updated order
     // await res.save();
@@ -256,7 +272,7 @@ export async function cancelOrder(req, res) {
 
 export async function returnOrder(req, res) {
   const orderId = req.body.orderId;
-  console.log(orderId, "idd");
+  // console.log(orderId, "idd");
 
   try {
     // Find the order by ID
@@ -265,7 +281,7 @@ export async function returnOrder(req, res) {
       { $set: { "orderDetails.$.orderStatus": "Returned" } },
       { projection: { "orderDetails.$": 1 } }
     );
-    console.log(order, "orderr");
+    // console.log(order, "orderr");
 
     // Add the quantity back to product stock
     const product = await Productdb.findOneAndUpdate(
@@ -273,7 +289,32 @@ export async function returnOrder(req, res) {
       { $inc: { quantity: order.orderDetails[0].quantity } }
     );
 
-    console.log(product, "prodct");
+    console.log(order.orderDetails[0].orderStatus,"ordrrrrrrr");
+
+    if (order.orderDetails[0].orderStatus == "Delivered") {
+      const user = await Userdb.findOne({_id : req.session.userId});
+      console.log(user,"userr");
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      const wallet = await Walletdb.findOne({userId:req.session.userId})
+      console.log(wallet,"walletttt");
+      // Update wallet balance
+      wallet.walletBalance += amount;
+
+      // Add transaction record
+      wallet.transactions.push({
+        amount: amount,
+        type: "+ CREDIT", // Assuming we are adding money to the wallet
+        transactionDate: new Date(),
+      });
+
+      // Save the updated user document
+      await wallet.save();
+  }
+
+    // console.log(product, "prodct");
 
     // Save the updated order
     // await res.save();
@@ -302,7 +343,7 @@ async function clearUserCart(userId) {
       await Cartdb.findByIdAndDelete(cartItems._id);
     }
 
-    console.log("User cart cleared successfully");
+    // console.log("User cart cleared successfully");
   } catch (error) {
     console.error("Error clearing user cart:", error);
     // Handle error appropriately
@@ -325,7 +366,7 @@ async function decreaseProductStock(productId, quantity) {
     // Save the updated product
     await product.save();
 
-    console.log(`Stock quantity decreased for product ${productId}`);
+    // console.log(`Stock quantity decreased for product ${productId}`);
   } catch (error) {
     console.error("Error decreasing product stock:", error);
     // Handle error appropriately

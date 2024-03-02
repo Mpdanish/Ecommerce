@@ -5,6 +5,7 @@ import Categorydb from "../model/categorySchema.js";
 import Userdb from "../model/userSchema.js";
 import Orderdb from "../model/orderSchema.js";
 import Offerdb from "../model/offerSchema.js";
+import Coupondb from "../model/couponSchema.js";
 
 const adminEmail = process.env.ADMIN_ID;
 const adminPassword = process.env.ADMIN_PASS;
@@ -44,9 +45,27 @@ export function logoutAdmin(req, res) {
   }
 }
 
-export function adminHome(req, res) {
+export async function adminHome(req, res) {
   try {
-    res.status(200).render("adminHome.ejs");
+    const totalOrders = await Orderdb.aggregate([
+      {
+        $project: {
+          orderDetailsCount: { $size: "$orderDetails" },
+        },
+      },
+    ]);
+
+    const totalOrderCount = totalOrders.reduce(
+      (total, obj) => total + obj.orderDetailsCount,
+      0
+    );
+
+    const productCount = await Productdb.countDocuments({ isHidden: false });
+    const userCount = await Userdb.countDocuments({ status: true });
+
+    res
+      .status(200)
+      .render("adminHome.ejs", { totalOrderCount, productCount, userCount });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -160,28 +179,22 @@ export async function adminUnlistedCategory(req, res) {
   }
 }
 
-export async function adminOffer(req, res) {
-  try {
-    res.status(200).render("adminCoupon.ejs");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-}
-
-export async function adminAddOffer(req, res) {
-  try {
-    res.status(200).render("adminAddOffer.ejs");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-}
-
 export async function offer(req, res) {
   try {
     const offer = await Offerdb.find();
     res.render("adminOffer.ejs", { offer });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function editOffer(req, res) {
+  try {
+    const id = req.params.id;
+    const offer = await Offerdb.findById(id);
+    const category = await Categorydb.find();
+    res.render("editOffer.ejs", { offer, category });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -201,6 +214,38 @@ export async function addCategoryOffer(req, res) {
 export async function addProductOffer(req, res) {
   try {
     res.render("addProductOffer.ejs");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function adminCoupon(req, res) {
+  try {
+    const coupons = await Coupondb.find();
+    res.render("adminCoupon.ejs", { coupons });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function adminAddCoupon(req, res) {
+  try {
+    const category = await Categorydb.find();
+    res.render("adminAddCoupon.ejs", { category });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function adminEditCoupon(req, res) {
+  try {
+    const id = req.params.id;
+    const coupon = await Coupondb.findById(id);
+    const category = await Categorydb.find();
+    res.render("adminEditCoupon.ejs", { coupon, category });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");

@@ -1,182 +1,152 @@
-<%- include('include/_header') %> <%- include('include/_nav') %> <%-
-include('include/_topheader') %>
+<%- include('include/_header') %> <%- include('include/_nav') %> <%- include('include/_topheader') %>
 
-<link rel="stylesheet" href="/css/adminorder.css">
+      <link rel="stylesheet" href="/css/adminorder.css">
 
-<section class="content-main">
-  <div class="content-header">
-    <div>
-      <h2 class="content-title card-title">Orders List</h2>
-    </div>
-    <div>
-      <input
-        type="text"
-        placeholder="Search order ID"
-        class="form-control bg-white"
-      />
-    </div>
-  </div>
-  <div class="card mb-4">
-    <header class="card-header">
-      <div class="row gx-3">
-        <div class="col-lg-4 col-md-6 me-auto">
-          <input type="text" placeholder="Search..." class="form-control" />
+      <section class="content-main">
+        <div class="content-header">
+          <div>
+            <h2 class="content-title card-title">Orders List</h2>
+          </div>
+          <div>
+            <input type="text" placeholder="Search order ID" class="form-control bg-white" />
+          </div>
         </div>
-        <div class="col-lg-2 col-6 col-md-3">
-          <select class="form-select">
-            <option>Status</option>
-            <option>Active</option>
-            <option>Disabled</option>
-            <option>Show all</option>
-          </select>
-        </div>
-        <div class="col-lg-2 col-6 col-md-3">
-          <select class="form-select">
-            <option>Show 20</option>
-            <option>Show 30</option>
-            <option>Show 40</option>
-          </select>
-        </div>
-      </div>
-    </header>
-    <!-- card-header end// -->
-    <div class="card-body">
-      <div class="table-responsive">
-        <!-- <table class="table table-hover">
-          <thead>
+        <table class="table mb-4">
+          <thead class="card-header">
             <tr>
-              <th>#ID</th>
-              <th scope="col">Name</th>
-              <th scope="col">Email</th>
-              <th scope="col">Total</th>
-              <th scope="col">Status</th>
-              <th scope="col">Date</th>
-              <th scope="col" class="text-end">Action</th>
+              <th>Product</th>
+              <th>User Details</th>
+              <th>Order Details</th>
+              <th>Total Price</th>
+              <th>Action</th>
             </tr>
           </thead>
-          <tbody>
-           <%# for( let i = 0; i < orders.length; i++ ) { %>
-           
-           
-            <tr>
-              <td> <%#= i+1 %></td>
-              <td><b><%#= orders[i].userDetails.name %></b></td>
-              <td><%#= orders[i].userDetails.email %></td>
-              <td><%#= orders[i].orderDetails.price * orders[i].orderDetails.quantity %></td>
-              <td>
-                <span class="badge rounded-pill alert-warning"><%#= orders[i].orderDetails.orderStatus %></span>
-              </td>
-              <td><%#= orders[i].orderDetails.orderDate %></td>
-              <td class="text-end">
-                <a href="#" class="btn btn-md rounded font-sm">Detail</a>
-                <div class="dropdown">
-                  <a
-                    href="#"
-                    data-bs-toggle="dropdown"
-                    class="btn btn-light rounded btn-sm font-sm"
-                  >
-                    <i class="material-icons md-more_horiz"></i>
-                  </a>
-                  <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#">View detail</a>
-                    <a class="dropdown-item" href="#">Edit info</a>
-                    <a class="dropdown-item text-danger" href="#">Delete</a>
-                  </div>
-                </div>
-               
-              </td>
-            </tr>
-            <%# } %>
-          </tbody>
-        </table> -->
-        <% for( let i = 0; i < orders.length; i++ ) { %>
-            <div class="produts p-3">
-              <div
-                class="productImg d-flex align-items-center justify-content-between"
-              >
-                <div class="proImg d-flex gap-3 align-items-center">
-                  <div>
-                    <p><%= i + 1 %></p>
-                  </div>
-                  <div>
-                    <img
-                      src="<%= orders[i].orderDetails.pImage %>"
-                      alt="No Image Uploaded"
-                    />
-                  </div>
-                  <div class="description d-flex align-items-center">
-                    <div>
-                      <p class="mb-1 p-0 fs-6 text-capitalize"><%= orders[i].orderDetails.pName %></p>
-                      <!-- <p class="mb-2 text-capitalize">COLOR: <%#= orders[i].orderDetails.color %></p> -->
-                      <p class="m-0 p-0">Qty: <%= orders[i].orderDetails.quantity %></p>
+          <tbody class="card-body">
+            <% for( let i=0; i < orders.length; i++ ) { %>
+              <tr class="produts p-3">
+                <td>
+                  <div class="productImg d-flex align-items-center justify-content-between">
+                    <div class="proImg d-flex gap-3 align-items-center">
+                      <div>
+                        <p>
+                          <%= i + 1 %>
+                        </p>
+                      </div>
+                      <div>
+                        <img src="<%= orders[i].orderDetails.pImage %>" alt="No Image Uploaded" />
+                      </div>
+                      <div class="description d-flex align-items-center">
+                        <div>
+                          <p class="mb-1 p-0 fs-6 text-capitalize">
+                            <%= orders[i].orderDetails.pName.substring(0,10) %>
+                          </p>
+                          <p class="mb-2 text-capitalize">Product Id : <%=
+                              orders[i].orderDetails.productId.toString().split('').slice(18,24).join('') %>
+                          </p>
+                          <p class="m-0 p-0">Qty: <%= orders[i].orderDetails.quantity %>
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="proImg d-flex">
-                  <div class="description d-flex align-items-center">
-                    <div class="userInfo">
-                      <p class="mb-1 text-capitalize"><%= orders[i].userDetails.name %></p>
-                      <p class="mb-1 p-0"><%= orders[i].userDetails.email %></p>
-                      <p class="mb-1 text-capitalize"><%= orders[i].userDetails.phoneNumber %></p>
-                      <p class="m-0 p-0"><%= orders[i].orderDetails.address %></p>
-                      <p class="d-none"></p>
+                </td>
+                <td>
+                  <div class="proImg d-flex">
+                    <div class="description d-flex align-items-center">
+                      <div class="userInfo">
+                        <p class="mb-1 text-capitalize">
+                          <%= orders[i].userDetails.name %>
+                        </p>
+                        <p class="mb-1 p-0">
+                          <%= orders[i].userDetails.email %>
+                        </p>
+                        <p class="mb-1 text-capitalize">
+                          <%= orders[i].userDetails.phoneNumber %>
+                        </p>
+                        <p class="m-0 p-0">
+                          <%= orders[i].orderDetails.address %>
+                        </p>
+                        <p class="d-none"></p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="proImg d-flex">
-                  <div class="description d-flex align-items-center">
-                    <div class="userInfo">
-                      <p class="mb-1 text-capitalize">
-                        Order ID: <%= orders[i]._id.toString().split('').slice(18,24).join('') %>
-                      </p>
-                      <p class="mb-1 text-capitalize">Order Status: <%= orders[i].orderDetails.orderStatus %></p>
-                      <p class="mb-1 p-0">Payment Methode: <%= orders[i].orderDetails.paymentMethod %></p>
-                      <p class="m-0 p-0 d-none"></p>
+                </td>
+                <td>
+                  <div class="proImg d-flex">
+                    <div class="description d-flex align-items-center">
+                      <div class="userInfo">
+                        <p class="mb-1 text-capitalize">
+                          Order ID: <%= orders[i]._id.toString().split('').slice(18,24).join('') %>
+                        </p>
+                        <p class="mb-1 text-capitalize" id="orderStatus_<%= orders[i].orderDetails._id %>">Order Status:
+                          <%= orders[i].orderDetails.orderStatus %>
+                        </p>
+                        <p class="mb-1 p-0">Payment Methode: <%= orders[i].orderDetails.paymentMethod %>
+                        </p>
+                        <p class="m-0 p-0 d-none"></p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="proImg d-flex">
-                  <div class="description d-flex align-items-center">
-                    <div class="userInfo">
-                      <p class="m-0 p-0 fs-6">₹<%= ((orders[i].orderDetails.price * orders[i].orderDetails.quantity))%></p>
-                      <p class="m-0 p-0 d-none"></p>
+                </td>
+                <td>
+                  <div class="proImg d-flex">
+                    <div class="description d-flex align-items-center">
+                      <div class="userInfo">
+                        <p class="m-0 p-0 fs-6">₹<%= ((orders[i].orderDetails.price *
+                            orders[i].orderDetails.quantity))%>
+                        </p>
+                        <p class="m-0 p-0 d-none"></p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="actions d-flex align-items-center">
-                  
+                </td>
+                 
+                
+                <td>
+                <% if ((orders[i].orderDetails.orderStatus !== "Delivered" ) || (orders[i].orderDetails.orderStatus==="Cancelled" ) || (orders[i].orderDetails.orderStatus==="Returned" )) { %>
+
+                  <div class="actions d-flex align-items-center">
                     <div class="d-flex gap-3">
-                      <% if ((orders[i].orderDetails.orderStatus === "Delivered") || (orders[i].orderDetails.orderStatus === "Cancelled") ) { %>
-                          <p class="me-2 <%= (orders[i].orderDetails.orderStatus === 'Cancelled')?'text-danger':'' %>"><%= orders[i].orderDetails.orderStatus %></p>
-                      <% } else { %>
-                            <select name="orderStatus" id="filler" class="bg-white border-1 border-black">
-                              <option value="Ordered" <%= (orders[i].orderDetails.orderStatus === "Ordered")?"selected":"" %> >Ordered</option>
-                              <option value="Shipped" <%= (orders[i].orderDetails.orderStatus === "Shipped")?"selected":"" %> >Shipped</option>
-                              <option value="Delivered" >Delivered</option>
-                              <option value="Cancelled" >Cancelled</option>
-                            </select>
-                            <button class="filler text-black cText" onclick="changeOrderStatus('<%= orders[i].orderDetails._id %>')">                       
-                              Change Status
-                            </button>
-                      <% } %>
+                      
+                      <% if ((orders[i].orderDetails.orderStatus==="Delivered" ) ||
+                        (orders[i].orderDetails.orderStatus==="Cancelled" ) ) { %>
+                        <p class="me-2 <%= (orders[i].orderDetails.orderStatus === 'Cancelled')?'text-danger':'' %>">
+                          <%= orders[i].orderDetails.orderStatus %>
+                        </p>
+                        <% } else { %>
+                          <select name="orderStatus" class="statusfiller" id="filler_<%= orders[i].orderDetails._id %>"
+                            class="bg-white border-1 border-black"
+                            onchange="changeOrderStatus('<%= orders[i].orderDetails._id %>')">
+                            <option value="Ordered" <%=(orders[i].orderDetails.orderStatus==="Ordered" )?"selected":""
+                              %> >Ordered</option>
+                            <option value="Shipped" <%=(orders[i].orderDetails.orderStatus==="Shipped" )?"selected":""
+                              %> >Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                          </select>
+                          <% } %>
                     </div>
-                  
-                </div>
-              </div>
-            </div>
-      <% } %>
-      <% if (orders.length === 0) { %>
-        <div class="text-center">\(^Д^)/ <br>No Orders.</div>
-    <% } %>
-    </div>
-  </div>
-      </div>
-      <!-- table-responsive //end -->
-    </div>
-    <!-- card-body end// -->
-  </div>
-  <!-- card end// -->
-  <!-- <div class="pagination-area mt-15 mb-50">
+                  </div>
+                  <% } %>
+                </td>
+
+              </tr>
+              <% } %>
+                <% if (orders.length===0) { %>
+                  <tr>
+                    <td colspan="5" class="text-center">\(^Д^)/ <br>No Orders.</td>
+                  </tr>
+                  <% } %>
+          </tbody>
+        </table>
+
+        
+        <!-- table-responsive //end -->
+        </div>
+        <!-- card-body end// -->
+        </div>
+        <!-- card end// -->
+        <!-- <div class="pagination-area mt-15 mb-50">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-start">
                             <li class="page-item active"><a class="page-link" href="#">01</a></li>
@@ -190,43 +160,69 @@ include('include/_topheader') %>
                         </ul>
                     </nav>
                 </div> -->
-</section>
+      </section>
 
-<script>
+      <script>
 
-function changeOrderStatus(orderId) {
-    console.log(orderId);
-        // Get the selected value of order status
-        const orderStatus = document.getElementById('filler').value;
-        console.log(orderStatus);
+        // function changeOrderStatus(orderId) {
+        //     console.log(orderId);
+        //         // Get the selected value of order status
+        //         const orderStatus = document.getElementById('filler').value;
+        //         console.log(orderStatus);
 
-        // Make a POST request to backend to update order status
-        axios.post('/updateOrderStatus', { orderId, orderStatus })
+        //         // Make a POST request to backend to update order status
+        //         axios.post('/updateOrderStatus', { orderId, orderStatus })
+        //             .then(response => {
+        //                 console.log(response.data);
+        //                 // Handle success, if needed
+        //             })
+        //             .catch(error => {
+        //                 console.error(error);
+        //                 // Handle error, if needed
+        //             });
+        //     }
+
+        function changeOrderStatus(orderId) {
+          // Get the selected value of order status
+          const orderStatus = document.querySelector(`#filler_${orderId}`).value;
+
+
+          // Make a POST request to backend to update order status
+          axios.post('/updateOrderStatus', { orderId, orderStatus })
             .then(response => {
-                console.log(response.data);
-                // Handle success, if needed
+              // Update the order status dynamically without reloading the page
+              const orderStatusElement = document.querySelector(`#orderStatus_${orderId}`);
+              
+              if (orderStatusElement) {
+                orderStatusElement.textContent = `Order Status: ${orderStatus}`;
+              }
+              // console.log(response.data);
+
+              // Handle success, if needed
             })
             .catch(error => {
-                console.error(error);
-                // Handle error, if needed
+              console.error(error);
+              // Handle error, if needed
             });
-    }
+        }
 
 
 
-const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
 
-allSideMenu.forEach(item=> {
-	const li = item.parentElement;
 
-	item.addEventListener('click', function () {
-		allSideMenu.forEach(i=> {
-			i.parentElement.classList.remove('active');
-		})
-		li.classList.add('active'); 
-	})
-});
+        const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
 
-</script>
+        allSideMenu.forEach(item => {
+          const li = item.parentElement;
 
-<%- include('include/_footer') %>
+          item.addEventListener('click', function () {
+            allSideMenu.forEach(i => {
+              i.parentElement.classList.remove('active');
+            })
+            li.classList.add('active');
+          })
+        });
+
+      </script>
+
+      <%- include('include/_footer') %>

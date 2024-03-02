@@ -48,7 +48,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
       <script>
         function editcategory(id) {
-          console.log("........");
+          // console.log("........");
           const name = document.getElementById("categoryname").value
           const  errorModal = document.getElementById('errorpopup')
           errorModal.innerHTML='';
@@ -58,7 +58,7 @@
             name,
           })
             .then((data) => {
-              console.log("success");
+              // console.log("success");
               if (data) {
                 Swal.fire("Category Updated", "Click the button", "success").then(
                   () => {
@@ -83,7 +83,7 @@
 
                 }
               }
-              console.log("failddd");
+              // console.log("failddd");
               console.log(error);
             })
         }

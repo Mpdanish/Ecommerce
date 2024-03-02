@@ -112,7 +112,7 @@ export async function updatecategory(req, res) {
       res.status(201).json({ message: "Category Updated" });
     }
 
-    // console.log(newcat);
+    
 
     // res.status(200).send(true);
   } catch (error) {
@@ -307,13 +307,14 @@ export async function updateorder(req,res) {
   try {
 
     const { orderId, orderStatus } = req.body;
-    console.log(req.body);
     const data = await Orderdb.aggregate([
       {
         $unwind: "$orderDetails"
       }
     ])
     await Orderdb.updateOne({"orderDetails._id":orderId},{$set:{"orderDetails.$.orderStatus":orderStatus}})
+
+  
 
     
     res.status(200).json({ message: "Successfully Changed!" });
@@ -327,7 +328,7 @@ export async function updateorder(req,res) {
 
 export async function getProductData(req,res) {
   let payload = req.body.payload.trim();
-  console.log(payload);
+  
   let search = await Productdb.find({name: {$regex: new RegExp('^'+payload+'.*','i')}}).exec();
   search = search.slice(0,10)
   res.send({payload: search});

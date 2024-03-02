@@ -5,6 +5,7 @@ import userRouter from './server/routes/userRouter.js'
 import adminRouter from './server/routes/adminRouter.js';
 import connectDB from './server/database/connection.js';
 import MongoStore from 'connect-mongo';
+// import morgan from 'morgan'
 // import validator from './server/validator.js';
 import "dotenv/config"
 import flash from 'express-flash';
@@ -21,6 +22,8 @@ app.use(
         saveUninitialized: true
     })
 );
+
+// app.use(morgan('dev'));
 
 //clear cache
 app.use((req, res, next) => {
