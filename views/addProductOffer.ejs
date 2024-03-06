@@ -174,22 +174,20 @@
       function addToInput(value) {
         document.getElementById("productName").value = value;
       }
-      // Function to handle clicking the select button
-      function handleSelect() {
-        const inputBox = document.getElementById("inputBox");
-        const selectedValue = inputBox.value;
-        if (selectedValue) {
-          // Do something with the selected value, for example:
-          // console.log("Selected value:", selectedValue);
-          // Clear the input box
-          inputBox.value = "";
-          // Remove the suggestion list
-          const searchResults = document
-            .getElementById("searchResults")
-            .classList.add("d-none");
-          searchResults.innerHTML = "";
-        }
-      }
+      // // Function to handle clicking the select button
+      // function handleSelect() {
+      //   const inputBox = document.getElementById("inputBox");
+      //   const selectedValue = inputBox.value;
+      //   if (selectedValue) {
+      //     // Clear the input box
+      //     inputBox.value = "";
+      //     // Remove the suggestion list
+      //     const searchResults = document
+      //       .getElementById("searchResults")
+      //       .classList.add("d-none");
+      //     searchResults.innerHTML = "";
+      //   }
+      // }
 
       const form = document.querySelector("#form");
 

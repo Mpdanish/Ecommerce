@@ -10,8 +10,8 @@ import crypto from "crypto";
 import Walletdb from "../model/walletSchema.js";
 
 var instance = new Razorpay({
-  key_id: process.env.rzp_key_id,
-  key_secret: process.env.rzp_key_secret,
+  key_id: process.env.RZP_KEY_ID,
+  key_secret: process.env.RZP_KEY_SECRET,
 });
 
 export async function checkout(req, res) {
@@ -89,12 +89,10 @@ export async function placeorder(req, res) {
     const totalprice = parseInt(price);
     const count = parseInt(quantity);
 
-    const priceMatch = price.match(/₹(\d+)/);
     const quantityMatch = quantity.match(/(\d+)/);
     const sumMatch = totalsum.match(/(\d+)/);
 
     // Parse the matched values into numbers
-    const pricee = priceMatch ? parseInt(priceMatch[1]) : 0;
     const quantityy = quantityMatch ? parseInt(quantityMatch[1]) : 0;
     const summ = sumMatch ? parseInt(sumMatch[1]) : 0;
 
@@ -105,12 +103,12 @@ export async function placeorder(req, res) {
 
     if (paymentMethod === "Razorpay") {
       var instance = new Razorpay({
-        key_id: process.env.rzp_key_id,
-        key_secret: process.env.rzp_key_secret,
+        key_id: process.env.RZP_KEY_ID,
+        key_secret: process.env.RZP_KEY_SECRET,
       });
 
       var options = {
-        amount: summ * 100, // amount in the smallest currency unit
+        amount: totalprice * 100, // amount in the smallest currency unit
         currency: "INR",
         receipt: "order_rcptid_11",
       };
@@ -119,7 +117,39 @@ export async function placeorder(req, res) {
       });
     }
 
-    let user = req.session.userId;
+    
+
+    if (paymentMethod !== "Razorpay") {
+      res.status(200).json({ message: "Order placed successfully!" });
+    }
+  } catch (error) {
+    console.error("Error saving order:", error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function orderRazorpayVerification(req, res) {
+  try {
+    const instance = new Razorpay({
+      key_id: process.env.RZP_KEY_ID,
+      key_secret: process.env.RZP_KEY_SECRET,
+    });
+
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
+      req.body;
+
+    const body_data = razorpay_order_id + "|" + razorpay_payment_id;
+
+    const generated_signature = crypto
+      .createHmac("sha256", process.env.RZP_KEY_SECRET)
+      .update(body_data)
+      .digest("hex");
+
+    const isValid = generated_signature === razorpay_signature;
+
+
+    if (isValid) {
+      let user = req.session.userId;
 
     const userId = await Userdb.findById(user);
     const currentDate = new Date();
@@ -171,40 +201,11 @@ export async function placeorder(req, res) {
       totalsum: sum,
     });
 
-
     // Save the order to the database
     await newOrder.save();
 
     await clearUserCart(req.session.userId);
-
-    if (paymentMethod !== "Razorpay") {
-      res.status(200).json({ message: "Order placed successfully!" });
-    }
-  } catch (error) {
-    console.error("Error saving order:", error);
-    res.status(400).json({ error: error.message });
-  }
-}
-
-export async function orderRazorpayVerification(req, res) {
-  try {
-    const instance = new Razorpay({
-      key_id: process.env.rzp_key_id,
-      key_secret: process.env.rzp_key_secret,
-    });
-
-    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
-      req.body;
-
-    const body_data = razorpay_order_id + "|" + razorpay_payment_id;
-
-    const generated_signature = crypto
-      .createHmac("sha256", process.env.rzp_key_secret)
-      .update(body_data)
-      .digest("hex");
-
-    const isValid = generated_signature === razorpay_signature;
-    if (isValid) {
+    
       res.status(200).redirect("/successpage");
     }
   } catch (error) {
@@ -234,29 +235,36 @@ export async function cancelOrder(req, res) {
 
     if (order.orderDetails[0].orderStatus == "Cancelled") {
       if (order.orderDetails[0].paymentMethod == "Razorpay") {
-        const user = await Userdb.findOne({_id : req.session.userId});
+        const user = await Userdb.findOne({ _id: req.session.userId });
         if (!user) {
           throw new Error("User not found");
         }
 
-        const wallet = await Walletdb.findOne({userId:req.session.userId})
+        const refundorder = await Orderdb.aggregate([
+          {
+            $match: {
+              userId: new mongoose.Types.ObjectId(req.session.userId),
+            },
+          },
+          {
+            $unwind: "$orderDetails",
+          },
+        ]);
 
-        // Update wallet balance
-        wallet.walletBalance += amount;
+        const amount =
+          Number(refundorder[0].orderDetails.price) *
+          Number(refundorder[0].orderDetails.quantity);
 
-        // Add transaction record
-        wallet.transactions.push({
-          amount: amount,
-          type: "+ CREDIT", // Assuming we are adding money to the wallet
-          transactionDate: new Date(),
-        });
-
-        // Save the updated user document
-        await wallet.save();
+        await Walletdb.updateOne(
+          { userId: req.session.userId },
+          {
+            $inc: { walletBalance: amount },
+            $push: { transactions: { amount: amount, type: "+ CREDIT" } },
+          },
+          { upsert: true }
+        );
       }
     }
-
-    
 
     // Save the updated order
     // await res.save();
@@ -283,36 +291,44 @@ export async function returnOrder(req, res) {
     );
     // console.log(order, "orderr");
 
+    
+
     // Add the quantity back to product stock
     const product = await Productdb.findOneAndUpdate(
       { _id: order.orderDetails[0].productId },
       { $inc: { quantity: order.orderDetails[0].quantity } }
     );
 
-    console.log(order.orderDetails[0].orderStatus,"ordrrrrrrr");
-
     if (order.orderDetails[0].orderStatus == "Delivered") {
-      const user = await Userdb.findOne({_id : req.session.userId});
-      console.log(user,"userr");
+      const user = await Userdb.findOne({ _id: req.session.userId });
       if (!user) {
         throw new Error("User not found");
       }
 
-      const wallet = await Walletdb.findOne({userId:req.session.userId})
-      console.log(wallet,"walletttt");
-      // Update wallet balance
-      wallet.walletBalance += amount;
+      const refundorder = await Orderdb.aggregate([
+        {
+          $match: {
+            userId: new mongoose.Types.ObjectId(req.session.userId),
+          },
+        },
+        {
+          $unwind: "$orderDetails",
+        },
+      ]);
 
-      // Add transaction record
-      wallet.transactions.push({
-        amount: amount,
-        type: "+ CREDIT", // Assuming we are adding money to the wallet
-        transactionDate: new Date(),
-      });
+      const amount =
+        Number(refundorder[0].orderDetails.price) *
+        Number(refundorder[0].orderDetails.quantity);
 
-      // Save the updated user document
-      await wallet.save();
-  }
+      await Walletdb.updateOne(
+        { userId: req.session.userId },
+        {
+          $inc: { walletBalance: amount },
+          $push: { transactions: { amount: amount, type: "+ CREDIT" } },
+        },
+        { upsert: true }
+      );
+    }
 
     // console.log(product, "prodct");
 

@@ -7,6 +7,7 @@ import Addressdb from "../model/addressSchema.js";
 import Categorydb from "../model/categorySchema.js";
 import Orderdb from "../model/orderSchema.js";
 import Walletdb from "../model/walletSchema.js";
+import Wishlistdb from "../model/wishlistSchema.js";
 
 //Register User Page
 export function register(req, res) {
@@ -41,6 +42,7 @@ export async function homepage(req, res) {
   try {
     const product = await Productdb.find({ isHidden: false }).limit(3);
     const user = req.session.userId;
+    console.log("hello",user)
     res.status(200).render("homePage.ejs", { product, user });
   } catch (error) {
     console.error(error);
@@ -48,7 +50,7 @@ export async function homepage(req, res) {
   }
 }
 
-export async function successpage(req, res) {
+export function successpage(req, res) {
   try {
     res.status(200).render("successpage.ejs");
   } catch (error) {
@@ -110,10 +112,9 @@ export async function editaddress(req, res) {
 
 export async function productpage(req, res) {
   try {
-
     if (!isObjectIdOrHexString(req.params.id)) {
       return res.status(404).redirect("/404page");
-    } 
+    }
 
     const product = await Productdb.findOne({
       _id: req.params.id,
@@ -121,15 +122,13 @@ export async function productpage(req, res) {
 
     if (!product) {
       return res.status(404).redirect("/404page");
-    } 
-    
+    }
+
     const userid = req.session.userId;
-      
+
     const user = await Userdb.findOne({ _id: userid });
 
     res.status(200).render("productpreview", { product, user });
-
-    
   } catch (error) {
     console.log("err");
     console.error(error);
@@ -206,7 +205,7 @@ export async function orderslist(req, res) {
         $match: { userId: new mongoose.Types.ObjectId(userid) },
       },
       { $unwind: "$orderDetails" },
-      { $sort: { "orderDetails.orderDate": -1 } }
+      { $sort: { "orderDetails.orderDate": -1 } },
     ]);
     // console.log(orders);
     res.render("ordersList.ejs", { orders });
@@ -246,6 +245,32 @@ export async function wallet(req, res) {
     const wallet = await Walletdb.find({ userId: req.session.userId });
     console.log(wallet);
     res.render("wallet.ejs", { wallet });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function wishlist(req, res) {
+  try {
+    const wishlist = await Wishlistdb.aggregate([
+      {
+        $match: { userId: new mongoose.Types.ObjectId(req.session.userId) },
+      },
+      { $unwind: "$products" }
+      ,{
+        $lookup: {
+          from: Productdb.collection.name,
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "productsDetails",
+        },
+      },
+      {
+        $unwind: "$productsDetails",
+      },
+    ]);
+    res.render("wishlist.ejs", { wishlist });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");

@@ -197,11 +197,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        // console.log("qwer");
         document
           .getElementById("checkoutButton")
           .addEventListener("click", function () {
-            // console.log("123");
             // Get stock and quantity
             const stockElement = document.querySelector("[data-stock]");
             const stock = stockElement
@@ -211,26 +209,15 @@
               document.querySelector(".quantityInput").value
             );
 
-            // console.log("Stock:", stock);
-            // console.log("Quantity:", quantity);
 
             // Check if quantity is greater than stock
             if (quantity < stock) {
-              // console.log("Quantity is less than or equal to stock");
-              // // If quantity is less than or equal to stock, enable the button
-              // document
-              //   .getElementById("checkoutButton")
-              //   .removeAttribute("disabled");
               // Hide the out of stock message
               document
                 .getElementById("outOfStockMessage")
                 .classList.add("hidden");
             } else {
-              // console.log("Quantity is greater than stock");
               event.preventDefault();
-              // document
-              //   .getElementById("checkoutButton")
-              //   .setAttribute("disabled");
               // Show the out of stock message
               document
                 .getElementById("outOfStockMessage")

@@ -1,23 +1,156 @@
 <%- include('include/_header') %> <%- include('include/_nav') %> <%-
 include('include/_topheader') %>
+<!-- Bootstrap CSS -->
+<link
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
 
 <section class="content-main">
   <div class="content-header">
     <div>
       <h2 class="content-title card-title">Dashboard</h2>
     </div>
-    <div>
-      <a href="#" class="btn btn-primary"
-        ><i class="text-muted material-icons md-post_add"></i>Create report</a
-      >
+    <!-- Button to Open Modal -->
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-toggle="modal"
+      data-target="#salesReportModal"
+    >
+      Download Sales Report
+    </button>
+  </div>
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="salesReportModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="salesReportModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="salesReportModalLabel">
+            Sales Report Download
+          </h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Date Range Selection -->
+          <form
+            action="/generateSalesReport"
+            id="salesReportForm"
+            method="post"
+          >
+            <div class="form-group">
+              <label for="fromDate">From Date:</label>
+              <input
+                type="date"
+                name="fromDate"
+                class="form-control"
+                id="fromDate"
+              />
+            </div>
+            <div class="form-group">
+              <label for="toDate">To Date:</label>
+              <input
+                type="date"
+                name="toDate"
+                class="form-control"
+                id="toDate"
+              />
+            </div>
+            <!-- Report Interval Options -->
+            <!-- <div class="form-group">
+              <label>Select report interval:</label>
+              <div class="d-flex flex-column">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="reportInterval"
+                    id="daily"
+                    value="daily"
+                  />
+                  <label class="form-check-label" for="daily">Daily</label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="reportInterval"
+                    id="weekly"
+                    value="weekly"
+                  />
+                  <label class="form-check-label" for="weekly">Weekly</label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="reportInterval"
+                    id="yearly"
+                    value="yearly"
+                  />
+                  <label class="form-check-label" for="yearly">Yearly</label>
+                </div>
+              </div>
+            </div> -->
+            <!-- Download Options -->
+            <div class="form-group">
+              <label>Select file format:</label>
+              <div class="d-flex flex-column">
+                <div class="form-check">
+                  <input
+                    name="pdfChecked"
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    id="pdfCheck"
+                  />
+                  <label class="form-check-label" for="pdfCheck">PDF</label>
+                </div>
+                <div class="form-check">
+                  <input
+                    name="excelChecked"
+                    class="form-check-input"
+                    type="checkbox"
+                    value="true"
+                    id="excelCheck"
+                  />
+                  <label class="form-check-label" for="excelCheck">Excel</label>
+                </div>
+              </div>
+            </div>
+            <button
+              type="submit"
+              id="downloadButton"
+              class="btn btn-primary mt-3"
+            >
+              Download
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
+
   <div class="row">
     <div class="col-lg-4">
       <div class="card card-body mb-4">
         <article class="icontext">
           <span class="icon icon-sm rounded-circle bg-primary-light"
-            ><i class="text-primary material-icons md-monetization_on"></i
+            ><i class="text-primary material-icons md-perm_identity"></i
           ></span>
           <div class="text">
             <h6 class="mb-1 card-title">Users</h6>
@@ -53,39 +186,25 @@ include('include/_topheader') %>
       </div>
     </div>
   </div>
-<div style="width: 800px"><canvas id="acquisitions"></canvas></div>
-
+  <!-- <div style="width: 800px"><canvas id="acquisitions"></canvas></div> -->
 </section>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Axios -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-
-  (async function () {
-
-    const ctx = document.getElementById("acquisitions");
-    
-
-    const newChart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"],
-      datasets: [
-        {
-          label: "Total Sales",
-          data: [1,2,3,4,5,6,7],
-          borderWidth: 1,
-        },
-      ],
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-        },
-      },
-    },
-  });
-
-  })();
+  document
+    .getElementById("downloadButton")
+    .addEventListener("click", function () {
+      // Clear the form fields
+      // document.getElementById("fromDate").value = "";
+      // document.getElementById("toDate").value = "";
+      // document.getElementById("pdfCheck").checked = false;
+      // document.getElementById("excelCheck").checked = false;
+    });
 </script>
 
 <%- include('include/_footer') %>

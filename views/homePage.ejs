@@ -73,7 +73,9 @@
               id="search-navbar"
               class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Search..."
+              onkeyup="sendData(this)"
             />
+            <section id="searchResults"></section>
           </div>
           <button
             data-collapse-toggle="navbar-search"
@@ -129,7 +131,9 @@
               id="search-navbar"
               class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Search..."
+              onkeyup="sendData(this)"
             />
+            <section id="searchResults" class="hidden"></section>
           </div>
           <ul
             class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"
@@ -149,15 +153,15 @@
                 >Product</a
               >
             </li>
-            <% if (user) { %>
+            <% if (locals.user) { %>
             <li>
               <a
                 href="/profile"
                 class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                >Account</a
+                >Profile</a
               >
             </li>
-            <% } else if(!user || user.status === false) { %>
+            <% } else  { %>
 
             <li>
               <a
@@ -173,96 +177,6 @@
                 href="/cart"
                 class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                 >Cart</a
-              >
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <nav class="bg-gray-50 dark:bg-gray-700">
-      <div class="max-w-screen-xl px-4 py-3 mx-auto">
-        <div class="flex items-center">
-          <ul
-            class="flex flex-row font-medium mt-0 space-x-8 rtl:space-x-reverse text-sm"
-          >
-            <button
-              id="dropdownHoverButton"
-              data-dropdown-toggle="dropdownHover"
-              data-dropdown-trigger="hover"
-              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              type="button"
-            >
-              Categories
-              <svg
-                class="w-2.5 h-2.5 ms-3"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 10 6"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="m1 1 4 4 4-4"
-                />
-              </svg>
-            </button>
-
-            <!-- Dropdown menu -->
-            <div
-              id="dropdownHover"
-              class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
-            >
-              <ul
-                class="py-2 text-sm text-gray-700 dark:text-gray-200"
-                aria-labelledby="dropdownHoverButton"
-              >
-                <li>
-                  <a
-                    href="#"
-                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >Dashboard</a
-                  >
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >Settings</a
-                  >
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >Earnings</a
-                  >
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >Sign out</a
-                  >
-                </li>
-              </ul>
-            </div>
-
-            <li>
-              <a href="#" class="text-gray-900 dark:text-white hover:underline"
-                >Everything</a
-              >
-            </li>
-            <li>
-              <a href="#" class="text-gray-900 dark:text-white hover:underline"
-                >New Arrivals</a
-              >
-            </li>
-            <li>
-              <a href="#" class="text-gray-900 dark:text-white hover:underline"
-                >Today's Deal</a
               >
             </li>
           </ul>
@@ -746,10 +660,8 @@
         axios
           .post("/api/addtocart", { id })
           .then((response) => {
-            // console.log(response.data);
-            // Check if the product was successfully added or already exists
             if (response.data.message === "Product already in cart") {
-                const Toast = Swal.mixin({
+              const Toast = Swal.mixin({
                 toast: true,
                 position: "top-end",
                 showConfirmButton: false,
@@ -784,13 +696,55 @@
                 icon: "success",
                 title: "Product Added To Cart",
               });
-              // console.log(response.data.message);
             }
           })
           .catch((error) => {
             // Handle error, log to console for simplicity
             console.error("Error:", error);
           });
+      }
+
+      function sendData(e) {
+        const searchResults = document.getElementById("searchResults");
+        let match = e.value.match(/^[a-zA-Z]*/);
+        let match2 = e.value.match(/\s*/);
+        if (match2[0] === e.value) {
+          searchResults.innerHTML = "";
+          return;
+        }
+        if (match[0] === e.value) {
+          axios
+            .post(
+              "/getproductname",
+              { payload: e.value },
+              {
+                headers: { "Content-Type": "application/json" },
+              }
+            )
+            .then((response) => {
+              let payload = response.data.payload;
+              console.log(payload);
+              searchResults.innerHTML = "";
+              if (payload.length < 1) {
+                searchResults.innerHTML = `<p style="color:white;">Sorry, Nothing Found</p>`;
+                return;
+              }
+              searchResults.classList.remove("hidden");
+              payload.forEach((item, index) => {
+                if (index > 0) searchResults.innerHTML += "<hr>";
+                searchResults.innerHTML += `<a href='/product/${item._id}'><div style="display:flex; gap:10px;"><img class="suggestion"  style="width: 30px; height: 30px;" src="${item.images[0]}"></img><p class="suggestion" style="color:white;" onclick="addToInput('${item.name}')">${item.name}</p></div></a>`;
+              });
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+          return;
+        }
+        searchResults.innerHTML = "";
+      }
+
+      function addToInput(value) {
+        document.getElementById("search-navbar").value = value;
       }
     </script>
   </body>

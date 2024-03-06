@@ -81,7 +81,7 @@
                         <p class="mb-1 text-capitalize" id="orderStatus_<%= orders[i].orderDetails._id %>">Order Status:
                           <%= orders[i].orderDetails.orderStatus %>
                         </p>
-                        <p class="mb-1 p-0">Payment Methode: <%= orders[i].orderDetails.paymentMethod %>
+                        <p class="mb-1 p-0">Payment Method: <%= orders[i].orderDetails.paymentMethod %>
                         </p>
                         <p class="m-0 p-0 d-none"></p>
                       </div>
@@ -122,7 +122,6 @@
                             <option value="Shipped" <%=(orders[i].orderDetails.orderStatus==="Shipped" )?"selected":""
                               %> >Shipped</option>
                             <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
                           </select>
                           <% } %>
                     </div>

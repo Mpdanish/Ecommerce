@@ -16,6 +16,7 @@ import {
   showaddress,
   successpage,
   wallet,
+  wishlist,
 } from "../services/userRender.js";
 import {
   addAddress,
@@ -35,20 +36,22 @@ import {
 
 import { addToCart, reloadTotalAmount, removeFromCart, removeproductfromcart, updatequantity } from "../controller/cartController.js";
 import { cancelOrder, checkaddress, checkout, orderRazorpayVerification, placeorder, returnOrder } from "../controller/orderController.js";
-import { checkBlocked } from "../middleware/userAuth.js";
+import { checkBlocked, dontgoback, } from "../middleware/userAuth.js";
+import { addToWishlist, removeFromWishlist } from "../controller/wishlistController.js";
+import { checkCoupon } from "../controller/couponController.js";
 
 const router = Router();
 
-router.get("/", homepage); //checkBlocked
-// router.get("/homepage1", homepage1);
-
-router.get("/login", login);
+router.get("/", homepage); //checkBlocked, checkSession,
+router.get("/home",checkBlocked, homepage); //checkBlocked, checkSession,
+router.get("/login",dontgoback, login);
 router.get("/logout", logoutUser);
 router.get("/register", register);
 router.get("/404page", pagenotfound);
 router.get("/successpage",checkBlocked, successpage)
 router.get("/product/:id", productpage);
 router.get("/cart", cart);
+router.get("/wishlist", wishlist);
 router.get("/profile",checkBlocked, profile);
 router.get("/address",checkBlocked, showaddress);
 router.get("/addaddress",checkBlocked, addaddress)
@@ -67,12 +70,18 @@ router.get("/wallet",checkBlocked, wallet)
 router.post("/api/registeruser", newuser);
 router.post("/api/login", isUser);
 router.post("/api/addtocart", addToCart);
-router.post("/api/removeFromCart", removeFromCart );
+router.post("/addToWishlist", addToWishlist);
 router.post("/api/addaddress", addAddress );
-router.delete("/deleteaddress/:id",deleteaddress)
+router.post("/api/checkCoupon", checkCoupon );
+
+router.delete("/deleteaddress/:id",deleteaddress);
+
 router.post("/updateprofile",updateprofile );
+
 router.put("/api/updateaddress",updateaddress )
+
 router.delete("/removeProduct", removeproductfromcart)
+router.delete("/removeFromWishlist", removeFromWishlist)
 router.get('/api/products',filterproduct)
 router.get('/getUpdatedTotalAmount',reloadTotalAmount)
 router.get('/checkaddress',checkaddress)

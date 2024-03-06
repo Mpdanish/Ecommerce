@@ -1,12 +1,12 @@
 import express from 'express';
 import path from 'path';
 import session from 'express-session';
-import userRouter from './server/routes/userRouter.js'
+import userRouter from './server/routes/userRouter.js';
 import adminRouter from './server/routes/adminRouter.js';
 import connectDB from './server/database/connection.js';
-import MongoStore from 'connect-mongo';
+import nocache from 'nocache';
+// import MongoStore from 'connect-mongo';
 // import morgan from 'morgan'
-// import validator from './server/validator.js';
 import "dotenv/config"
 import flash from 'express-flash';
 
@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 8080;
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
-        store: MongoStore.create({mongoUrl : process.env.MONGO_URI}),
+        // store: MongoStore.create({mongoUrl : process.env.MONGO_URI}),
         resave: true,
         saveUninitialized: true
     })
@@ -38,7 +38,7 @@ connectDB();
 
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({extended: true}));
-
+app.use(nocache())
 // set view engine
 app.set('view engine', 'ejs');
 // app.set('views' ,path.resolve(__dirname, "views/ejs"));

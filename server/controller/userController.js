@@ -8,6 +8,8 @@ import Walletdb from "../model/walletSchema.js";
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import flash from "express-flash";
+import NodeCache from "node-cache";
+const myCache = new NodeCache();
 
 // Function to generate a random OTP
 const generateOTP = () => {
@@ -117,6 +119,7 @@ export async function isUser(req, res) {
       // Set session and redirect to home
       req.session.userId = user.id;
       req.session.email = email;
+      myCache.flushAll();
       res.send("login successfully");
     } else {
       res.status(401).json({ errStatus: true, message: "Invalid password" });
@@ -384,8 +387,8 @@ export async function addToWallet(req, res) {
     req.session.amount = money;
 
     var instance = new Razorpay({
-      key_id: process.env.rzp_key_id,
-      key_secret: process.env.rzp_key_secret,
+      key_id: process.env.RZP_KEY_ID,
+      key_secret: process.env.RZP_KEY_SECRET,
     });
 
     var options = {
@@ -434,29 +437,6 @@ export async function walletRazorpayVerification(req, res) {
         },
         { upsert: true }
       );
-
-      // const newTransactionAmount = req.session.amount;
-
-      // const creditTransactionsSum = await Walletdb.aggregate([
-      //   { $match: { userId: req.session.userId } },
-      //   { $unwind: "$transactions" },
-      //   { $match: { "transactions.type": "+ CREDIT" } },
-      //   { $group: { _id: null, total: { $sum: "$transactions.amount" } } },
-      // ]);
-
-      // console.log(creditTransactionsSum,"sum");
-
-      // const walletBalance =
-      //   creditTransactionsSum.length > 0 ? creditTransactionsSum[0].total : 0;
-
-      // const wallet = await Walletdb.updateOne(
-      //   { userId: req.session.userId },
-      //   {
-      //     $push: { transactions: newTransaction },
-      //     $set: { walletBalance: walletBalance + newTransactionAmount },
-      //   },
-      //   { upsert: true }
-      // );
 
       delete req.session?.amount;
       req.flash("success", true);

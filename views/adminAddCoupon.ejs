@@ -41,12 +41,13 @@
                     <div id="addProduct" class="order">
                         <form class="addProductForm" id="form">
                             <div class="d-flex align-items-center formRow">
-                                <div class="w-50 <%#= errMesg?.code?'errDiv':'' %>">
+                                <div class="w-50">
                                     <label for="code" class="d-block">Coupon Code</label>
-                                    <input type="text" name="code" id="couponcode"
-                                        value="<%#= savedDetails?.code?savedDetails.code:'' %>">
-                                    <p class="err">
-                                        <%#= errMesg?.code %>
+                                    <div class=" position-relative z-10 top-5 py-1.5 px-3 rounded-lg text-danger d-none"
+                                        id="errorpopup">
+                                    </div>
+                                    <input type="text" name="code" id="couponcode">
+                                    <p id="couponCodeErr" style="color: red">
                                     </p>
                                 </div>
                                 <div class="w-50">
@@ -54,9 +55,8 @@
                                     <select name="category" id="category">
                                         <option value="All">All</option>
                                         <% for( let i=0; i < category.length; i++ ) { %>
-                                            <option class="text-capitalize" value="<%= category[i].name %>"
-                                                <%#=(savedDetails?.category===category[i].name)?'selected':'' %>><%=
-                                                    category[i].name %>
+                                            <option class="text-capitalize" value="<%= category[i].name %>">
+                                                <%= category[i].name %>
                                             </option>
                                             <% } %>
                                     </select>
@@ -64,39 +64,31 @@
                             </div>
 
                             <div class="d-flex align-items-center formRow">
-                                <div class="w-50 <%#= errMesg?.discount?'errDiv':'' %>">
+                                <div class="w-50">
                                     <label for="discount" class="d-block">Coupon Discount</label>
-                                    <input type="number" name="discount" id="coupondiscount"
-                                        value="<%#= savedDetails?.discount?savedDetails.discount:'' %>">
-                                    <p class="err">
-                                        <%#= errMesg?.discount %>
+                                    <input type="number" name="discount" id="coupondiscount">
+                                    <p id="discountErr" style="color: red">
                                     </p>
                                 </div>
-                                <div class="dheading w-50 <%#= errMesg?.count?'errDiv':'' %>">
+                                <div class="dheading w-50">
                                     <label for="count" class="d-block">Max Use</label>
-                                    <input type="number" name="count" id="Maxuse"
-                                        value="<%#= savedDetails?.count?savedDetails.count:'' %>">
-                                    <p class="err">
-                                        <%#= errMesg?.count %>
+                                    <input type="number" name="count" id="Maxuse">
+                                    <p id="maxUseErr" style="color: red">
                                     </p>
                                 </div>
                             </div>
 
                             <div class="d-flex align-items-center formRow">
-                                <div class="w-50 <%#= errMesg?.minPrice?'errDiv':'' %>">
+                                <div class="w-50">
                                     <label for="minPrice" class="d-block">Use Above</label>
-                                    <input type="number" name="minPrice" id="pricelimit"
-                                        value="<%#= savedDetails?.minPrice?savedDetails?.minPrice:'' %>">
-                                    <p class="err">
-                                        <%#= errMesg?.minPrice %>
+                                    <input type="number" name="minPrice" id="pricelimit">
+                                    <p id="priceLimitErr" style="color: red">
                                     </p>
                                 </div>
-                                <div class="w-50 <%#= errMesg?.expiry?'errDiv':'' %>">
+                                <div class="w-50">
                                     <label for="expiry" class="d-block">Coupon Expiry</label>
-                                    <input type="date" name="expiry" id="expiry"
-                                        value="<%#= savedDetails?.expiry?savedDetails?.expiry:'' %>">
-                                    <p class="err">
-                                        <%#= errMesg?.expiry %>
+                                    <input type="date" name="expiry" id="expiry">
+                                    <p id="expiryErr" style="color: red">
                                     </p>
                                 </div>
                             </div>
@@ -149,66 +141,87 @@
                 const form = document.querySelector("#form");
 
                 form.addEventListener("submit", function (e) {
+
                     e.preventDefault();
-                    // let flag = false;
-                    const couponCode = document.getElementById("couponcode").value.trim();
-                    const category = document.getElementById("category").value.trim();
-                    const maxUse = document.getElementById("Maxuse").value.trim();
-                    const priceLimit = document.getElementById("pricelimit").value.trim();
-                    const coupondiscount = document.getElementById("coupondiscount").value.trim();
-                    const expiry = document.getElementById("expiry").value.trim();
 
-                    // console.log('code', couponCode);
-                    // console.log('category', category);
-                    // console.log('maxuse', maxUse);
-                    // console.log('price', priceLimit);
-                    // console.log('coupondiscount', coupondiscount);
-                    // console.log('expiry', expiry);
-
+                    let flag = false;
+                    const couponCode = document.getElementById("couponcode").value;
+                    const category = document.getElementById("category").value;
+                    const maxUse = document.getElementById("Maxuse").value;
+                    const priceLimit = document.getElementById("pricelimit").value;
+                    const coupondiscount = document.getElementById("coupondiscount").value;
+                    const expiry = document.getElementById("expiry").value;
 
 
                     // Clear previous error messages
-                    // const categoryError = document.getElementById("categoryError");
-                    // const discountError = document.getElementById("discountError");
-                    // const dateError = document.getElementById("expiryDateError");
-                    // discountError.innerText = "";
-                    // categoryError.innerText = "";
-                    // dateError.innerText = "";
+                    const couponCodeError = document.getElementById("couponCodeErr");
+                    const discountError = document.getElementById("discountErr");
+                    const maxUseError = document.getElementById("maxUseErr");
+                    const priceLimitError = document.getElementById("priceLimitErr");
+                    const expiryError = document.getElementById("expiryErr");
+                    couponCodeError.innerText = "";
+                    discountError.innerText = "";
+                    maxUseError.innerText = "";
+                    priceLimitError.innerText = "";
+                    expiryError.innerText = "";
 
-                    // // Validate Product Name
-                    // if (!name) {
-                    //     categoryError.innerText = "Please select a category.";
-                    //     flag = true;
-                    // }
+                    // Validate Coupon Code
+                    if (!couponCode) {
 
-                    // // Validate Discount
-                    // if (!discount) {
-                    //     discountError.innerText = "Please enter a discount.";
-                    //     flag = true;
-                    // } else if (parseInt(discount) < 0) {
-                    //     discountError.innerText = "Discount must be a positive number.";
-                    //     flag = true;
-                    // } else if (parseInt(discount) > 95) {
-                    //     discountError.innerText = "Discount must be less than 95";
-                    //     flag = true;
-                    // }
+                        couponCodeError.innerText = "Enter Coupon Code";
+                        flag = true;
+                    }
 
-                    // // Validate Expiry Date
-                    // if (!expiry) {
-                    //     dateError.innerText = "Please select an expiry date.";
-                    //     flag = true;
-                    // } else {
-                    //     const currentDate = new Date();
-                    //     const selectedDate = new Date(expiry);
-                    //     if (selectedDate < currentDate) {
-                    //         dateError.innerText = "Expiry Date must be in the future.";
-                    //         flag = true;
-                    //     }
-                    // }
+                    if (!maxUse) {
 
-                    // if (flag) {
-                    //     return;
-                    // }
+                        maxUseError.innerText = "Please enter usage limit.";
+                        flag = true;
+                    } else if (parseInt(maxUse) < 0) {
+                        maxUseError.innerText = "Usage limit must be a positive number.";
+                        flag = true;
+                    }
+
+                    // Validate Coupon Code
+                    if (!priceLimit) {
+
+                        priceLimitError.innerText = "Enter Price Limit";
+                        flag = true;
+                    } else if (parseInt(priceLimit) < 0) {
+                        priceLimitError.innerText = "Enter limit in positive number";
+                        flag = true;
+                    }
+
+                    // Validate Discount
+                    if (!coupondiscount) {
+
+                        discountError.innerText = "Please enter a discount.";
+                        flag = true;
+                    } else if (parseInt(coupondiscount) < 0) {
+                        discountError.innerText = "Discount must be a positive number.";
+                        flag = true;
+                    } else if (parseInt(coupondiscount) > 95) {
+                        discountError.innerText = "Discount must be less than 95";
+                        flag = true;
+                    }
+
+                    // Validate Expiry Date
+                    if (!expiry) {
+
+                        expiryError.innerText = "Please select an expiry date.";
+                        flag = true;
+                    } else {
+                        const currentDate = new Date();
+                        const selectedDate = new Date(expiry);
+                        if (selectedDate < currentDate) {
+                            expiryError.innerText = "Expiry Date must be in the future.";
+                            flag = true;
+                        }
+                    }
+
+                    if (flag) {
+
+                        return;
+                    }
                     axios
                         .post("/addCoupon", {
                             couponCode,
@@ -219,6 +232,7 @@
                             expiry
                         })
                         .then((data) => {
+
                             if (data) {
                                 Swal.fire(
                                     "Coupon Successfully Added",
@@ -228,16 +242,17 @@
                                     window.location.href = "/adminCoupon";
                                 });
                             }
-                            // let errorModal = document.getElementById("errorpopup");
-                            // errorModal.innerText = data.data.message;
-                            // errorModal.classList.remove("d-none");
+                            let errorModal = document.getElementById("errorpopup");
+                            errorModal.innerText = data.data.message;
+                            errorModal.classList.remove("d-none");
                         })
                         .catch((error) => {
-                            // if (error?.response?.data?.errStatus) {
-                            //     let errorModal = document.getElementById("errorpopup");
-                            //     errorModal.innerText = error.response.data.message;
-                            //     return errorModal.classList.remove("d-none");
-                            // }
+
+                            if (error?.response?.data?.errStatus) {
+                                let errorModal = document.getElementById("errorpopup");
+                                errorModal.innerText = error.response.data.message;
+                                return errorModal.classList.remove("d-none");
+                            }
                             console.log(error);
                         });
                 });
