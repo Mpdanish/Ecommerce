@@ -6,6 +6,7 @@ import Userdb from "../model/userSchema.js";
 import Orderdb from "../model/orderSchema.js";
 import Offerdb from "../model/offerSchema.js";
 import Coupondb from "../model/couponSchema.js";
+import { getAllCoupon } from "../helper/coupondbhelper.js";
 
 const adminEmail = process.env.ADMIN_ID;
 const adminPassword = process.env.ADMIN_PASS;
@@ -141,7 +142,6 @@ export async function adminOrder(req, res) {
         $unwind: "$userDetails",
       },
     ]);
-
     res.status(200).render("adminOrders.ejs", { orders });
   } catch (error) {
     console.error(error);
@@ -222,8 +222,11 @@ export async function addProductOffer(req, res) {
 
 export async function adminCoupon(req, res) {
   try {
-    const coupons = await Coupondb.find();
-    res.render("adminCoupon.ejs", { coupons });
+    const allcoupons = await Coupondb.find();
+    const coupons = await getAllCoupon(null, req.query.page)
+    const totalCoupons = allcoupons.length;
+  
+    res.render("adminCoupon.ejs", { coupons, totalCoupons, currentPage: Number(req.query.page) });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");

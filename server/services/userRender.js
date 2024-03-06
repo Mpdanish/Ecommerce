@@ -42,7 +42,6 @@ export async function homepage(req, res) {
   try {
     const product = await Productdb.find({ isHidden: false }).limit(3);
     const user = req.session.userId;
-    console.log("hello",user)
     res.status(200).render("homePage.ejs", { product, user });
   } catch (error) {
     console.error(error);
