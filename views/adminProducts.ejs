@@ -131,20 +131,44 @@
 
                 <!-- card-body end// -->
                 </div>
-                <!-- card end// -->
-                <% if (product.length > 10) { %>
-
-                    <div class="pagination-area mt-30 mb-50">
-                        <nav aria-label="Page navigation example">
+                <% if (totalProducts !==0) { %>
+                    <div class="row mb-4">
+                      <div class="col-12">
+                        <div class="text-center pagenationButton">
+                          <nav aria-label="Page navigation example">
                             <ul class="pagination justify-content-center">
-                                <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-                                </li>
+                              <li class="page-item">
+                                <a
+                                  class="page-link"
+                                  href="/adminProducts?page=<%= (currentPage === 1 || !currentPage)?1:(currentPage - 1) %>"
+                                  aria-label="Previous"
+                                >
+                                  <span aria-hidden="true">&laquo;</span>
+                                </a>
+                              </li>
+                              <% for( let i=0; i < (Math.ceil(totalProducts/ 10)); i++ ) { %>
+                              <li class="page-item">
+                                <a class="page-link" href="/adminProducts?page=<%= (i + 1) %>">
+                                  <%= (i + 1) %>
+                                </a>
+                              </li>
+                              <% } %>
+                              <li class="page-item">
+                                <a
+                                  class="page-link"
+                                  href="/adminProducts?page=<%= (((Math.ceil(totalProducts / 10)) === currentPage) || (Math.ceil(totalProducts / 10)) && !currentPage)?(currentPage?currentPage:1):(currentPage === 1 || !currentPage)?2:(currentPage + 1) %>"
+                                  aria-label="Next"
+                                >
+                                  <span aria-hidden="true">&raquo;</span>
+                                </a>
+                              </li>
                             </ul>
-                        </nav>
+                          </nav>
+                        </div>
+                      </div>
                     </div>
-                    <% } else if ( product.length == 0 ) { %>
+                    <% } %>
+                    <%  if ( totalProducts == 0 ) { %>
                      
 
                         <div>

@@ -38,6 +38,7 @@ export async function addToWishlist(req, res) {
 export async function removeFromWishlist(req, res) {
   try {
     const { id } = req.body;
+    console.log(id);
 
     // Remove the product from the user's cart
     const data = await Wishlistdb.updateOne(

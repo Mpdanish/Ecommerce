@@ -269,6 +269,10 @@ export async function wishlist(req, res) {
         $unwind: "$productsDetails",
       },
     ]);
+    console.log(wishlist);
+
+    // console.log(wishlist[0].products.productId);
+
     res.render("wishlist.ejs", { wishlist });
   } catch (error) {
     console.error(error);
