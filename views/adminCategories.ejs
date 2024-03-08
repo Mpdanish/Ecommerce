@@ -1,180 +1,203 @@
-<%- include('include/_header') %>
+<%- include('include/_header') %> <%- include('include/_nav') %> <%-
+include('include/_topheader') %>
 
+<section class="content-main">
+  <div class="content-header">
+    <div>
+      <h2 class="content-title card-title">Categories</h2>
+      <p>Add, edit or delete a category</p>
+    </div>
+    <div>
+      <div class="d-grid">
+        <a href="/adminUnlistedCategory">
+          <button class="btn btn-primary">Unlisted Categories</button>
+        </a>
+      </div>
+    </div>
+    <div>
+      <input
+        type="text"
+        placeholder="Search Categories"
+        class="form-control bg-white"
+      />
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="mb-4">
+            <label for="product_name" class="form-label">Category Name</label>
 
-    <%- include('include/_nav') %>
+            <input
+              type="text"
+              placeholder="Type here"
+              name="categoryName"
+              class="form-control"
+              id="category"
+            />
+            <br />
+            <div
+              class="bg-danger position-relative z-10 top-5 py-1.5 px-3 rounded-lg text-white d-none"
+              id="errorpopup"
+            ></div>
+          </div>
+          <div class="d-grid">
+            <button class="btn btn-primary" onclick="add()">
+              Add Category
+            </button>
+          </div>
+        </div>
+        <div class="col-md-9">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Action</th>
+                  <th>Edit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% for( let i=0; i < category.length; i++ ) { %> <% if
+                (category[i].isHidden==false) { %>
+                <tr>
+                  <td><%= i+1 %></td>
+                  <td>
+                    <p><%= category[i].name %></p>
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      class="btn btn-danger"
+                      onclick="handlelist('<%= category[i]._id %>')"
+                    >
+                      Unlist
+                    </button>
 
+                    <% } %>
+                  </td>
+                  <% if (category[i].isHidden==false) { %>
 
-        <%- include('include/_topheader') %>
+                  <td>
+                    <a href="/adminEditCategory/<%= category[i]._id %>"
+                      ><button type="button" class="btn btn-primary">
+                        Edit
+                      </button></a>
+                  </td>
+                  <% } %>
+                </tr>
 
+                <% } %>
+              </tbody>
+            </table>
+            <% if (category.length===0) { %>
+            <div class="text-center">\(^Д^)/ <br />No Categories.</div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% if (totalCategories !==0) { %>
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="text-center pagenationButton">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-center">
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="/adminCategory?page=<%= (currentPage === 1 || !currentPage)?1:(currentPage - 1) %>"
+                aria-label="Previous"
+              >
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <% for( let i=0; i < (Math.ceil(totalCategories / 10)); i++ ) { %>
+            <li class="page-item">
+              <a class="page-link" href="/adminCategory?page=<%= (i + 1) %>">
+                <%= (i + 1) %>
+              </a>
+            </li>
+            <% } %>
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="/adminCategory?page=<%= (((Math.ceil(totalCategories / 10)) === currentPage) || (Math.ceil(totalCategories / 10)) && !currentPage)?(currentPage?currentPage:1):(currentPage === 1 || !currentPage)?2:(currentPage + 1) %>"
+                aria-label="Next"
+              >
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <% } %>
+</section>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.5/axios.min.js"
+  integrity="sha512-TjBzDQIDnc6pWyeM1bhMnDxtWH0QpOXMcVooglXrali/Tj7W569/wd4E8EDjk1CwOAOPSJon1VfcEt1BI4xIrA=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+></script>
+<script>
+  function add() {
+    const name = document.getElementById("category").value;
 
-            <section class="content-main">
-                <div class="content-header">
-                    <div>
-                        <h2 class="content-title card-title">Categories</h2>
-                        <p>Add, edit or delete a category</p>
-                    </div>
-                    <div>
-                        <div class="d-grid">
-                            <a href="/adminUnlistedCategory"> <button class="btn btn-primary">Unlisted
-                                    Categories</button> </a>
-                        </div>
-                    </div>
-                    <div>
-                        <input type="text" placeholder="Search Categories" class="form-control bg-white" />
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="mb-4">
-                                    <label for="product_name" class="form-label">Category Name</label>
+    axios
+      .post("/api/addcategory", {
+        name,
+      })
+      .then((data) => {
+        if (data) {
+          Swal.fire("Category Added", "Click the button", "success").then(
+            () => {
+              window.location.reload();
+            }
+          );
+        }
+        let errorModal = document.getElementById("errorpopup");
+        errorModal.innerText = data.data.message;
+        errorModal.classList.remove("d-none");
+        if (data.data.message == "Category Added") {
+          errorModal.classList.add("d-none");
+        }
+      })
+      .catch((error) => {
+        if (error?.response?.data?.errStatus) {
+          let errorModal = document.getElementById("errorpopup");
+          errorModal.innerText = error.response.data.message;
+          return errorModal.classList.remove("d-none");
 
-                                    <input type="text" placeholder="Type here" name="categoryName" class="form-control"
-                                        id="category" />
-                                    <br>
-                                    <div class="bg-danger position-relative z-10 top-5 py-1.5 px-3 rounded-lg text-white d-none"
-                                        id="errorpopup">
-                                    </div>
-                                </div>
-                                <div class="d-grid">
-                                    <button class="btn btn-primary" onclick="add()">Add Category</button>
-                                </div>
+          if (error.response.data.message == "Category Added") {
+            errorModal.classList.add("d-none");
+          }
+        }
+        console.log(error);
+      });
+  }
 
-                            </div>
-                            <div class="col-md-9">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Name</th>
-                                                <th>Action</th>
-                                                <th>Edit</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% for( let i=0; i < category.length; i++ ) { %>
-                                                <% if (category[i].isHidden==false) { %>
-                                                    <tr>
-                                                        <td>
-                                                            <%= i+1 %>
-                                                        </td>
-                                                        <td>
-                                                            <p>
-                                                                <%= category[i].name %>
-                                                            </p>
-                                                        </td>
-                                                        <td>
+  function handlelist(id) {
+    axios
+      .post("/api/deletecategory", { id })
+      .then((data) => {
+        Swal.fire({
+          title: "Good job!",
+          text: "Successfully Unlisted",
+          icon: "success",
+        });
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+</script>
 
-                                                            <button type="button" class="btn btn-danger"
-                                                                onclick="handlelist('<%= category[i]._id %>')">Unlist</button>
-
-                                                            <% } %>
-                                                        </td>
-                                                        <% if (category[i].isHidden==false) { %>
-                                                         
-                                                        
-                                                        <td>
-                                                            <a href="/adminEditCategory/<%= category[i]._id %>"><button type="button" class="btn btn-primary"
-                                                                >
-                                                                Edit
-                                                            </button></a>
-                                                        </td>
-                                                        <% } %>
-                                                    </tr>
-
-                                                    <% } %>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <!-- .col// -->
-                        </div>
-                        <!-- .row // -->
-                    </div>
-                    <!-- card body .// -->
-                </div>
-                <!-- card .// -->
-                <% if (category.length> 10) { %>
-
-                    <div class="pagination-area mt-30 mb-50">
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination justify-content-center">
-                                <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-                    <% } else if ( category.length==0 ) { %>
-
-
-                        <div>
-                            <h3 class="text-center text-danger">No Data Available..!!</h3>
-                        </div>
-
-
-                        <% } %>
-            </section>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.5/axios.min.js"
-                integrity="sha512-TjBzDQIDnc6pWyeM1bhMnDxtWH0QpOXMcVooglXrali/Tj7W569/wd4E8EDjk1CwOAOPSJon1VfcEt1BI4xIrA=="
-                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-            <script>
-
-                function add() {
-                    const name = document.getElementById("category").value
-
-                    axios.post("/api/addcategory", {
-                        name
-                    })
-                        .then((data) => {
-                            if (data) {
-                                Swal.fire("Category Added", "Click the button", "success").then(
-                                    () => {
-                                        window.location.reload();
-                                    }
-                                );
-                            }
-                            let errorModal = document.getElementById('errorpopup')
-                            errorModal.innerText = data.data.message
-                            errorModal.classList.remove('d-none')
-                            if (data.data.message == "Category Added") {
-                                errorModal.classList.add('d-none')
-                            }
-                        })
-                        .catch((error) => {
-                            if (error?.response?.data?.errStatus) {
-                                let errorModal = document.getElementById('errorpopup')
-                                errorModal.innerText = error.response.data.message
-                                return errorModal.classList.remove('d-none')
-
-                                if (error.response.data.message == "Category Added") {
-                                    errorModal.classList.add('d-none')
-                                }
-                            }
-                            console.log(error);
-                        })
-                }
-
-                function handlelist(id) {
-                    axios.post('/api/deletecategory', { id })
-                        .then((data) => {
-                            Swal.fire({
-                                title: "Good job!",
-                                text: "Successfully Unlisted",
-                                icon: "success"
-                            });
-                            setTimeout(() => {
-                                window.location.reload()
-                            }, 1000);
-                        }).catch((err) => {
-                            console.log(err);
-                        })
-                }
-
-            </script>
-
-
-            <%- include('include/_footer') %>
+<%- include('include/_footer') %>

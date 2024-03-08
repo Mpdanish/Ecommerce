@@ -6,7 +6,7 @@ import Userdb from "../model/userSchema.js";
 import Orderdb from "../model/orderSchema.js";
 import Offerdb from "../model/offerSchema.js";
 import Coupondb from "../model/couponSchema.js";
-import { getAllCoupon } from "../helper/coupondbhelper.js";
+import {  getAllCoupon, getAllUsers, getListedAllCategories, getUnlistedAllCategories } from "../helper/dbHelper.js";
 
 const adminEmail = process.env.ADMIN_ID;
 const adminPassword = process.env.ADMIN_PASS;
@@ -75,8 +75,10 @@ export async function adminHome(req, res) {
 
 export async function adminUser(req, res) {
   try {
-    const user = await Userdb.find();
-    res.status(200).render("adminUsers.ejs", { user });
+    const users = await Userdb.find();
+    const user = await getAllUsers(req.query.page);
+    const totalUsers = users.length;
+    res.status(200).render("adminUsers.ejs", { user,currentPage: Number(req.query.page), totalUsers });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -85,7 +87,10 @@ export async function adminUser(req, res) {
 
 export async function adminProduct(req, res) {
   try {
-    const product = await Productdb.find().populate("category");
+    const products = await Productdb.find().populate("category");
+    const product = await getAllUsers(req.query.page);
+    const total = users.length;
+
     res.status(200).render("adminProducts.ejs", { product });
   } catch (error) {
     console.error(error);
@@ -151,8 +156,13 @@ export async function adminOrder(req, res) {
 
 export async function adminCategory(req, res) {
   try {
-    const category = await Categorydb.find();
-    res.status(200).render("adminCategories.ejs", { category });
+
+    const allCategories = await Categorydb.find({isHidden:false});
+    const category = await getListedAllCategories(false, req.query.page)
+    const totalCategories = allCategories.length;
+
+
+    res.status(200).render("adminCategories.ejs", { category, totalCategories,currentPage: Number(req.query.page)  });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
@@ -171,8 +181,12 @@ export async function adminEditCategory(req, res) {
 
 export async function adminUnlistedCategory(req, res) {
   try {
-    const category = await Categorydb.find();
-    res.status(200).render("adminUnlistCategory.ejs", { category });
+
+    const allCategories = await Categorydb.find({isHidden:true});
+    const category = await getUnlistedAllCategories(true, req.query.page)
+    const totalCategories = allCategories.length;
+
+    res.status(200).render("adminUnlistCategory.ejs", { category, totalCategories,currentPage: Number(req.query.page) });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
