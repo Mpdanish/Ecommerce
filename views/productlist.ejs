@@ -385,8 +385,12 @@
           productGrid.innerHTML = "";
 
           for (let i = 0; i < filteredProducts.length; i++) {
-            const productHTML = `
-          <a href="/product/${filteredProducts[i]._id}" class="group">
+            const productHTML = `<div
+                      id="showproducts"
+                      class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8"
+                    >
+            <div class="group">
+          <a href="/product/${filteredProducts[i]._id}">
       <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
         <img src="${filteredProducts[i].images[0]}"
           alt="Tall slender porcelain bottle with natural clay textured body and cork stopper."
@@ -395,10 +399,10 @@
       <h3 class="mt-4 text-sm text-gray-700">
         ${filteredProducts[i].name}
       </h3>
-      <p class="mt-1 text-lg font-medium text-gray-900">
-        ${filteredProducts[i].price}
+      <p class="mt-1 text-lg font-medium text-gray-900 price">
+        ₹ ${filteredProducts[i].price}
       </p>
-    </a>`;
+    </a> </div> </div>`;
             productGrid.innerHTML += productHTML;
           }
         } catch (error) {
@@ -415,8 +419,12 @@
           productGrid.innerHTML = "";
 
           for (let i = 0; i < allProducts.length; i++) {
-            const productHTML = `
-            <a href="/product/${allProducts[i]._id}" class="group">
+            const productHTML = `<div
+                      id="showproducts"
+                      class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8"
+                    >
+            <div class="group">
+            <a href="/product/${allProducts[i]._id}">
                 <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
                     <img src="${allProducts[i].images[0]}"
                         alt="Tall slender porcelain bottle with natural clay textured body and cork stopper."
@@ -425,10 +433,10 @@
                 <h3 class="mt-4 text-sm text-gray-700">
                     ${allProducts[i].name}
                 </h3>
-                <p class="mt-1 text-lg font-medium text-gray-900">
-                    ${allProducts[i].price}
+                <p class="mt-1 text-lg font-medium text-gray-900 price">
+                  ₹ ${allProducts[i].price}
                 </p>
-            </a>`;
+            </a> </div> </div>`;
             productGrid.innerHTML += productHTML;
           }
         } catch (error) {

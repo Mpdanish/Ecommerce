@@ -113,6 +113,12 @@
                   class="py-2 px-4 border-b"
                   onclick="location.href = '/orderinformation/<%= orders[i].orderDetails._id %>'"
                 >
+                  Order Date: <%= orders[i].orderDetails.orderDate.toISOString().split("T")[0].split("-").reverse().join("-") %>
+                </td>
+                <td
+                  class="py-2 px-4 border-b"
+                  onclick="location.href = '/orderinformation/<%= orders[i].orderDetails._id %>'"
+                >
                   Quantity: <%= orders[i].orderDetails.quantity %>
                 </td>
                 <td

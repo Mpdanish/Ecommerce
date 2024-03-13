@@ -3,6 +3,7 @@ import {
   addaddress,
   cart,
   editaddress,
+  forgotPass,
   homepage,
   login,
   orderinfo,
@@ -24,6 +25,7 @@ import {
   changepassowrd,
   deleteaddress,
   filterproduct,
+  forgotPassEmailVerify,
   isUser,
   logoutUser,
   newuser,
@@ -35,7 +37,7 @@ import {
 } from "../controller/userController.js";
 
 import { addToCart, reloadTotalAmount, removeFromCart, removeproductfromcart, updatequantity } from "../controller/cartController.js";
-import { cancelOrder, checkaddress, checkout, orderRazorpayVerification, placeorder, returnOrder } from "../controller/orderController.js";
+import { cancelOrder, checkaddress, checkout, generateInvoice, orderRazorpayVerification, placeorder, returnOrder } from "../controller/orderController.js";
 import { checkBlocked, dontgoback, } from "../middleware/userAuth.js";
 import { addToWishlist, removeFromWishlist } from "../controller/wishlistController.js";
 import { checkCoupon } from "../controller/couponController.js";
@@ -47,6 +49,7 @@ router.get("/home",checkBlocked, homepage); //checkBlocked, checkSession,
 router.get("/login",dontgoback, login);
 router.get("/logout", logoutUser);
 router.get("/register", register);
+router.get("/forgotPassword", forgotPass);
 router.get("/404page", pagenotfound);
 router.get("/successpage",checkBlocked, successpage)
 router.get("/product/:id", productpage);
@@ -69,22 +72,25 @@ router.get("/wallet",checkBlocked, wallet)
 
 router.post("/api/registeruser", newuser);
 router.post("/api/login", isUser);
+router.post("/forgotPassEmailVerify",forgotPassEmailVerify)
 router.post("/api/addtocart", addToCart);
 router.post("/addToWishlist", addToWishlist);
 router.post("/api/addaddress", addAddress );
 router.post("/api/checkCoupon", checkCoupon );
-
-router.delete("/deleteaddress/:id",deleteaddress);
-
 router.post("/updateprofile",updateprofile );
 
 router.put("/api/updateaddress",updateaddress )
 
 router.delete("/removeProduct", removeproductfromcart)
 router.delete("/removeFromWishlist", removeFromWishlist)
+router.delete("/deleteaddress/:id",deleteaddress);
+
+
 router.get('/api/products',filterproduct)
 router.get('/getUpdatedTotalAmount',reloadTotalAmount)
 router.get('/checkaddress',checkaddress)
+router.get('/generate-invoice/:id', generateInvoice)
+
 router.post('/placeorder',placeorder)
 router.post('/cancelOrder',cancelOrder)
 router.post('/returnOrder',returnOrder)

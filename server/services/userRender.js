@@ -8,6 +8,7 @@ import Categorydb from "../model/categorySchema.js";
 import Orderdb from "../model/orderSchema.js";
 import Walletdb from "../model/walletSchema.js";
 import Wishlistdb from "../model/wishlistSchema.js";
+import Offerdb from "../model/offerSchema.js";
 
 //Register User Page
 export function register(req, res) {
@@ -68,6 +69,15 @@ export async function otppage(req, res) {
   }
 }
 
+export async function forgotPass(req, res) {
+  try {
+    res.render("forgotPassEmail.ejs");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
 export async function profile(req, res) {
   try {
     const user = await Userdb.findById({ _id: req.session.userId });
@@ -115,9 +125,27 @@ export async function productpage(req, res) {
       return res.status(404).redirect("/404page");
     }
 
-    const product = await Productdb.findOne({
-      _id: req.params.id,
-    }).populate("offer");
+    // const product = await Productdb.findOne({
+    //   _id: req.params.id,
+    // }).populate("offer");
+    console.log(req.params.id);
+
+    const product = await Productdb.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(req.params.id),
+        },
+      },
+      {
+        $lookup: {
+          from: Offerdb.collection.name,
+          localField: "offer",
+          foreignField: "_id",
+          as: "offerDetails",
+        },
+      }
+    ]);
+
 
     if (!product) {
       return res.status(404).redirect("/404page");
@@ -256,8 +284,8 @@ export async function wishlist(req, res) {
       {
         $match: { userId: new mongoose.Types.ObjectId(req.session.userId) },
       },
-      { $unwind: "$products" }
-      ,{
+      { $unwind: "$products" },
+      {
         $lookup: {
           from: Productdb.collection.name,
           localField: "products.productId",

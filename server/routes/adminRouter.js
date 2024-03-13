@@ -97,7 +97,7 @@ router.post('/generateSalesReport', customDateSales)
 router.put("/api/updateproduct/:id", updateproduct);
 router.put("/api/updatecategory/:id", updatecategory);
 router.put("/updateOffer/:id", updateOffer);
-router.put("/updateCoupon/:id", updateCoupon);
+router.patch("/updateCoupon/:id", updateCoupon);
 
 router.delete("/deleteimage/:id/:productid", deleteImage)
 router.delete("/deleteoffer/:id", deleteOffer)

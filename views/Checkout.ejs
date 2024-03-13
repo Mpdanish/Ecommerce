@@ -448,23 +448,17 @@
           const selectedPaymentMethod = document.querySelector(
             'input[name="payment_method"]:checked'
           ).value;
-          // console.log(selectedPaymentMethod,'1');
           const totalSum = sum;
           const selectedAddress =
             document.getElementById("selectedAddress").innerText;
-          // console.log(totalSum);
           // Get the image source
           const image = document.getElementById("imageproduct").src;
-          // console.log("Image Source:", image);
 
           const name = document.getElementById("prdname").innerText;
-          // console.log("name: ", name);
 
           const price = Number(document.getElementById("totalSum").textContent);
-          console.log(price);
 
           const quantity = document.getElementById("prdquantity").innerText;
-          // console.log("quantity:", quantity);
 
           if (selectedPaymentMethod) {
             var paymentMethod = selectedPaymentMethod;
@@ -475,7 +469,7 @@
               axios
                 .post("/placeorder", {
                   address: selectedAddress,
-                  totalsum: totalSum,
+                  totalsum: price,
                   paymentMethod: paymentMethod,
                   name: name,
                   price: price,

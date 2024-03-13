@@ -64,7 +64,7 @@ export async function newuser(req, res) {
     await user.save();
     // res.redirect('/otp')
     // Send email with OTP
-    await sendOtpEmail(req.body.email, otp);
+    sendOtpEmail(req.body.email, otp);
 
     // Render OTP entry page
     res.status(200).render("otpentry");
@@ -113,7 +113,7 @@ export async function isUser(req, res) {
 
     const data = await Userdb.findOne({ email });
 
-    const isPasswordMatch = await bcrypt.compare(password, data.password);
+    const isPasswordMatch = bcrypt.compare(password, data.password);
 
     if (isPasswordMatch) {
       // Set session and redirect to home
@@ -174,7 +174,7 @@ export async function resendOtp(req, res) {
 
     // Save the new OTP to the database
     await Otpdb.create({ email, otp: newOTP });
-    await sendOtpEmail(email, newOTP);
+    sendOtpEmail(email, newOTP);
 
     console.log(`New OTP generated for ${email}: ${newOTP}`);
 
@@ -183,6 +183,80 @@ export async function resendOtp(req, res) {
   } catch (error) {
     console.error("Error while resending OTP:", error);
     res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function forgotPassEmailVerify(req, res) {
+  try {
+    console.log(req.body);
+    const email = req.body.email;
+    if (!email) {
+      return res
+        .status(401)
+        .json({ errStatus: true, message: "Enter Email" });
+    }
+
+    if (email && !/^[A-Za-z0-9]+@gmail\.com$/.test(email)) {
+      return res
+        .status(401)
+        .json({ errStatus: true, message: "Enter Valid Email Address" });
+    }
+
+
+    const data = await Userdb.findOne({ email: email });
+
+    if (!data) {
+      res
+        .status(401)
+        .json({ errStatus: true, message: "No user with that Email" });
+
+      return res.status(401).redirect("/forgotPassword");
+    }
+
+    req.session.userId = data._id;
+    req.session.verifyEmail = email;
+
+    // Generate a new OTP
+    const newOTP = generateOTP();
+
+    // Save the new OTP to the database
+    await Otpdb.create({ email, otp: newOTP });
+
+    sendOtpEmail(email,newOTP);
+    
+  } catch (err) {
+    console.error("Error querying the database:", err);
+  }
+}
+
+export async function forgotPassOtpVerify(req, res) {
+  try {
+    const otp = req.body.otp;
+    if (!otp) {
+      return res
+      .status(401)
+      .json({ errStatus: true, message: "Enter OTP" });
+    }
+
+    if (String(otp).length > 4) {
+      return res
+      .status(401)
+      .json({ errStatus: true, message: "Enter Valid Number" });
+    }
+
+
+    const response = await userOtpVerify(req, res, "/forgotPassword");
+
+    if (response) {
+      deleteOtpFromdb(req.session.otpId);
+      req.session.resetPasswordPage = true;
+
+      delete req.session.verifyEmail;
+      res.status(200).redirect("/loginResetPassword");
+    }
+  } catch (err) {
+    console.error("Internal delete error", err);
+    res.status(500).render("errorPages/500ErrorPage");
   }
 }
 
@@ -241,7 +315,7 @@ export async function changepassowrd(req, res) {
     }
     // Check if current password is correct
 
-    const passwordmatch = await bcrypt.compare(currentPassword, user.password);
+    const passwordmatch = bcrypt.compare(currentPassword, user.password);
     if (!passwordmatch) {
       return res.status(400).json({ error: "Invalid current password" });
     }

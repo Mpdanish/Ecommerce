@@ -14,15 +14,11 @@
     />
 
     <style>
-      
-
       .image {
         position: relative;
         width: 100%;
         height: 460px;
         overflow: hidden;
-        /* border: 5px solid #fff;
-        box-shadow: -1px 5px 15px #000; */
       }
 
       .image img {
@@ -32,7 +28,7 @@
         -o-object-fit: cover;
         object-fit: cover;
         transform: scale(var(--zoom, 1));
-        transform-origin: var(--x, 50%) var(--y, 50%); /* Updated transform-origin */
+        transform-origin: var(--x, 50%) var(--y, 50%);
         transition: transform 0.3s ease;
       }
       .image:hover {
@@ -93,27 +89,35 @@
           <div class="flex flex-col md:flex-row -mx-4">
             <div class="md:flex-1 px-4">
               <div class="image mb-4">
+                <% if (product[0]?.images && Array.isArray(product[0]?.images) && product[0]?.images.length > 0) { %>
                 <img
                   id="mainImage"
                   class="w-full h-full object-cover"
-                  src="<%= product.images[0] %>"
+                  src="<%= product[0].images[0] %>"
                   alt="Product Image"
                 />
+                <% } else { %>
+                  <p>No images available for this product.</p>
+              <% } %>
               </div>
 
               <div class="flex -mx-2 mb-4" id="thumbnailContainer">
-                <% for( let i=0; i < product.images.length; i++ ) { %>
+                <% if (product[0]?.images && product[0]?.images.length > 0) { %>
+                <% for( let i=0; i < product[0].images.length; i++ ) { %>
 
                 <div class="w-1/5 px-2">
                   <img
                     class="w-full h-auto cursor-pointer"
                     style="height: 90px; width: 90px"
-                    src="<%= product.images[i] %>"
+                    src="<%= product[0].images[i] %>"
                     alt="Thumbnail Image"
                     onclick="showMainImage(this)"
                   />
                 </div>
                 <% } %>
+                <% } else { %>
+                  <p>No images available for this product.</p>
+              <% } %>
 
                 <!-- Add more thumbnail images here -->
               </div>
@@ -121,14 +125,31 @@
 
             <div class="md:flex-1 px-4">
               <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-                <%= product.name %>
+                <%= product[0]?.name %>
               </h2>
               <div class="flex mb-4">
                 <div class="mr-4">
-                  <span class="font-bold text-gray-700 dark:text-gray-300"
-                    >Price: ₹ <%= product.price %></span
+                  
+                  <% if (product[0]?.offerDetails[0]) { %>
+                  <% if (new Date(product[0].offerDetails[0].expiry) < new Date()) { %>
+                  <p class="font-bold text-gray-700 dark:text-gray-300" id="productPrice">
+                    Price: ₹ <%= product[0].price %>
+                  </p>
+                  <% } else { %>
+                  <p class="font-bold text-gray-700 dark:text-gray-300" id="productPrice">
+                   <strike> Price: ₹ <%= product[0].price %> </strike>
+                  </p>
+                  <p class="font-bold text-gray-700 dark:text-gray-300" id="productPrice">
+                    Price: ₹ <%= product[0].price - Math.round(product[0].price *
+                    product[0].offerDetails[0].discount / 100) %>
+                  </p>
+                  <% } %>
+                  <% } else { %>
+                    <span class="font-bold text-gray-700 dark:text-gray-300"
+                    >Price: ₹ <%= product[0]?.price %></span
                   >
-                  <!-- <span class="text-gray-600 dark:text-gray-300">$29.99</span> -->
+                    <% } %>
+
                 </div>
                 <!-- <div>
                 <span class="font-bold text-gray-700 dark:text-gray-300"
@@ -141,13 +162,14 @@
                 <div class="w-1/2 px-2">
                   <button
                     class="w-full bg-gray-900 dark:bg-gray-600 text-white py-2 px-4 rounded-full font-bold hover:bg-gray-800 dark:hover:bg-gray-700"
-                    onclick="addToCart( '<%- product._id %>')"
+                    onclick="addToCart( '<%- product[0]?._id %>')"
                   >
                     Add to Cart
                   </button>
                 </div>
                 <div class="w-1/2 px-2">
-                  <button onclick="addToWishlist( '<%- product._id %>')"
+                  <button
+                    onclick="addToWishlist( '<%- product[0]?._id %>')"
                     class="w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white py-2 px-4 rounded-full font-bold hover:bg-gray-300 dark:hover:bg-gray-600"
                   >
                     Add to Wishlist
@@ -159,7 +181,7 @@
                   >Product Description:</span
                 >
                 <p class="text-gray-600 dark:text-gray-300 text-sm mt-2">
-                  <%= product.description %>
+                  <%= product[0]?.description %>
                 </p>
               </div>
             </div>
@@ -272,20 +294,20 @@
             // Check if the product was successfully added or already exists
             if (response.data.message === "Product already in wishlist") {
               const Toast = Swal.mixin({
-              toast: true,
-              position: "top-end",
-              showConfirmButton: false,
-              timer: 3000,
-              timerProgressBar: true,
-              didOpen: (toast) => {
-                toast.onmouseenter = Swal.stopTimer;
-                toast.onmouseleave = Swal.resumeTimer;
-              },
-            });
-            Toast.fire({
-              icon: "success",
-              title: "Product Already in Wishlist",
-            });
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                  toast.onmouseenter = Swal.stopTimer;
+                  toast.onmouseleave = Swal.resumeTimer;
+                },
+              });
+              Toast.fire({
+                icon: "success",
+                title: "Product Already in Wishlist",
+              });
             } else {
               console.log(response.data.message);
             }

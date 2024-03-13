@@ -8,6 +8,8 @@ import Userdb from "../model/userSchema.js";
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import Walletdb from "../model/walletSchema.js";
+import EasyInvoice from "easyinvoice";
+import fs from "fs";
 
 var instance = new Razorpay({
   key_id: process.env.RZP_KEY_ID,
@@ -83,22 +85,12 @@ export async function checkaddress(req, res) {
 
 export async function placeorder(req, res) {
   try {
-    const { paymentMethod, address, totalsum, name, price, quantity, image } =
-      req.body;
-    const sum = parseInt(totalsum);
-    const totalprice = parseInt(price);
-    const count = parseInt(quantity);
-
-    const quantityMatch = quantity.match(/(\d+)/);
-    const sumMatch = totalsum.match(/(\d+)/);
-
-    // Parse the matched values into numbers
-    const quantityy = quantityMatch ? parseInt(quantityMatch[1]) : 0;
-    const summ = sumMatch ? parseInt(sumMatch[1]) : 0;
+    const { paymentMethod, address, price } = req.body;
+    req.session.sum = price;
 
     // Check if address and paymentMethod are provided
-    if (!paymentMethod || !address || !totalsum) {
-      throw new Error("Payment method, address, and total sum are required.");
+    if (!paymentMethod || !address) {
+      throw new Error("Payment method and address are required.");
     }
 
     if (paymentMethod === "Razorpay") {
@@ -107,8 +99,11 @@ export async function placeorder(req, res) {
         key_secret: process.env.RZP_KEY_SECRET,
       });
 
+      req.session.paymentMethod = paymentMethod;
+      req.session.address = address;
+
       var options = {
-        amount: totalprice * 100, // amount in the smallest currency unit
+        amount: price * 100, // amount in the smallest currency unit
         currency: "INR",
         receipt: "order_rcptid_11",
       };
@@ -116,8 +111,6 @@ export async function placeorder(req, res) {
         return res.json({ order });
       });
     }
-
-    
 
     if (paymentMethod !== "Razorpay") {
       res.status(200).json({ message: "Order placed successfully!" });
@@ -147,65 +140,63 @@ export async function orderRazorpayVerification(req, res) {
 
     const isValid = generated_signature === razorpay_signature;
 
-
     if (isValid) {
       let user = req.session.userId;
 
-    const userId = await Userdb.findById(user);
-    const currentDate = new Date();
-    const dateWithoutTime = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate()
-    );
+      const userId = await Userdb.findById(user);
+      const currentDate = new Date();
 
-    const cartItems = await Cartdb.aggregate([
-      {
-        $match: { userId: new mongoose.Types.ObjectId(req.session.userId) },
-      },
-      {
-        $unwind: "$products",
-      },
-      {
-        $lookup: {
-          from: Productdb.collection.name,
-          localField: "products.productId",
-          foreignField: "_id",
-          as: "productsDetails",
+      const cartItems = await Cartdb.aggregate([
+        {
+          $match: { userId: new mongoose.Types.ObjectId(req.session.userId) },
         },
-      },
-      {
-        $unwind: "$productsDetails",
-      },
-    ]);
+        {
+          $unwind: "$products",
+        },
+        {
+          $lookup: {
+            from: Productdb.collection.name,
+            localField: "products.productId",
+            foreignField: "_id",
+            as: "productsDetails",
+          },
+        },
+        {
+          $unwind: "$productsDetails",
+        },
+      ]);
 
-    const orderItems = cartItems.map((element) => {
-      const orderItem = {
-        productId: element.products.productId,
-        pName: element.productsDetails.name,
-        price: element.productsDetails.price * quantityy,
-        pImage: element.productsDetails.images[0],
-        quantity: quantityy,
-        address: address,
-        paymentMethod: paymentMethod,
-        orderStatus: "Ordered",
-        orderDate: dateWithoutTime,
-      };
-      return orderItem;
-    });
+      const orderItems = cartItems.map((element) => {
+        const orderItem = {
+          productId: element.products.productId,
+          pName: element.productsDetails.name,
+          price: element.productsDetails.price * element.products.quantity,
+          pImage: element.productsDetails.images[0],
+          quantity: element.products.quantity,
+          address: req.session.address,
+          paymentMethod: req.session.paymentMethod,
+          orderStatus: "Ordered",
+          orderDate: currentDate,
+        };
+        return orderItem;
+      });
 
-    // Create a new order instance
-    const newOrder = new Orderdb({
-      userId: userId,
-      orderDetails: orderItems,
-      totalsum: sum,
-    });
+      // Create a new order instance
+      const newOrder = new Orderdb({
+        userId: userId,
+        orderDetails: orderItems,
+        totalsum: req.session.sum,
+      });
 
-    // Save the order to the database
-    await newOrder.save();
+      // Save the order to the database
+      await newOrder.save();
 
-    await clearUserCart(req.session.userId);
-    
+      delete req.session.address;
+      delete req.session.sum;
+      delete req.session.paymentMethod;
+
+      await clearUserCart(req.session.userId);
+
       res.status(200).redirect("/successpage");
     }
   } catch (error) {
@@ -290,8 +281,6 @@ export async function returnOrder(req, res) {
       { projection: { "orderDetails.$": 1 } }
     );
     // console.log(order, "orderr");
-
-    
 
     // Add the quantity back to product stock
     const product = await Productdb.findOneAndUpdate(
@@ -386,5 +375,178 @@ async function decreaseProductStock(productId, quantity) {
   } catch (error) {
     console.error("Error decreasing product stock:", error);
     // Handle error appropriately
+  }
+}
+
+export async function generateInvoice(req, res) {
+  try {
+    const order = await Orderdb.findById(req.params.id);
+    console.log(order);
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+
+    // Create the invoice using EasyInvoice
+    const data = {
+      documentTitle: "Invoice",
+      currency: "INR",
+      taxNotation: "gst", // or gst
+      marginTop: 25,
+      marginBottom: 25,
+      padding: 10,
+      color: "#007BFF",
+      logo: "/images/electronic-store-logo.svg", // or base64
+      sender: {
+        company: "OtronMart",
+        address: "Street 123",
+        zip: "459876",
+        city: "Calicut",
+        country: "India",
+      },
+      client: {
+        company: "Client",
+        address: order.orderDetails[0].address,
+      },
+      invoiceNumber: `Order #${order._id}`, // Use order ID as invoice number
+      invoiceDate: order.orderDetails[0].orderDate.toLocaleDateString(), // Use order date as invoice date
+      products: order.orderDetails.map((detail) => ({
+        name: detail.pName,
+        price: detail.price,
+        quantity: detail.quantity,
+      })),
+      total: order.totalsum,
+    };
+    console.log(data);
+
+    const result = await EasyInvoice.createInvoice(data);
+
+    // Save invoice to a PDF file
+    fs.writeFileSync("invoice.pdf", result.pdf, "base64");
+
+    res.contentType("application/pdf");
+    res.send(result.pdf);
+  } catch (error) {
+    console.error("error", error);
+    res.status(500).send("Server Error");
+  }
+}
+
+function generateInvoiceNumber() {
+  return Math.floor(Math.random() * 1000000) + 1;
+}
+
+export async function invoiceDownload(req, res) {
+  const orderId = req.params.id;
+  try {
+    const order = await Orderdb.findOne({ _id: orderId });
+
+    const doc = new PDFDocument();
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'attachment; filename="invoice.pdf"');
+
+    doc.pipe(res);
+
+    const invoiceNumber = generateInvoiceNumber();
+
+    doc
+      .font("Helvetica")
+      .fontSize(24)
+      .text("Fonekart", { align: "center" })
+      .moveDown()
+      .moveDown();
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(24)
+      .text("INVOICE", { align: "start" })
+      .moveDown();
+
+    doc
+      .fontSize(12)
+      .text(`Invoice Number: ${invoiceNumber}`, { align: "start" })
+      .moveDown();
+    doc
+      .fontSize(10)
+      .text(`Order Date: ${order.orderDetails.orderDate.toDateString()}`, { align: "start" })
+      .moveDown()
+      .moveDown();
+
+    doc.fontSize(12).text("BILLED TO :", { underline: true });
+    doc.fontSize(10).text(`Name: ${order.orderDetails.address.name}`);
+    doc
+      .fontSize(10)
+      .text(
+        `Address: ${order.address.address}, ${order.address.city}, ${order.address.pin}`
+      );
+
+    const tableHeaders = [
+      "Product Name",
+      "Quantity",
+      "Unit Price",
+      "Total Price",
+    ];
+
+    const startX = 50;
+    const startY = doc.y + 15;
+    const cellWidth = 120;
+
+    const headerHeight = 30;
+    doc
+      .rect(startX, startY, cellWidth * tableHeaders.length, headerHeight)
+      .fillAndStroke("#CCCCCC", "#000000");
+    doc.font("Helvetica-Bold").fontSize(10).fillColor("#000000");
+    tableHeaders.forEach((header, index) => {
+      doc.text(
+        header,
+        startX + cellWidth * index + cellWidth / 2,
+        startY + headerHeight / 2,
+        { width: cellWidth, align: "start", valign: "start" }
+      );
+    });
+
+    const rowHeight = 50;
+    let yPos = startY + headerHeight;
+    order.orderItems.forEach((item, rowIndex) => {
+      const fillColor = rowIndex % 2 === 0 ? "#FFFFFF" : "#EEEEEE";
+      doc
+        .rect(startX, yPos, cellWidth * tableHeaders.length, rowHeight)
+        .fillAndStroke(fillColor, "#000000");
+      doc.fillColor("#000000");
+      doc.font("Helvetica").fontSize(10);
+      doc.text(
+        item.Pname || "N/A",
+        startX + cellWidth / 2,
+        yPos + rowHeight / 2,
+        { width: cellWidth, align: "start", valign: "start" }
+      );
+      doc.text(
+        item.quantity.toString(),
+        startX + cellWidth + cellWidth / 2,
+        yPos + rowHeight / 2,
+        { width: cellWidth, align: "start", valign: "start" }
+      );
+      doc.text(
+        item.price !== undefined ? item.price.toString() : "N/A",
+        startX + cellWidth * 2 + cellWidth / 2,
+        yPos + rowHeight / 2,
+        { width: cellWidth, align: "start", valign: "start" }
+      );
+      doc.text(
+        item.price !== undefined && item.quantity !== undefined
+          ? (item.price * item.quantity).toString()
+          : "N/A",
+        startX + cellWidth * 3 + cellWidth / 2,
+        yPos + rowHeight / 2,
+        { width: cellWidth, align: "start", valign: "start" }
+      );
+      yPos += rowHeight;
+    });
+
+    doc.moveDown(2);
+
+    doc.end();
+  } catch (error) {
+    res.status(500).redirect("/500");
+    console.error("Error generating invoice:", error);
   }
 }

@@ -52,8 +52,13 @@ export async function updateCoupon(req, res) {
     let { couponCode, category, maxUse, priceLimit, coupondiscount, expiry } =
       req.body;
     const regexCode = new RegExp(couponCode, "i");
+    // const duplicate = await Coupondb.findOne({
+    //   couponCode: { $regex: regexCode },
+    // });
+
     const duplicate = await Coupondb.findOne({
-      couponCode: { $regex: regexCode },
+      couponCode: { $regex: new RegExp('^' + couponCode + '$', "i") },
+      _id: { $ne: req.params.id } // Exclude the current coupon being updated
     });
 
     if (!couponCode) {

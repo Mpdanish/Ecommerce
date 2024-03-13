@@ -1,167 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Order Information</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css" rel="stylesheet" />
-    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-</head>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
 
-<body class="bg-gray-100 font-sans flex flex-col min-h-screen">
-
+  <body class="bg-gray-100 font-sans flex flex-col min-h-screen">
     <nav class="bg-white border-gray-200 dark:bg-gray-900">
-        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-            <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
-                <img src="/images/electronic-store-logo.svg" class="h-8" alt="OtronMart Logo" />
-            </a>
+      <div
+        class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
+      >
+        <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
+          <img
+            src="/images/electronic-store-logo.svg"
+            class="h-8"
+            alt="OtronMart Logo"
+          />
+        </a>
 
-            <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-search">
-
-                <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-                    <li>
-                        <a href="/" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">Home</a>
-                    </li>
-                    <li>
-                        <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Product</a>
-                    </li>
-                    <li>
-                        <a href="/cart" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Cart</a>
-                    </li>
-                </ul>
-            </div>
+        <div
+          class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
+          id="navbar-search"
+        >
+          <ul
+            class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"
+          >
+            <li>
+              <a
+                href="/"
+                class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500"
+                aria-current="page"
+                >Home</a
+              >
+            </li>
+            <li>
+              <a
+                href="#"
+                class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                >Product</a
+              >
+            </li>
+            <li>
+              <a
+                href="/cart"
+                class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                >Cart</a
+              >
+            </li>
+          </ul>
         </div>
+      </div>
     </nav>
-        <div class="flex-grow">
-            <div class="container mx-auto my-8 p-8 bg-white rounded-lg shadow-md">
-                 <!-- Back button -->
-            <a href="#" onclick="goBack()"
-            class="inline-flex items-center mb-5 px-4 py-2 text-base font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-            <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            Back
+    <div class="flex-grow">
+      <div class="container mx-auto my-8 p-8 bg-white rounded-lg shadow-md">
+        <!-- Back button -->
+        <a
+          href="#"
+          onclick="goBack()"
+          class="inline-flex items-center mb-5 px-4 py-2 text-base font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+        >
+          <svg
+            class="h-4 w-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            ></path>
+          </svg>
+          Back
         </a>
         <!-- Order Information Header -->
         <div class="flex justify-between items-center mb-8">
-           
-            <h1 class="text-3xl font-semibold">Order Information</h1>
-            <!-- Add your logo or navigation links here -->
+          <h1 class="text-3xl font-semibold">Order Information</h1>
+          <!-- Add your logo or navigation links here -->
         </div>
 
         <!-- Order Summary and Shipping Information -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="w-full">
-                <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
-                <!-- Add order summary details here -->
-                <!-- Example: -->
-                <p>Order ID: <%= details._id.toString().split('').slice(18,24).join('') %></p>
-                <p>Total Items: <%= details.orderDetails[0].quantity %></p>
-                <p>Subtotal: <%= details.orderDetails[0].price %> </p>
-                <!-- <p>Discount: -$10.00</p> -->
-                <p class="text-xl font-semibold mt-4">Order Total:  <%= details.orderDetails[0].quantity * details.orderDetails[0].price %></p>
-            </div>
-            <div class="w-full">
-                <h2 class="text-xl font-semibold mb-4">Shipping Information</h2>
-                <!-- Add shipping information details here -->
-                <!-- Example: -->
-                <p style="word-wrap: break-word;"> <%= details.orderDetails[0].address %></p>
-            </div>
-            <div class="w-full">
-                <h2 class="text-xl font-semibold mb-4">Billing Information</h2>
-                <!-- Add billing information details here -->
-                <!-- Example: -->
-                <p style="word-wrap: break-word;" > <%= details.orderDetails[0].address %></p>
-            </div>
+          <div class="w-full">
+            <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+            <!-- Add order summary details here -->
+            <!-- Example: -->
+            <p>
+              Order ID: <%=
+              details._id.toString().split('').slice(18,24).join('') %>
+            </p>
+            <p>Total Items: <%= details.orderDetails[0].quantity %></p>
+            <p>Subtotal: <%= details.orderDetails[0].price %></p>
+            <!-- <p>Discount: -$10.00</p> -->
+            <p class="text-xl font-semibold mt-4">
+              Order Total: <%= details.orderDetails[0].quantity *
+              details.orderDetails[0].price %>
+            </p>
+          </div>
+          <div class="w-full">
+            <h2 class="text-xl font-semibold mb-4">Shipping Information</h2>
+            <!-- Add shipping information details here -->
+            <!-- Example: -->
+            <p style="word-wrap: break-word">
+              <%= details.orderDetails[0].address %>
+            </p>
+          </div>
+          <div class="w-full">
+            <h2 class="text-xl font-semibold mb-4">Billing Information</h2>
+            <!-- Add billing information details here -->
+            <!-- Example: -->
+            <p style="word-wrap: break-word">
+              <%= details.orderDetails[0].address %>
+            </p>
+          </div>
         </div>
 
         <!-- Order Status with Progress Bar -->
         <div class="mt-8">
-            <h2 class="text-xl font-semibold mb-4">Order Status</h2>
-            <p class="text-lg">
-                Status:
-                <span id="orderStatus" class="text-blue-500 font-semibold"> <%= details.orderDetails[0].orderStatus %></span>
-                <!-- You can dynamically change the status color based on the order status -->
-            </p>
+          <h2 class="text-xl font-semibold mb-4">Order Status</h2>
+          <p class="text-lg">
+            Status:
+            <span id="orderStatus" class="text-blue-500 font-semibold">
+              <%= details.orderDetails[0].orderStatus %></span
+            >
+            <!-- You can dynamically change the status color based on the order status -->
+          </p>
 
-            <!-- Progress Bar -->
-            <progress id="orderProgressBar" class="w-full h-5 mt-2 bg-green-500" value="0" max="100"></progress>
+          <!-- Progress Bar -->
+          <progress
+            id="orderProgressBar"
+            class="w-full h-5 mt-2 bg-green-500"
+            value="0"
+            max="100"
+          ></progress>
         </div>
+        <p id="id" class="hidden"><%= details._id %> </p>
 
         <!-- Order Status -->
         <!-- <div class="mt-8" id="orderStatusContainer">
             <h2 class="text-xl font-semibold mb-4">Order Status</h2>
             <p class="text-lg" id="orderStatus">
                 Status: <span class="text-blue-500 font-semibold">Ordered</span> -->
-                <!-- You can dynamically change the status color based on the order status -->
-            <!-- </p>
+        <!-- You can dynamically change the status color based on the order status -->
+        <!-- </p>
         </div> -->
 
         <!-- Order Items -->
         <div class="mt-8">
-            <h2 class="text-xl font-semibold mb-4">Order Items</h2>
-            <!-- Add a loop for each item in the order -->
-            <!-- Example for a single product -->
-            <div class="flex items-center justify-between border-b border-gray-300 py-4">
-                <div class="flex items-center">
-                    <img src=" <%= details.orderDetails[0].pImage %>" alt="Product Image" class="w-16 h-16 object-cover rounded-md mr-4">
-                    <div>
-                        <p class="text-lg font-semibold"> <%= details.orderDetails[0].pName %></p>
-                        <p class="text-gray-600">Quantity:  <%= details.orderDetails[0].quantity %></p>
-                    </div>
-                </div>
-                <p class="text-lg font-semibold"> <%= details.orderDetails[0].price %></p>
+          <h2 class="text-xl font-semibold mb-4">Order Items</h2>
+          <!-- Add a loop for each item in the order -->
+          <!-- Example for a single product -->
+          <div
+            class="flex items-center justify-between border-b border-gray-300 py-4"
+          >
+            <div class="flex items-center">
+              <img
+                src=" <%= details.orderDetails[0].pImage %>"
+                alt="Product Image"
+                class="w-16 h-16 object-cover rounded-md mr-4"
+              />
+              <div>
+                <p class="text-lg font-semibold">
+                  <%= details.orderDetails[0].pName %>
+                </p>
+                <p class="text-gray-600">
+                  Quantity: <%= details.orderDetails[0].quantity %>
+                </p>
+              </div>
             </div>
-            <!-- Repeat the above block for each item in the order -->
+            <p class="text-lg font-semibold">
+              <%= details.orderDetails[0].price %>
+            </p>
+          </div>
+          <!-- Repeat the above block for each item in the order -->
 
-            <!-- Order Total -->
-            <div class="flex justify-end mt-8">
-                <p class="text-2xl font-semibold">Order Total:  <%= details.orderDetails[0].price  *  details.orderDetails[0].quantity %></p>
-            </div>
+          <!-- Order Total -->
+          <div class="flex justify-end mt-8">
+            <p class="text-2xl font-semibold">
+              Order Total: <%= details.orderDetails[0].price *
+              details.orderDetails[0].quantity %>
+            </p>
+          </div>
+          <button id="downloadInvoiceBtn">Download Invoice</button>
         </div>
+      </div>
+      <footer class="bg-gray-800 text-white p-4 text-center">
+        <p>
+          &copy;
+          <script>
+            document.write(new Date().getFullYear());
+          </script>
+          OtronMart E-Commerce. All rights reserved.
+        </p>
+      </footer>
     </div>
-        <footer class="bg-gray-800 text-white p-4 text-center">
-            <p>&copy; <script>
-                    document.write(new Date().getFullYear());
-                </script> OtronMart E-Commerce. All rights reserved.</p>
-        </footer>
-        <script>
-            const orderStatusElement = document.getElementById('orderStatus').innerText;
-             function goBack() {
-                window.history.back();
-            }
-
-            if(orderStatusElement === 'Cancelled'){
-                updateOrderStatus({ text: 'Cancelled', color: 'red' }, 100);
-            }
-            if(orderStatusElement === 'Delivered'){
-                updateOrderStatus({ text: 'Delivered', color: 'purple' }, 100);
-            }
-            if(orderStatusElement === 'Shipped'){
-                updateOrderStatus({ text: 'Shipped', color: 'green' }, 66);
-            }
-            if(orderStatusElement === 'Ordered'){
-                updateOrderStatus({ text: 'Ordered', color: 'blue' }, 33);
-            }
-
-            function updateOrderStatus(status, progress) {
-                const progressBar = document.querySelector('#orderProgressBar');
-                progressBar.value = progress;
-
-                // Conditionally set the color based on the status
-                if (status.text === 'Cancelled') {
-                    progressBar.classList.remove('bg-green-500');
-                    progressBar.classList.add('bg-red-500');
-                }
-            }
-
-        
-        </script>
-    
-    </div>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"
+      integrity="sha512-NQfB/bDaB8kaSXF8E77JjhHG5PM6XVRxvHzkZiwl3ddWCEPBa23T76MuWSwAJdMGJnmQqM0VeY9kFszsrBEFrQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
     <script src="https://cdn.tailwindcss.com"></script>
-</body>
+    <script>
+      const orderStatusElement =
+        document.getElementById("orderStatus").innerText;
+      function goBack() {
+        window.history.back();
+      }
+
+      if (orderStatusElement === "Cancelled") {
+        updateOrderStatus({ text: "Cancelled", color: "red" }, 100);
+      }
+      if (orderStatusElement === "Delivered") {
+        updateOrderStatus({ text: "Delivered", color: "purple" }, 100);
+      }
+      if (orderStatusElement === "Shipped") {
+        updateOrderStatus({ text: "Shipped", color: "green" }, 66);
+      }
+      if (orderStatusElement === "Ordered") {
+        updateOrderStatus({ text: "Ordered", color: "blue" }, 33);
+      }
+
+      function updateOrderStatus(status, progress) {
+        const progressBar = document.querySelector("#orderProgressBar");
+        progressBar.value = progress;
+
+        // Conditionally set the color based on the status
+        if (status.text === "Cancelled") {
+          progressBar.classList.remove("bg-green-500");
+          progressBar.classList.add("bg-red-500");
+        }
+      }
+
+      document
+        .getElementById("downloadInvoiceBtn")
+        .addEventListener("click", async () => {
+          try {
+            const orderId = document.getElementById('id').innerText;
+            console.log(orderId); // Replace with the actual order ID
+            const response = await axios.get(`/generate-invoice/${orderId}`, {
+              responseType: "blob", // Set response type to blob
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "invoice.pdf";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          } catch (error) {
+            console.error("Error downloading invoice:", error);
+          }
+        });
+    </script>
+  </body>
 </html>
