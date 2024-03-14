@@ -36,8 +36,8 @@ import {
   walletRazorpayVerification,
 } from "../controller/userController.js";
 
-import { addToCart, reloadTotalAmount, removeFromCart, removeproductfromcart, updatequantity } from "../controller/cartController.js";
-import { cancelOrder, checkaddress, checkout, generateInvoice, orderRazorpayVerification, placeorder, returnOrder } from "../controller/orderController.js";
+import { addToCart, reloadTotalAmount, removeproductfromcart, updatequantity } from "../controller/cartController.js";
+import { cancelOrder, checkaddress, checkout, invoiceDownload, orderRazorpayVerification, placeorder, returnOrder } from "../controller/orderController.js";
 import { checkBlocked, dontgoback, } from "../middleware/userAuth.js";
 import { addToWishlist, removeFromWishlist } from "../controller/wishlistController.js";
 import { checkCoupon } from "../controller/couponController.js";
@@ -89,7 +89,7 @@ router.delete("/deleteaddress/:id",deleteaddress);
 router.get('/api/products',filterproduct)
 router.get('/getUpdatedTotalAmount',reloadTotalAmount)
 router.get('/checkaddress',checkaddress)
-router.get('/generate-invoice/:id', generateInvoice)
+router.get('/generate-invoice/:id', invoiceDownload)
 
 router.post('/placeorder',placeorder)
 router.post('/cancelOrder',cancelOrder)

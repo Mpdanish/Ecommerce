@@ -8,8 +8,7 @@ import Userdb from "../model/userSchema.js";
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import Walletdb from "../model/walletSchema.js";
-import EasyInvoice from "easyinvoice";
-import fs from "fs";
+import PDFDocument from "pdfkit";
 
 var instance = new Razorpay({
   key_id: process.env.RZP_KEY_ID,
@@ -25,8 +24,6 @@ export async function checkout(req, res) {
     const productid = await Cartdb.findOne({
       userId: new mongoose.Types.ObjectId(userid),
     });
-
-    // console.log(productid);
 
     const products = await Cartdb.aggregate([
       {
@@ -48,10 +45,7 @@ export async function checkout(req, res) {
       },
     ]);
 
-    // console.log(products);
-
     const sum = products.reduce((total, product) => {
-      // Ensure product and productDetails exist
       if (product.products && product.productsDetails) {
         total += product.products.quantity * product.productsDetails.price;
       }
@@ -69,7 +63,6 @@ export async function checkout(req, res) {
 
 export async function checkaddress(req, res) {
   try {
-    // Fetch address data from the database
     const address = await Addressdb.findOne({ userId: req.session.userId });
 
     if (!address) {
@@ -88,7 +81,6 @@ export async function placeorder(req, res) {
     const { paymentMethod, address, price } = req.body;
     req.session.sum = price;
 
-    // Check if address and paymentMethod are provided
     if (!paymentMethod || !address) {
       throw new Error("Payment method and address are required.");
     }
@@ -103,7 +95,7 @@ export async function placeorder(req, res) {
       req.session.address = address;
 
       var options = {
-        amount: price * 100, // amount in the smallest currency unit
+        amount: price * 100,
         currency: "INR",
         receipt: "order_rcptid_11",
       };
@@ -181,14 +173,12 @@ export async function orderRazorpayVerification(req, res) {
         return orderItem;
       });
 
-      // Create a new order instance
       const newOrder = new Orderdb({
         userId: userId,
         orderDetails: orderItems,
         totalsum: req.session.sum,
       });
 
-      // Save the order to the database
       await newOrder.save();
 
       delete req.session.address;
@@ -200,7 +190,6 @@ export async function orderRazorpayVerification(req, res) {
       res.status(200).redirect("/successpage");
     }
   } catch (error) {
-    // If there's an error, send an error response
     console.error("Error while verifying", error);
     res.status(500).send("Error verifiying razorpay payment");
   }
@@ -208,17 +197,14 @@ export async function orderRazorpayVerification(req, res) {
 
 export async function cancelOrder(req, res) {
   const orderId = req.body.orderId;
-  // console.log(orderId, "idd");
 
   try {
-    // Find the order by ID
     const order = await Orderdb.findOneAndUpdate(
       { "orderDetails._id": orderId },
       { $set: { "orderDetails.$.orderStatus": "Cancelled" } },
       { projection: { "orderDetails.$": 1 } }
     );
 
-    // Add the quantity back to product stock
     const product = await Productdb.findOneAndUpdate(
       { _id: order.orderDetails[0].productId },
       { $inc: { quantity: order.orderDetails[0].quantity } }
@@ -256,14 +242,8 @@ export async function cancelOrder(req, res) {
         );
       }
     }
-
-    // Save the updated order
-    // await res.save();
-
-    // Send a success response
     res.status(200).send("Order cancelled successfully");
   } catch (error) {
-    // If there's an error, send an error response
     console.error("Error cancelling order:", error);
     res.status(500).send("Error cancelling order");
   }
@@ -271,18 +251,14 @@ export async function cancelOrder(req, res) {
 
 export async function returnOrder(req, res) {
   const orderId = req.body.orderId;
-  // console.log(orderId, "idd");
 
   try {
-    // Find the order by ID
     const order = await Orderdb.findOneAndUpdate(
       { "orderDetails._id": orderId },
       { $set: { "orderDetails.$.orderStatus": "Returned" } },
       { projection: { "orderDetails.$": 1 } }
     );
-    // console.log(order, "orderr");
 
-    // Add the quantity back to product stock
     const product = await Productdb.findOneAndUpdate(
       { _id: order.orderDetails[0].productId },
       { $inc: { quantity: order.orderDetails[0].quantity } }
@@ -319,15 +295,8 @@ export async function returnOrder(req, res) {
       );
     }
 
-    // console.log(product, "prodct");
-
-    // Save the updated order
-    // await res.save();
-
-    // Send a success response
     res.status(200).send("Order returned successfully");
   } catch (error) {
-    // If there's an error, send an error response
     console.error("Error returning order:", error);
     res.status(500).send("Error returning order");
   }
@@ -335,99 +304,30 @@ export async function returnOrder(req, res) {
 
 async function clearUserCart(userId) {
   try {
-    // Find all cart items associated with the user
     const cartItems = await Cartdb.findOne({ userId: userId });
-    // console.log(cartItems, "cartItems");
-    // Loop through each cart item
     for (const cartItem of cartItems.products) {
-      // Decrease the stock quantity of the product
-      // console.log(cartItem, "zxcvb");
       await decreaseProductStock(cartItem.productId, cartItem.quantity);
 
-      // Delete the cart item
       await Cartdb.findByIdAndDelete(cartItems._id);
     }
-
-    // console.log("User cart cleared successfully");
   } catch (error) {
     console.error("Error clearing user cart:", error);
-    // Handle error appropriately
   }
 }
 
 async function decreaseProductStock(productId, quantity) {
   try {
-    // Find the product by ID
     const product = await Productdb.findOne({ _id: productId });
-    // console.log(productId, "asdfg");
 
     if (!product) {
       throw new Error(`Product with ID ${productId} not found`);
     }
 
-    // Decrease the stock quantity
     product.stock -= quantity;
 
-    // Save the updated product
     await product.save();
-
-    // console.log(`Stock quantity decreased for product ${productId}`);
   } catch (error) {
     console.error("Error decreasing product stock:", error);
-    // Handle error appropriately
-  }
-}
-
-export async function generateInvoice(req, res) {
-  try {
-    const order = await Orderdb.findById(req.params.id);
-    console.log(order);
-    if (!order) {
-      return res.status(404).send("Order not found");
-    }
-
-    // Create the invoice using EasyInvoice
-    const data = {
-      documentTitle: "Invoice",
-      currency: "INR",
-      taxNotation: "gst", // or gst
-      marginTop: 25,
-      marginBottom: 25,
-      padding: 10,
-      color: "#007BFF",
-      logo: "/images/electronic-store-logo.svg", // or base64
-      sender: {
-        company: "OtronMart",
-        address: "Street 123",
-        zip: "459876",
-        city: "Calicut",
-        country: "India",
-      },
-      client: {
-        company: "Client",
-        address: order.orderDetails[0].address,
-      },
-      invoiceNumber: `Order #${order._id}`, // Use order ID as invoice number
-      invoiceDate: order.orderDetails[0].orderDate.toLocaleDateString(), // Use order date as invoice date
-      products: order.orderDetails.map((detail) => ({
-        name: detail.pName,
-        price: detail.price,
-        quantity: detail.quantity,
-      })),
-      total: order.totalsum,
-    };
-    console.log(data);
-
-    const result = await EasyInvoice.createInvoice(data);
-
-    // Save invoice to a PDF file
-    fs.writeFileSync("invoice.pdf", result.pdf, "base64");
-
-    res.contentType("application/pdf");
-    res.send(result.pdf);
-  } catch (error) {
-    console.error("error", error);
-    res.status(500).send("Server Error");
   }
 }
 
@@ -439,7 +339,21 @@ export async function invoiceDownload(req, res) {
   const orderId = req.params.id;
   try {
     const order = await Orderdb.findOne({ _id: orderId });
-
+    let address;
+    let orderDate;
+    if (order) {
+      order.orderDetails.forEach((order) => {
+        address = order.address;
+        orderDate = order.orderDate;
+      });
+    }
+    const name = address.split(",")[0];
+    const date = orderDate
+      .toISOString()
+      .split("T")[0]
+      .split("-")
+      .reverse()
+      .join("-");
     const doc = new PDFDocument();
 
     res.setHeader("Content-Type", "application/pdf");
@@ -452,7 +366,7 @@ export async function invoiceDownload(req, res) {
     doc
       .font("Helvetica")
       .fontSize(24)
-      .text("Fonekart", { align: "center" })
+      .text("OtronMart", { align: "center" })
       .moveDown()
       .moveDown();
     doc
@@ -467,17 +381,13 @@ export async function invoiceDownload(req, res) {
       .moveDown();
     doc
       .fontSize(10)
-      .text(`Order Date: ${order.orderDetails.orderDate.toDateString()}`, { align: "start" })
+      .text(`Order Date: ${date}`, { align: "start" })
       .moveDown()
       .moveDown();
 
     doc.fontSize(12).text("BILLED TO :", { underline: true });
-    doc.fontSize(10).text(`Name: ${order.orderDetails.address.name}`);
-    doc
-      .fontSize(10)
-      .text(
-        `Address: ${order.address.address}, ${order.address.city}, ${order.address.pin}`
-      );
+    doc.fontSize(10).text(`Name: ${name}`);
+    doc.fontSize(10).text(`Address: ${address}`);
 
     const tableHeaders = [
       "Product Name",
@@ -506,7 +416,7 @@ export async function invoiceDownload(req, res) {
 
     const rowHeight = 50;
     let yPos = startY + headerHeight;
-    order.orderItems.forEach((item, rowIndex) => {
+    order.orderDetails.forEach((item, rowIndex) => {
       const fillColor = rowIndex % 2 === 0 ? "#FFFFFF" : "#EEEEEE";
       doc
         .rect(startX, yPos, cellWidth * tableHeaders.length, rowHeight)
@@ -514,7 +424,7 @@ export async function invoiceDownload(req, res) {
       doc.fillColor("#000000");
       doc.font("Helvetica").fontSize(10);
       doc.text(
-        item.Pname || "N/A",
+        item.pName || "N/A",
         startX + cellWidth / 2,
         yPos + rowHeight / 2,
         { width: cellWidth, align: "start", valign: "start" }
