@@ -8,6 +8,7 @@ import Offerdb from "../model/offerSchema.js";
 import Coupondb from "../model/couponSchema.js";
 import {
   getAllCoupon,
+  getAllDeletedCoupons,
   getAllOrders,
   getAllUsers,
   getListedAllCategories,
@@ -54,32 +55,32 @@ export function logoutAdmin(req, res) {
   }
 }
 
-export async function adminHome(req, res) {
-  try {
-    const totalOrders = await Orderdb.aggregate([
-      {
-        $project: {
-          orderDetailsCount: { $size: "$orderDetails" },
-        },
-      },
-    ]);
+// export async function adminHome(req, res) {
+//   try {
+//     const totalOrders = await Orderdb.aggregate([
+//       {
+//         $project: {
+//           orderDetailsCount: { $size: "$orderDetails" },
+//         },
+//       },
+//     ]);
 
-    const totalOrderCount = totalOrders.reduce(
-      (total, obj) => total + obj.orderDetailsCount,
-      0
-    );
+//     const totalOrderCount = totalOrders.reduce(
+//       (total, obj) => total + obj.orderDetailsCount,
+//       0
+//     );
 
-    const productCount = await Productdb.countDocuments({ isHidden: false });
-    const userCount = await Userdb.countDocuments({ status: true });
+//     const productCount = await Productdb.countDocuments({ isHidden: false });
+//     const userCount = await Userdb.countDocuments({ status: true });
 
-    res
-      .status(200)
-      .render("adminHome.ejs", { totalOrderCount, productCount, userCount });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-}
+//     res
+//       .status(200)
+//       .render("adminHome.ejs", { totalOrderCount, productCount, userCount });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Internal Server Error");
+//   }
+// }
 
 export async function adminUser(req, res) {
   try {
@@ -268,6 +269,7 @@ export async function adminCoupon(req, res) {
     const allcoupons = await Coupondb.find();
     const coupons = await getAllCoupon(null, req.query.page);
     const totalCoupons = allcoupons.length;
+    console.log(coupons);
 
     res.render("adminCoupon.ejs", {
       coupons,
@@ -296,6 +298,24 @@ export async function adminEditCoupon(req, res) {
     const coupon = await Coupondb.findById(id);
     const category = await Categorydb.find();
     res.render("adminEditCoupon.ejs", { coupon, category });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function adminDeletedCoupon(req, res) {
+  try {
+    const allcoupons = await Coupondb.find();
+    const coupons = await getAllDeletedCoupons(null, req.query.page);
+    const totalCoupons = allcoupons.length;
+    console.log(coupons);
+
+    res.render("adminDeletedCoupons.ejs", {
+      coupons,
+      totalCoupons,
+      currentPage: Number(req.query.page),
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");

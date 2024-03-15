@@ -105,6 +105,61 @@ export async function placeorder(req, res) {
     }
 
     if (paymentMethod !== "Razorpay") {
+      let user = req.session.userId;
+
+      const userId = await Userdb.findById(user);
+      const currentDate = new Date();
+
+      const cartItems = await Cartdb.aggregate([
+        {
+          $match: { userId: new mongoose.Types.ObjectId(user) },
+        },
+        {
+          $unwind: "$products",
+        },
+        {
+          $lookup: {
+            from: Productdb.collection.name,
+            localField: "products.productId",
+            foreignField: "_id",
+            as: "productsDetails",
+          },
+        },
+        {
+          $unwind: "$productsDetails",
+        },
+      ]);
+
+      const orderItems = cartItems.map((element) => {
+        const orderItem = {
+          productId: element.products.productId,
+          pName: element.productsDetails.name,
+          price: element.productsDetails.price * element.products.quantity,
+          pImage: element.productsDetails.images[0],
+          quantity: element.products.quantity,
+          address: address,
+          paymentMethod: paymentMethod,
+          orderStatus: "Ordered",
+          orderDate: currentDate,
+        };
+        return orderItem;
+      });
+
+      const price = Number(req.session.sum)
+      console.log(price);
+
+      const newOrder = new Orderdb({
+        userId: userId,
+        orderDetails: orderItems,
+        totalsum: price,
+      });
+
+      await newOrder.save();
+
+      delete req.session.sum;
+
+      await clearUserCart(user);
+
       res.status(200).json({ message: "Order placed successfully!" });
     }
   } catch (error) {

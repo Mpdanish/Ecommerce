@@ -456,7 +456,9 @@
 
           const name = document.getElementById("prdname").innerText;
 
-          const price = Number(document.getElementById("totalSum").textContent);
+          const price = document.getElementById("totalSum").innerText;
+          const value = price.split(' ').trim();
+          console.log(value);
 
           const quantity = document.getElementById("prdquantity").innerText;
 
@@ -507,7 +509,8 @@
 
                   // console.log("Order placed successfully!");
                   if (paymentMethod === cod) {
-                    window.location.href = "/successpage";
+                    // window.location.href = "/successpage";
+                    console.log("successs");
                   }
                 })
                 .catch(function (error) {

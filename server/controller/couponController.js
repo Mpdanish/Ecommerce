@@ -57,8 +57,8 @@ export async function updateCoupon(req, res) {
     // });
 
     const duplicate = await Coupondb.findOne({
-      couponCode: { $regex: new RegExp('^' + couponCode + '$', "i") },
-      _id: { $ne: req.params.id } // Exclude the current coupon being updated
+      couponCode: { $regex: new RegExp("^" + couponCode + "$", "i") },
+      _id: { $ne: req.params.id }, // Exclude the current coupon being updated
     });
 
     if (!couponCode) {
@@ -176,7 +176,13 @@ export async function checkCoupon(req, res) {
 
 export async function deleteCoupon(req, res) {
   try {
-    
+    const couponId = req.params.id;
+    const data = await Coupondb.findByIdAndUpdate(
+      { _id: couponId },
+      { $set: { isDeleted: true } }
+    );
+    console.log(data);
+    res.status(201).json({ message: "Coupon Deleted" });
   } catch (error) {
     console.error("Error deleting coupon:", error);
     return res.status(500).json({ error: "Internal Server Error" });

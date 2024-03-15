@@ -12,9 +12,9 @@ export async function getAllCoupon(couponId = null, page = null) {
       if (!isObjectIdOrHexString(couponId)) {
         return null;
       }
-      return await Coupondb.findOne({ _id: couponId });
+      return await Coupondb.findOne({ _id: couponId,isDeleted:false });
     }
-    return await Coupondb.find()
+    return await Coupondb.find({isDeleted:false})
       .skip(10 * skip)
       .limit(10);
   } catch (err) {
@@ -22,22 +22,23 @@ export async function getAllCoupon(couponId = null, page = null) {
   }
 }
 
-// export async function getAllCategories (catId = null, page = null) {
-//     try {
-//         const skip = Number(page)?(Number(page) - 1):0;
-//         // for updation of coupon we need details of the particular coupon
-//         if(catId){
-//             if(!isObjectIdOrHexString(catId)){
-//                 return null;
-//             }
-//             return await Categorydb.findOne({_id: catId});
-//         }
-//         return await Categorydb.find().skip((10 * skip)).limit(10);
-
-//     } catch (err) {
-//         throw err;
-//     }
-// }
+export async function getAllDeletedCoupons(couponId = null, page = null) {
+  try {
+    const skip = Number(page) ? Number(page) - 1 : 0;
+    // for updation of coupon we need details of the particular coupon
+    if (couponId) {
+      if (!isObjectIdOrHexString(couponId)) {
+        return null;
+      }
+      return await Coupondb.findOne({ _id: couponId,isDeleted:true });
+    }
+    return await Coupondb.find({isDeleted:true})
+      .skip(10 * skip)
+      .limit(10);
+  } catch (err) {
+    throw err;
+  }
+}
 
 export async function getListedAllCategories(
   isHidden = false,

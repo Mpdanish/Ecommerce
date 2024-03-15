@@ -6,11 +6,11 @@ import {
   adminAddProduct,
   adminCategory,
   adminCoupon,
+  adminDeletedCoupon,
   adminDeletedProduct,
   adminEditCategory,
   adminEditCoupon,
   adminEditProduct,
-  adminHome,
   adminOrder,
   adminProduct,
   adminUnlistedCategory,
@@ -42,15 +42,16 @@ import {
 } from "../controller/adminController.js";
 import { checkAdmin } from "../middleware/adminAuth.js";
 import { CategoryOffer, ProductOffer, deleteOffer, updateOffer } from "../controller/offerController.js";
-import { addCoupon, updateCoupon } from "../controller/couponController.js";
+import { addCoupon, deleteCoupon, updateCoupon } from "../controller/couponController.js";
 import { customDateSales } from "../controller/salesReportController.js";
+import { adminDashboard } from "../controller/dashboardController.js";
 
 
 const router = Router();
 
 router.get("/adminlogin", adminlogin);
 router.get("/adminlogout", logoutAdmin);
-router.get("/adminHome",checkAdmin, adminHome);
+router.get("/adminHome",checkAdmin, adminDashboard);
 router.get("/adminUsers",checkAdmin, adminUser);
 router.get("/adminProducts",checkAdmin, adminProduct);
 router.get("/adminDeletedProducts",checkAdmin, adminDeletedProduct);
@@ -64,9 +65,10 @@ router.get("/offer",checkAdmin, offer);
 router.get("/addCategoryOffer",checkAdmin, addCategoryOffer);
 router.get("/addProductOffer",checkAdmin, addProductOffer);
 router.get("/editoffer/:id",checkAdmin, editOffer);
-router.get("/adminCoupon", adminCoupon ); //checkAdmin,
-router.get("/adminAddCoupon", adminAddCoupon ); //checkAdmin,
-router.get("/editCoupon/:id", adminEditCoupon); //checkAdmin,
+router.get("/adminCoupon",checkAdmin, adminCoupon ); //checkAdmin,
+router.get("/adminAddCoupon",checkAdmin, adminAddCoupon ); //checkAdmin,
+router.get("/editCoupon/:id",checkAdmin, adminEditCoupon); //checkAdmin,
+router.get("/adminDeletedCoupons",checkAdmin, adminDeletedCoupon); //checkAdmin,
 
 
 router.post("/adminlogincheck", isAdmin);
@@ -101,5 +103,6 @@ router.patch("/updateCoupon/:id", updateCoupon);
 
 router.delete("/deleteimage/:id/:productid", deleteImage)
 router.delete("/deleteoffer/:id", deleteOffer)
+router.delete("/deleteCoupon/:id", deleteCoupon)
 
 export default router;
