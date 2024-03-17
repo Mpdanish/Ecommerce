@@ -218,58 +218,63 @@ include('include/_topheader') %>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <!-- Axios -->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.4/axios.min.js"
+  integrity="sha512-ANd7ZJmixP2T0hxOP4bS6hkci01fxyrQSyRdaY7IsWq1WlKsD0WwWBDVDZbnMR7CJZVKCTkDx/q5D5n2C2C+vg=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+></script>
 <script>
   function updateChart() {
-		  var interval = document.getElementById('intervalSelect').value;
-	  
-		  // Making AJAX request
-		  $.ajax({
-			type: 'POST',
-			url: '/admin/chartData',
-			data: { filter: interval }, 
-			success: function (response) {
-			 
-			  var labels = response.label;
-			  var salesCount = response.salesCount;
-	
-			  myChart.data.labels = labels;
-			  myChart.data.datasets[0].data = salesCount;
-			  myChart.update();
-			},
-			error: function (xhr, status, error) {
-			  console.error(error);
-			}
-		  });
-		}
-	  
-		var data = {
-		  labels: [],
-		  datasets: [{
-			label: 'Sales Count',
-			backgroundColor: '#27ae60',
-			borderColor: 'rgb(255, 99, 132)',
-			data: []
-		  }]
-		};
-	  
-		var config = {
-		  type: 'bar',
-		  data: data,
-		  options: {
-			scales: {
-			  yAxes: [{
-				ticks: {
-				  beginAtZero: true
-				}
-			  }]
-			}
-		  }
-		};
-	  
-		var ctx = document.getElementById('myChart').getContext('2d');
-		var myChart = new Chart(ctx, config);
-		updateChart();
+    var interval = document.getElementById("intervalSelect").value;
+
+    // Making Axios request
+    axios
+      .post("/getChartData", { filter: interval })
+      .then(function (response) {
+        var labels = response.data.label;
+        var salesCount = response.data.salesCount;
+
+        myChart.data.labels = labels;
+        myChart.data.datasets[0].data = salesCount;
+        myChart.update();
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  }
+
+  var data = {
+    labels: [],
+    datasets: [
+      {
+        label: "Sales Count",
+        backgroundColor: "#27ae60",
+        borderColor: "rgb(255, 99, 132)",
+        data: [],
+      },
+    ],
+  };
+
+  var config = {
+    type: "bar",
+    data: data,
+    options: {
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+            },
+          },
+        ],
+      },
+    },
+  };
+
+  var ctx = document.getElementById("myChart").getContext("2d");
+  var myChart = new Chart(ctx, config);
+  updateChart();
 </script>
 
 <%- include('include/_footer') %>

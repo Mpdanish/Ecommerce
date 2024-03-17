@@ -26,7 +26,7 @@ const couponSchema = new mongoose.Schema({
     required: true,
   },
   isDeleted: {
-    type: String,
+    type: Boolean,
     default: false,
   },
 });

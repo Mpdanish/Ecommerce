@@ -67,9 +67,11 @@
                 <%= product.productsDetails.name %>
               </p>
               <!-- Product Price -->
-              <p class="text-gray-700 mb-2" id="prdsum" >
-                Total Price: ₹<span class="prdsum"><%= (product.productsDetails.price) *
-                  (product.products.quantity) %></span>
+              <p class="text-gray-700 mb-2" id="prdsum">
+                Total Price: ₹<span class="prdsum"
+                  ><%= (product.productsDetails.price) *
+                  (product.products.quantity) %></span
+                >
               </p>
               <!-- Product Quantity -->
               <p class="text-gray-700 mb-2" id="prdquantity">
@@ -245,6 +247,14 @@
               >
                 Apply
               </button>
+              <button
+                id="removeCouponButton"
+                type="button"
+                class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                style="display: none"
+              >
+                Remove Coupon
+              </button>
             </div>
           </div>
           <!-- End Coupon Section -->
@@ -316,9 +326,11 @@
 
               if (isValid) {
                 const totalPrice = document.querySelectorAll(".prdsum");
-                let total = 0
-                totalPrice.forEach(value => total += Number(value.innerHTML));
-                
+                let total = 0;
+                totalPrice.forEach(
+                  (value) => (total += Number(value.innerHTML))
+                );
+
                 console.log(total);
                 const discountedvalue = Math.floor(total / discount);
 
@@ -326,9 +338,9 @@
                 // Update UI to show discount
                 document.getElementById("couponDiscountValue").textContent =
                   discountedvalue;
-                  if(!discountedvalue){
-                    discountedvalue = 0;
-                  }
+                if (!discountedvalue) {
+                  discountedvalue = 0;
+                }
                 totalSum.innerHTML = total - Number(discountedvalue);
                 document
                   .getElementById("couponDiscount")
@@ -339,7 +351,6 @@
             }
           });
 
-          
         document.addEventListener("DOMContentLoaded", async function () {
           const openAddressModalButton = document.getElementById(
             "openAddressModalButton"
@@ -431,8 +442,6 @@
           const couponDiscountValue = document.getElementById(
             "couponDiscountValue"
           );
-
-
         });
 
         // Function to update total with discount applied
@@ -448,7 +457,7 @@
           const selectedPaymentMethod = document.querySelector(
             'input[name="payment_method"]:checked'
           ).value;
-          const totalSum = sum;
+          // const totalSum = sum;
           const selectedAddress =
             document.getElementById("selectedAddress").innerText;
           // Get the image source
@@ -456,10 +465,9 @@
 
           const name = document.getElementById("prdname").innerText;
 
-          const price = document.getElementById("totalSum").innerText;
-          const value = price.split(' ').trim();
-          console.log(value);
-
+          const totalSum = document.getElementById("totalSum").innerText;
+          const value = totalSum.split(" ");
+          const price = value[1].trim();
           const quantity = document.getElementById("prdquantity").innerText;
 
           if (selectedPaymentMethod) {
@@ -479,9 +487,8 @@
                   image: image,
                 })
                 .then(function (response) {
-                  console.log(response.data.order);
+                  console.log(response.data.order, "order");
                   if (response.data?.order) {
-
                     var options = {
                       key: "rzp_test_MfFcU2xZ3MrlD6",
                       amount: response.data?.order.amount,
@@ -526,6 +533,32 @@
             // Show a message to select a payment method
           }
         }
+
+        const applyCouponButton = document.getElementById("applyCouponButton");
+        const removeCouponButton =
+          document.getElementById("removeCouponButton");
+        const couponCodeInput = document.getElementById("couponCode");
+        const subtotalValue = document.getElementById("subtotalValue");
+        const totalValue = document.getElementById("totalSum");
+        const originalTotal = totalValue.innerText; // Store original total value
+
+        applyCouponButton.addEventListener("click", function () {
+          // Your code to apply coupon here
+          // Display coupon discount and update total accordingly
+          document.getElementById("couponDiscount").classList.remove("hidden");
+          removeCouponButton.style.display = "inline-flex";
+          applyCouponButton.style.display = "none";
+        });
+
+        removeCouponButton.addEventListener("click", function () {
+          // Your code to remove coupon here
+          // Hide coupon discount, clear input box, and revert total to original value
+          document.getElementById("couponDiscount").classList.add("hidden");
+          removeCouponButton.style.display = "none";
+          applyCouponButton.style.display = "inline-flex";
+          couponCodeInput.value = ""; // Clear input box
+          totalValue.innerText = originalTotal; // Revert total to original value
+        });
       </script>
     </div>
   </body>

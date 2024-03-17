@@ -44,7 +44,7 @@ import { checkAdmin } from "../middleware/adminAuth.js";
 import { CategoryOffer, ProductOffer, deleteOffer, updateOffer } from "../controller/offerController.js";
 import { addCoupon, deleteCoupon, updateCoupon } from "../controller/couponController.js";
 import { customDateSales } from "../controller/salesReportController.js";
-import { adminDashboard } from "../controller/dashboardController.js";
+import { adminDashboard, getDetailsChart } from "../controller/dashboardController.js";
 
 
 const router = Router();
@@ -94,6 +94,7 @@ router.post('/getproductname', getProductData)
 router.post('/addProductOffer', ProductOffer)
 router.post('/addCoupon', addCoupon)
 router.post('/generateSalesReport', customDateSales)
+router.post('/getChartData', getDetailsChart)
 
 
 router.put("/api/updateproduct/:id", updateproduct);
